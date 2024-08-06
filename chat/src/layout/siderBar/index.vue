@@ -103,7 +103,7 @@
 
 			<HoverButton
 				v-if="!isLogin"
-				tooltip="t('sidebar.loginAccount')"
+				:tooltip="t('sidebar.loginAccount')"
 				:placement="isMobile ? 'bottom' : 'right'"
 				:class="isMobile ? 'mb-0' : 'mb-5'"
 				@click="toggleLogin"
@@ -225,7 +225,7 @@ const iframeSrc = computed(() => useGlobalStore.iframeUrl);
 function handleClickMenu(menu: MenuItem) {
 	const { menuPath, isJump, menuIframeUrl, isNeedAuth } = menu;
 	if (isNeedAuth && !isLogin.value) {
-		message.warning(t('common.loginFirst'));
+		message.warning(t('sidebar.loginFirst'));
 		authStore.setLoginDialog(true);
 		return;
 	}

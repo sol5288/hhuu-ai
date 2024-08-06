@@ -94,5 +94,6 @@ export default {
 		themeSwitch: '테마전환',
 		personalCenter: '개인설정',
 		loginAccount: '로그인',
+		loginFirst: '로그인하세요',
 	},
 };

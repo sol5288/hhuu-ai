@@ -97,5 +97,6 @@ export default {
 		themeSwitch: '主题切换',
 		personalCenter: '个人中心',
 		loginAccount: '登录账户',
+		loginFirst: '请先登录后访问！',
 	},
 };
