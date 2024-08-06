@@ -1,6 +1,7 @@
-import dayjs from 'dayjs'
-import 'dayjs/locale/zh-cn'
+import dayjs from "dayjs";
+import "dayjs/locale/zh-cn";
+import "dayjs/locale/ko";
 
-dayjs.locale('zh-cn')
+dayjs.locale("ko");
 
-export default dayjs
+export default dayjs;
