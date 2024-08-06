@@ -62,19 +62,19 @@ export class AppService {
     throw new HttpException('修改失败！', HttpStatus.BAD_REQUEST);
   }
 
-  async queryOneCat(params){
-    const {id} = params
-    if(!id){
+  async queryOneCat(params) {
+    const { id } = params;
+    if (!id) {
       throw new HttpException('缺失必要参数！', HttpStatus.BAD_REQUEST);
     }
-    const app = await this.appEntity.findOne({where: {id}})
-    const { demoData: demo, coverImg, des, name } = app
-    return { 
+    const app = await this.appEntity.findOne({ where: { id } });
+    const { demoData: demo, coverImg, des, name } = app;
+    return {
       demoData: demo ? demo.split('\n') : [],
-      coverImg, 
-      des, 
-      name
-    }
+      coverImg,
+      des,
+      name,
+    };
   }
 
   async appCatsList(query: QuerCatsDto) {

@@ -1,21 +1,21 @@
-import { defineStore } from "pinia";
-import { formatChatPre, getLocalState, setLocalState } from "./helper";
+import { defineStore } from 'pinia';
+import { formatChatPre, getLocalState, setLocalState } from './helper';
 import {
 	fetchCreateGroupAPI,
 	fetchDelAllGroupAPI,
 	fetchDelGroupAPI,
 	fetchQueryGroupAPI,
 	fetchUpdateGroupAPI,
-} from "@/api/group";
+} from '@/api/group';
 import {
 	fetchDelChatLogAPI,
 	fetchDelChatLogByGroupIdAPI,
 	fetchQueryChatLogListAPI,
-} from "@/api/chatLog";
-import { fetchModelBaseConfigAPI } from "@/api/models";
-import { fetchGetChatPreList } from "@/api/index";
+} from '@/api/chatLog';
+import { fetchModelBaseConfigAPI } from '@/api/models';
+import { fetchGetChatPreList } from '@/api/index';
 
-export const useChatStore = defineStore("chat-store", {
+export const useChatStore = defineStore('chat-store', {
 	state: (): Chat.ChatState => getLocalState(),
 
 	getters: {
@@ -61,8 +61,7 @@ export const useChatStore = defineStore("chat-store", {
 
 		/* 计算拿到当前选择的对话组信息 */
 		getChatByGroupInfo() {
-			if (this.active)
-				return this.groupList.find((item) => item.uuid === this.active) || {};
+			if (this.active) return this.groupList.find((item) => item.uuid === this.active) || {};
 		},
 
 		/*  */
@@ -89,16 +88,7 @@ export const useChatStore = defineStore("chat-store", {
 			const res: any = await fetchQueryGroupAPI();
 			this.groupList = [
 				...res.data.map((item: any) => {
-					const {
-						id: uuid,
-						title,
-						isSticky,
-						createdAt,
-						updatedAt,
-						appId,
-						config,
-						appLogo,
-					} = item;
+					const { id: uuid, title, isSticky, createdAt, updatedAt, appId, config, appLogo } = item;
 					return {
 						uuid,
 						title,
@@ -112,19 +102,13 @@ export const useChatStore = defineStore("chat-store", {
 					};
 				}),
 			];
-			const isHasActive = this.groupList.some(
-				(item) => Number(item.uuid) === Number(this.active)
-			);
+			const isHasActive = this.groupList.some((item) => Number(item.uuid) === Number(this.active));
 			if (!this.active || !isHasActive)
 				this.groupList.length && this.setActiveGroup(this.groupList[0].uuid);
 		},
 
 		/* 修改对话组信息 */
-		async updateGroupInfo(params: {
-			groupId: number;
-			title?: string;
-			isSticky?: boolean;
-		}) {
+		async updateGroupInfo(params: { groupId: number; title?: string; isSticky?: boolean }) {
 			await fetchUpdateGroupAPI(params);
 		},
 
@@ -140,9 +124,7 @@ export const useChatStore = defineStore("chat-store", {
 
 		/* 删除对话组 */
 		async deleteGroup(params: Chat.History) {
-			const curIndex = this.groupList.findIndex(
-				(item) => item.uuid === params.uuid
-			);
+			const curIndex = this.groupList.findIndex((item) => item.uuid === params.uuid);
 			const { uuid: groupId } = params;
 			await fetchDelGroupAPI({ groupId });
 			await this.queryMyGroup();
@@ -154,10 +136,7 @@ export const useChatStore = defineStore("chat-store", {
 			if (curIndex === 0 && this.groupList.length > 0)
 				await this.setActiveGroup(this.groupList[0].uuid);
 
-			if (
-				curIndex > this.groupList.length ||
-				(curIndex === 0 && this.groupList.length === 0)
-			)
+			if (curIndex > this.groupList.length || (curIndex === 0 && this.groupList.length === 0))
 				await this.setActiveGroup(0);
 
 			if (curIndex > 0 && curIndex === this.groupList.length)

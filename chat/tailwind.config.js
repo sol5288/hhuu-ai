@@ -2,13 +2,10 @@
 module.exports = {
   darkMode: 'class',
   purge: false,
-  content: [
-    './index.html',
-    './src/**/*.{vue,js,ts,jsx,tsx}',
-  ],
+  content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   theme: {
     extend: {
-			screens: {
+      screens: {
         '3xl': '1750px',
         '4xl': '1870px',
       },

@@ -7,8 +7,8 @@ import { AppEntity } from './app.entity';
 import { UserAppsEntity } from './userApps.entity';
 
 @Module({
-	imports: [TypeOrmModule.forFeature([AppCatsEntity, AppEntity, UserAppsEntity])],
-	controllers: [AppController],
-	providers: [AppService],
+  imports: [TypeOrmModule.forFeature([AppCatsEntity, AppEntity, UserAppsEntity])],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

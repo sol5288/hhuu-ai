@@ -1,100 +1,101 @@
 <script setup lang="ts">
-import { computed, onMounted, onBeforeUnmount, ref,watch } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAppStore, useAuthStore, useGlobalStoreWithOut } from '@/store'
-import { getToken } from '@/store/modules/auth/helper'
-import { fetchGetchatSyncApi } from '@/api'
+import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAppStore, useAuthStore, useGlobalStoreWithOut } from '@/store';
+import { getToken } from '@/store/modules/auth/helper';
+import { fetchGetchatSyncApi } from '@/api';
 
-const router = useRouter()
-const globalStore = useGlobalStoreWithOut()
-const loading = ref(false)
-const iframeSrc = computed(() => globalStore.iframeUrl)
+const router = useRouter();
+const globalStore = useGlobalStoreWithOut();
+const loading = ref(false);
+const iframeSrc = computed(() => globalStore.iframeUrl);
 // const iframeSrc = computed(() => 'http://localhost:3000/')
 
-const appStore = useAppStore()
-const darkMode = computed(() => appStore.theme === 'dark')
+const appStore = useAppStore();
+const darkMode = computed(() => appStore.theme === 'dark');
 
 function watchIframe() {
-	const iframe = document.getElementById('iframe')
+	const iframe = document.getElementById('iframe');
 	if (!iframe?.addEventListener) {
-		iframe?.attachEvent('onload', handleIframeLoad)
+		iframe?.attachEvent('onload', handleIframeLoad);
 	}
-	iframe?.addEventListener('load', handleIframeLoad, true)
+	iframe?.addEventListener('load', handleIframeLoad, true);
 }
 
-const theme = computed(() => appStore.theme)
+const theme = computed(() => appStore.theme);
 
 watch(theme, (data) => {
-	sendMessageToIframe({type: 'theme', data})
-})
+	sendMessageToIframe({ type: 'theme', data });
+});
 
 onMounted(() => {
 	if (!iframeSrc.value) {
-		return router.push('/')
+		return router.push('/');
 	}
-	loading.value = true
-	watchIframe()
-	window.addEventListener('message', messageChange)
-})
+	loading.value = true;
+	watchIframe();
+	window.addEventListener('message', messageChange);
+});
 
-async function messageChange(event: any){
-	const { type, data } = event.data
-	if(type === 'theme'){
-  	appStore.setTheme(data === 'dark' ? 'dark' : 'light' )
+async function messageChange(event: any) {
+	const { type, data } = event.data;
+	if (type === 'theme') {
+		appStore.setTheme(data === 'dark' ? 'dark' : 'light');
 	}
-	if(type === 'chat'){
-		replyAiChat(data)
+	if (type === 'chat') {
+		replyAiChat(data);
 	}
 }
 
-function replyAiChat(question: any){
-	fetchGetchatSyncApi({prompt: question}).then( (res: any) => {
-		const { code, data: resData } = res
-		if(code !== 200) return;
-		sendMessageToIframe({ type:'chat', data: removeEmojis(resData) })
-	})
+function replyAiChat(question: any) {
+	fetchGetchatSyncApi({ prompt: question }).then((res: any) => {
+		const { code, data: resData } = res;
+		if (code !== 200) return;
+		sendMessageToIframe({ type: 'chat', data: removeEmojis(resData) });
+	});
 }
 
 function removeEmojis(str: any) {
-    const regex = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
-    return str.replace(regex, '');
-  }
+	const regex = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
+	return str.replace(regex, '');
+}
 
-
-
-
-function sendMessageToIframe(message: any){
-	const iframe: any = document.getElementById('iframe')
-	const childWindow = iframe.contentWindow
+function sendMessageToIframe(message: any) {
+	const iframe: any = document.getElementById('iframe');
+	const childWindow = iframe.contentWindow;
 	childWindow.postMessage(message, '*');
 }
 
 function handleIframeLoad() {
 	sendMessageToIframe({
 		type: 'theme',
-		data: theme.value
-	})
-	const token = getToken()
-	if(token){
+		data: theme.value,
+	});
+	const token = getToken();
+	if (token) {
 		sendMessageToIframe({
 			type: 'token',
-			data: token
-		})
+			data: token,
+		});
 	}
-	loading.value = false
+	loading.value = false;
 }
 
 onBeforeUnmount(() => {
-	globalStore.updateIframeUrl('')
-	const iframe = document.getElementById('iframe')
-	iframe?.removeEventListener('load', handleIframeLoad)
-	window.removeEventListener('message', messageChange)
-})
+	globalStore.updateIframeUrl('');
+	const iframe = document.getElementById('iframe');
+	iframe?.removeEventListener('load', handleIframeLoad);
+	window.removeEventListener('message', messageChange);
+});
 </script>
 
 <template>
 	<div class="w-full h-full relative">
-		<div v-if="loading" class="main-container absolute left-0 right-0 bottom-0 top-0 backdrop-blur" :class="[ darkMode ?  'dark:bg-black/20' : 'bg-white/80' ]">
+		<div
+			v-if="loading"
+			class="main-container absolute left-0 right-0 bottom-0 top-0 backdrop-blur"
+			:class="[darkMode ? 'dark:bg-black/20' : 'bg-white/80']"
+		>
 			<div class="loading">
 				<div :class="['loading-text ', darkMode ? 'text-[#fff]' : 'text-[#000]']" id="loading-text">
 					<span class="loading-text-words">内</span>
@@ -107,7 +108,7 @@ onBeforeUnmount(() => {
 				</div>
 			</div>
 		</div>
-		<iframe id="iframe" :src="iframeSrc" style="width: 100%; height: 100%; border: none;"></iframe>
+		<iframe id="iframe" :src="iframeSrc" style="width: 100%; height: 100%; border: none"></iframe>
 	</div>
 </template>
 
@@ -153,7 +154,7 @@ body {
 .loading-text span {
 	display: inline-block;
 	margin: 0 5px;
-	font-family: "Quattrocento Sans", sans-serif;
+	font-family: 'Quattrocento Sans', sans-serif;
 }
 
 .loading-text span:nth-child(1) {

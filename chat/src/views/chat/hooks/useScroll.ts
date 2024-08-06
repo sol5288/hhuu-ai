@@ -1,5 +1,5 @@
-import type { Ref } from "vue";
-import { nextTick, ref } from "vue";
+import type { Ref } from 'vue';
+import { nextTick, ref } from 'vue';
 
 type ScrollElement = HTMLDivElement | null;
 
@@ -30,12 +30,11 @@ export function useScroll(): ScrollReturn {
 
 	const scrollToBottom = async () => {
 		let previous = 0;
-		let now = Date.now();
+		const now = Date.now();
 		if (now - previous > 1000) {
 			previous = now;
 			await nextTick();
-			if (scrollRef.value)
-				scrollRef.value.scrollTop = scrollRef.value.scrollHeight;
+			if (scrollRef.value) scrollRef.value.scrollTop = scrollRef.value.scrollHeight;
 		}
 	};
 
@@ -45,20 +44,14 @@ export function useScroll(): ScrollReturn {
 	};
 
 	// 使用节流函数包装 scrollToBottomIfAtBottom
-	const throttledScrollToBottomIfAtBottom = throttle(
-		scrollToBottomIfAtBottom,
-		100
-	);
+	const throttledScrollToBottomIfAtBottom = throttle(scrollToBottomIfAtBottom, 100);
 
 	async function scrollToBottomIfAtBottom() {
 		if (scrollRef.value) {
 			const threshold = 300;
 			const distanceToBottom =
-				scrollRef.value.scrollHeight -
-				scrollRef.value.scrollTop -
-				scrollRef.value.clientHeight;
-			if (distanceToBottom <= threshold)
-				scrollRef.value.scrollTop = scrollRef.value.scrollHeight;
+				scrollRef.value.scrollHeight - scrollRef.value.scrollTop - scrollRef.value.clientHeight;
+			if (distanceToBottom <= threshold) scrollRef.value.scrollTop = scrollRef.value.scrollHeight;
 		}
 	}
 

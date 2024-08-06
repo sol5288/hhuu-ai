@@ -1,19 +1,19 @@
 // shortcutManager.js
-const { globalShortcut, BrowserWindow } = require('electron');
+const { globalShortcut, BrowserWindow } = require('electron')
 
-let isWindowVisible = true;
+let isWindowVisible = true
 
 function registerShortcuts(mainWindow) {
   globalShortcut.register('Ctrl+L', () => {
     if (mainWindow && !mainWindow.isFullScreen()) {
       if (isWindowVisible) {
-        mainWindow.hide();
+        mainWindow.hide()
       } else {
-        mainWindow.show();
+        mainWindow.show()
       }
-      isWindowVisible = !isWindowVisible;
+      isWindowVisible = !isWindowVisible
     }
-  });
+  })
 }
 
-module.exports = { registerShortcuts };
+module.exports = { registerShortcuts }

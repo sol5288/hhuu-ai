@@ -1,3 +1,3 @@
-import TitleBar from './titleBar.vue'
+import TitleBar from './titleBar.vue';
 
-export { TitleBar }
+export { TitleBar };
