@@ -6,8 +6,8 @@ const props = withDefaults(defineProps<Props>(), {
 	gap: 10,
 	progress: 0,
 	tips: '',
-	// words: ['L', 'O', 'A', 'D', 'I', 'N', 'G']
-	words: ['AI', '绘', '画', '中'],
+	words: ['L', 'O', 'A', 'D', 'I', 'N', 'G'],
+	// words: ['AI', '绘', '画', '中'],
 });
 
 const appStore = useAppStore();

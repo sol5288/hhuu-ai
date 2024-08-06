@@ -11,8 +11,8 @@ function setupPlugins(env: ImportMetaEnv): PluginOption[] {
 			VitePWA({
 				injectRegister: 'auto',
 				manifest: {
-					name: 'YI AI',
-					short_name: 'YI AI',
+					name: 'hhuu.io',
+					short_name: 'hhuu.io',
 					icons: [
 						{ src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
 						{ src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' },

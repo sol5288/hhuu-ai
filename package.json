@@ -1,9 +1,9 @@
 {
-  "name": "yi-ai",
+  "name": "hhuu.io",
   "version": "2.5.0",
   "description": "使用 Nestjs 和 Vue3 搭建的 AIGC 生态社区 持续集成AI能力到社区之中",
   "main": "index.js",
-  "author": "longyanjiang",
+  "author": "hhuu.io",
   "keywords": [
     "ChatGpt",
     "AIGC",
