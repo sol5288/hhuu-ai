@@ -72,7 +72,7 @@
 						@click="handleSignIn"
 					/>
 				</template>
-				{{ t('sidebar.signInReward') }}
+				{{ t('common.signInReward') }}
 			</NTooltip>
 
 			<NTooltip v-if="!isMobile" trigger="hover" placement="right">
@@ -83,7 +83,7 @@
 						@click="checkMode"
 					/>
 				</template>
-				{{ t('sidebar.themeSwitch') }}
+				{{ t('common.themeSwitch') }}
 			</NTooltip>
 
 			<NTooltip v-if="isLogin" trigger="hover" placement="right">
@@ -98,12 +98,12 @@
 						@click="toPath('UserCenter')"
 					/>
 				</template>
-				{{ t('sidebar.personalCenter') }}
+				{{ t('common.personalCenter') }}
 			</NTooltip>
 
 			<HoverButton
 				v-if="!isLogin"
-				:tooltip="t('sidebar.loginAccount')"
+				:tooltip="t('common.loginAccount')"
 				:placement="isMobile ? 'bottom' : 'right'"
 				:class="isMobile ? 'mb-0' : 'mb-5'"
 				@click="toggleLogin"
@@ -225,7 +225,7 @@ const iframeSrc = computed(() => useGlobalStore.iframeUrl);
 function handleClickMenu(menu: MenuItem) {
 	const { menuPath, isJump, menuIframeUrl, isNeedAuth } = menu;
 	if (isNeedAuth && !isLogin.value) {
-		message.warning(t('sidebar.loginFirst'));
+		message.warning(t('common.loginFirst'));
 		authStore.setLoginDialog(true);
 		return;
 	}

@@ -10,8 +10,8 @@ export function useUsingContext() {
 
 	function toggleUsingContext() {
 		chatStore.setUsingContext(!usingContext.value);
-		if (usingContext.value) ms.success(t('chat.turnOnContext'));
-		else ms.warning(t('chat.turnOffContext'));
+		if (usingContext.value) ms.success(t('common.turnOnContext'));
+		else ms.warning(t('common.turnOffContext'));
 	}
 
 	return {

@@ -131,7 +131,7 @@ function isActive(uuid: number) {
 								<SvgIcon icon="ri:delete-bin-line" />
 							</button>
 						</template>
-						{{ $t('chat.deleteHistoryConfirm') }}
+						{{ $t('common.deleteHistoryConfirm') }}
 					</NPopconfirm>
 				</template>
 			</div>

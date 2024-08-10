@@ -40,7 +40,7 @@ const messageRef = ref<HTMLElement>();
 const options = computed(() => {
 	const common = [
 		{
-			label: t('chat.copy'),
+			label: t('common.copy'),
 			key: 'copyText',
 			icon: iconRender({ icon: 'ri:file-copy-2-line' }),
 		},
@@ -53,7 +53,7 @@ const options = computed(() => {
 
 	if (!props.inversion) {
 		common.unshift({
-			label: asRawText.value ? t('chat.preview') : t('chat.showRawText'),
+			label: asRawText.value ? t('common.preview') : t('common.showRawText'),
 			key: 'toggleRenderType',
 			icon: iconRender({
 				icon: asRawText.value ? 'ic:outline-code-off' : 'ic:outline-code',

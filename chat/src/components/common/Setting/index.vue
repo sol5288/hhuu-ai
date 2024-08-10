@@ -42,14 +42,14 @@ const show = computed({
 				<NTabPane name="personalInfo" tab="personalInfo">
 					<template #tab>
 						<SvgIcon class="text-lg" icon="ri:file-user-line" />
-						<span class="ml-2">{{ $t('setting.personalInfo') }}</span>
+						<span class="ml-2">{{ $t('common.personalInfo') }}</span>
 					</template>
 					<Personal />
 				</NTabPane>
 				<NTabPane name="General" tab="General">
 					<template #tab>
 						<SvgIcon class="text-lg" icon="ri:list-settings-line" />
-						<span class="ml-2">{{ $t('setting.general') }}</span>
+						<span class="ml-2">{{ $t('common.settinggeneral') }}</span>
 					</template>
 					<div class="min-h-[100px]">
 						<General />
@@ -58,7 +58,7 @@ const show = computed({
 				<!-- <NTabPane name="Advanced" tab="Advanced">
           <template #tab>
             <SvgIcon class="text-lg" icon="ri:equalizer-line" />
-            <span class="ml-2">{{ $t('setting.advanced') }}</span>
+            <span class="ml-2">{{ $t('common.advanced') }}</span>
           </template>
           <div class="min-h-[100px]">
             <Advanced />

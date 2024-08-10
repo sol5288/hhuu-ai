@@ -59,7 +59,7 @@ const demoData = `
 `;
 
 const prompt = ref('');
-const initValue = `# YiAi
+const initValue = `# hhuu.io
 ## 基础功能
 - 支持AI聊天
 - 支持GPT4

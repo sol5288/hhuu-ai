@@ -123,7 +123,7 @@ function handleImportButtonClick(): void {
 	<div class="p-4 space-y-5 min-h-[200px]">
 		<div class="space-y-6">
 			<div class="flex items-center space-x-4">
-				<span class="flex-shrink-0 w-[100px]">{{ $t('setting.avatarLink') }}</span>
+				<span class="flex-shrink-0 w-[100px]">{{ $t('common.avatarLink') }}</span>
 				<div class="flex-1">
 					<NInput v-model:value="avatar" placeholder="请填写头像地址" />
 				</div>
@@ -138,7 +138,7 @@ function handleImportButtonClick(): void {
 				</NButton>
 			</div>
 			<div class="flex items-center space-x-4">
-				<span class="flex-shrink-0 w-[100px]">{{ $t('setting.name') }}</span>
+				<span class="flex-shrink-0 w-[100px]">{{ $t('common.name') }}</span>
 				<div class="w-[200px]">
 					<NInput v-model:value="username" placeholder="请填写用户名" />
 				</div>
@@ -153,7 +153,7 @@ function handleImportButtonClick(): void {
 				</NButton>
 			</div>
 			<div class="flex items-center space-x-4" :class="isMobile && 'items-start'">
-				<span class="flex-shrink-0 w-[100px]">{{ $t('setting.chatHistory') }}</span>
+				<span class="flex-shrink-0 w-[100px]">{{ $t('common.chatHistory') }}</span>
 
 				<div class="flex flex-wrap items-center gap-4">
 					<NButton size="small" @click="exportData">
@@ -180,12 +180,12 @@ function handleImportButtonClick(): void {
 								{{ $t('common.clear') }}
 							</NButton>
 						</template>
-						{{ $t('chat.clearHistoryConfirm') }}
+						{{ $t('common.clearHistoryConfirm') }}
 					</NPopconfirm>
 				</div>
 			</div>
 			<div class="flex items-center space-x-4">
-				<span class="flex-shrink-0 w-[100px]">{{ $t('setting.theme') }}</span>
+				<span class="flex-shrink-0 w-[100px]">{{ $t('common.theme') }}</span>
 				<div class="flex flex-wrap items-center gap-4">
 					<template v-for="item of themeOptions" :key="item.key">
 						<NButton
@@ -201,7 +201,7 @@ function handleImportButtonClick(): void {
 				</div>
 			</div>
 			<div class="flex items-center space-x-4">
-				<span class="flex-shrink-0 w-[100px]">{{ $t('setting.language') }}</span>
+				<span class="flex-shrink-0 w-[100px]">{{ $t('common.language') }}</span>
 				<div class="flex flex-wrap items-center gap-4">
 					<NSelect
 						style="width: 140px"

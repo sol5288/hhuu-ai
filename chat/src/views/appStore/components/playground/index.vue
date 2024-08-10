@@ -12,9 +12,11 @@ import { useAuthStore } from '@/store';
 import emptyImg from '@/assets/images/empty.png';
 import { useBasicLayout } from '@/hooks/useBasicLayout';
 import { copyText } from '@/utils/format';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<Props>();
 const emit = defineEmits<Emit>();
+const { t } = useI18n();
 
 const { scrollRef, scrollToBottom, scrollToBottomIfAtBottom } = useScroll();
 
@@ -88,7 +90,7 @@ function addMockAnswer() {
 		loading: true,
 		appId: app.value?.id ?? 0,
 		prompt: prompt.value,
-		answer: '思考中...',
+		answer: t('common.thinking') + '...',
 	});
 	customId.value = customId.value + 1;
 	return curId;
@@ -108,12 +110,12 @@ function updateMockAnswer(id: number, params: { answer?: string; loading?: boole
 function coptAnswer(answer: string | undefined) {
 	if (!answer) return;
 	copyText({ text: answer as string });
-	ms.success('复制成功');
+	ms.success(t('common.copySuccess'));
 }
 
 /* 续写 */
 function handleNext(item: Answer) {
-	ms.warning('即将开放、请稍作等待！');
+	ms.warning(t('common.comingSoon'));
 }
 
 function handleReset(item: Answer) {
@@ -204,22 +206,18 @@ function useDemo(demo: string) {
 					v-model="prompt"
 					class="textarea dark:bg-[#18181c]"
 					type="textarea"
-					placeholder="请输入关键词和需求"
+					placeholder="t('common.enterKeywordsAndRequirements')"
 				/>
 				<div class="ground-left-tips flex justify-between px-3 py-2">
 					<div class="text-[#999] text-xs flex items-center">
 						<SvgIcon icon="ph:info" class="mr-1" />
-						{{
-							isMobile
-								? '请合规使用！'
-								: '请您合法合规使用A功能，并自行核查生成内容，相关责任由您自行承拒。'
-						}}
+						{{ isMobile ? t('common.useCompliantly') + '！' : t('common.useAFunctionLegally') }}
 					</div>
 					<NButton ghost text size="tiny" @click="prompt = ''">
 						<template #icon>
 							<SvgIcon icon="carbon:delete" />
 						</template>
-						清空内容
+						{{ t('common.clearContent') }}
 					</NButton>
 				</div>
 				<div
@@ -228,15 +226,15 @@ function useDemo(demo: string) {
 				>
 					<div class="flex flex-col" :class="[isMobile ? 'mb-3' : 'justify-between']">
 						<div class="text-base">
-							<b class="font-bold">剩余额度:</b>
+							<b class="font-bold">{{ t('common.remainingQuota') }}:</b>
 							<span
 								class="ml-2 font-bold text-[#5a91fc] cursor-pointer"
 								style="text-decoration: underline"
-								>{{ sumModel3Count }}积分</span
+								>{{ sumModel3Count }}{{ t('common.points') }}</span
 							>
 						</div>
 						<div class="text-[#999] text-sm whitespace-nowrap">
-							每次创作消耗1积分额度、每次创作会产生新的内容！
+							{{ t('common.creationConsumptionMessage') }}
 						</div>
 					</div>
 					<div
@@ -244,14 +242,14 @@ function useDemo(demo: string) {
 						:class="[isLoading ? 'cursor-not-allowed disabled' : 'cursor-pointer']"
 						@click="handleRun"
 					>
-						<span class="text-base whitespace-nowrap">立即创作</span>
-						<span class="text-xs whitespace-nowrap">消耗1普通积分额度</span>
+						<span class="text-base whitespace-nowrap">{{ t('common.createImmediately') }}</span>
+						<span class="text-xs whitespace-nowrap">{{ t('common.consumeNormalPoints') }}</span>
 					</div>
 				</div>
 			</div>
 
 			<div class="flex-1 mt-4flex flex-col mt-6">
-				<span class="font-bold text-[#5a91fc] mb-3">示例需求</span>
+				<span class="font-bold text-[#5a91fc] mb-3">{{ t('common.exampleRequirements') }}</span>
 				<div class="flex-1 overflow-y-scroll pl-2 pr-5 py-4" :class="[isMobile ? '' : 'h-[150px]']">
 					<div
 						v-for="(item, index) in demoData"
@@ -317,12 +315,14 @@ function useDemo(demo: string) {
 					<div class="px-4 py-2 flex justify-end">
 						<NSpace>
 							<NButton size="small" :disabled="item.loading" @click="handleNext(item)">
-								智能续写
+								{{ t('common.intelligentContinuation') }}
 							</NButton>
 							<NButton size="small" :loading="item.loading" @click="handleReset(item)">
-								重新创作
+								{{ t('common.recreate') }}
 							</NButton>
-							<NButton size="small" @click="coptAnswer(item.answer)"> 复制文案 </NButton>
+							<NButton size="small" @click="coptAnswer(item.answer)">
+								{{ t('common.copyText') }}
+							</NButton>
 						</NSpace>
 					</div>
 				</div>
@@ -332,7 +332,7 @@ function useDemo(demo: string) {
 				class="flex-1 px-5 py-4 overflow-y-scroll flex flex-col justify-center items-center"
 			>
 				<img :src="emptyImg" class="w-24 h-24" alt="" />
-				<span class="mt-5 text-[#999]">您还没有使用过这个应用呢、快来试试吧！</span>
+				<span class="mt-5 text-[#999]">{{ t('common.appNotUsedYet') }}</span>
 			</div>
 			<div />
 		</div>

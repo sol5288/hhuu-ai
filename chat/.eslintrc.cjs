@@ -28,6 +28,14 @@ module.exports = {
 		'vue/multi-word-component-names': 'off',
 		'import/prefer-default-export': 'off', // 규칙 비활성화
 		'eslintimport/prefer-default-export': 'off', // 규칙 비활성화
+		'consistent-return': [
+			'error',
+			{
+				treatUndefinedAsUnspecified: true,
+				ignoreTernaryOperators: true,
+				ignoreCaseStatements: true,
+			},
+		],
 	},
 	globals: {
 		WeixinJSBridge: 'readonly',

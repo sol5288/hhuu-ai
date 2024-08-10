@@ -92,9 +92,8 @@ function highlightBlock(str: string, lang?: string) {
       <span class="dot dot-red"></span>
       <span class="dot dot-yellow"></span>
       <span class="dot dot-green"></span>
-    <span class="code-block-header__lang">${lang}</span><span class="code-block-header__copy">${t(
-			'chat.copyCode'
-		)}</span></div><code class="hljs code-block-body ${lang}">${str}</code></pre>`;
+    <span class="code-block-header__lang">${lang}</span><span class="code-block-header__copy">
+		${t('common.copyCode')}</span></div><code class="hljs code-block-body ${lang}">${str}</code></pre>`;
 }
 function handleRegenerate() {
 	emit('regenerate');
@@ -213,7 +212,7 @@ defineExpose({ textRef });
 							:icon="asRawText ? 'ic:outline-code-off' : 'ic:outline-code'"
 						/>
 						<span class="flex text-xs">{{
-							asRawText ? t('chat.preview') : t('chat.showRawText')
+							asRawText ? t('common.preview') : t('common.showRawText')
 						}}</span>
 					</button>
 

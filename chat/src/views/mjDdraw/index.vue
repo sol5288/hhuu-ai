@@ -24,7 +24,7 @@ import { TitleBar } from '@/components/base';
 import { useAppStore } from '@/store';
 import type { ResData } from '@/api/types';
 import { fetchMjDtawAPI, fetchUpscaleSingleImgAPI, fetchVariationSingleImgAPI } from '@/api/mjDraw';
-
+import { t } from '@/locales';
 const notification = useNotification();
 const { isMobile } = useBasicLayout();
 const appStore = useAppStore();
@@ -57,7 +57,7 @@ const promptList = [
 	'3D模型',
 	'手绘草图',
 	'炭笔画',
-	'极简线条画',
+	t('common.minimalisticLineDrawing'),
 	'电影质感',
 	'机械感',
 ];

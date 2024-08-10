@@ -191,7 +191,7 @@ setTimeout(() => {
 							<NGrid x-gap="12" :cols="1">
 								<NGi>
 									<div class="flex items-center space-x-4">
-										<span class="flex-shrink-0 w-[60px]">{{ $t('setting.avatarLink') }}</span>
+										<span class="flex-shrink-0 w-[60px]">{{ $t('common.avatarLink') }}</span>
 										<div class="flex-1">
 											<NInput v-model:value="avatar" placeholder="请填写头像地址" />
 										</div>
@@ -200,7 +200,7 @@ setTimeout(() => {
 										</NButton>
 									</div>
 									<div class="flex items-center space-x-4 mt-5">
-										<span class="flex-shrink-0 w-[60px]">{{ $t('setting.name') }}</span>
+										<span class="flex-shrink-0 w-[60px]">{{ $t('common.name') }}</span>
 										<div class="flex-1">
 											<NInput
 												v-model:value="username"
@@ -215,7 +215,7 @@ setTimeout(() => {
 										</NButton>
 									</div>
 									<div class="flex space-x-4 mt-5">
-										<span class="flex-shrink-0 w-[60px]">{{ $t('setting.sign') }}</span>
+										<span class="flex-shrink-0 w-[60px]">{{ $t('common.sign') }}</span>
 										<div class="flex-1">
 											<NInput
 												v-model:value="sign"

@@ -35,7 +35,7 @@ const mineDrawList: any = ref([]);
 const allDrawList: any = ref([]);
 
 const darkMode = computed(() => appStore.theme === 'dark');
-
+import { t } from '@/locales';
 watch(isLogin, async (newVal, oldVal) => {
 	if (newVal && !oldVal) queryMyDrawList();
 });
@@ -81,7 +81,7 @@ const promptList = [
 	'3D模型',
 	'手绘草图',
 	'炭笔画',
-	'极简线条画',
+	t('common.minimalisticLineDrawing'),
 	'电影质感',
 	'机械感',
 ];

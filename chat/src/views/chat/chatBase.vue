@@ -53,7 +53,7 @@ const appStore = useAppStore();
 const bottomContainer = ref();
 const chatStore = useChatStore();
 const isStreamIn = ref(false);
-const typingStatusEnd = ref(true); // 打字效果是否完成
+const typingStatusEnd = ref(true); // 타이핑 효과가 완료되었는지 여부
 const appDetail: any = ref(null);
 const chatPreVal = ref('');
 const chatPreRef = ref(null);
@@ -131,12 +131,12 @@ const { usingContext, toggleUsingContext } = useUsingContext();
 const { usingNetwork, toggleUsingNetwork } = useUsingNetwork();
 const dataSources = computed(() => chatStore.chatList);
 
-/* 当前所有的ai回复信息列表 方便拿到上下文 */
+/* 현재 모든 AI 응답 메시지 리스트 - 컨텍스트를 쉽게 가져오기 위함 */
 const conversationList = computed(() =>
 	dataSources.value.filter((item) => !item.inversion && !item.error)
 );
 
-/* 当前上下文有id的最后一条 防止停止回答的时候 上一条的id是空 接不上上下文 */
+/* 현재 컨텍스트에서 ID가 있는 마지막 항목 - 응답 중지 시 이전 ID가 비어 있어 컨텍스트를 연결할 수 없는 문제 방지 */
 const lastContext = computed(() => {
 	const hasIdCoversationList = conversationList.value.filter(
 		(item) => item.conversationOptions?.parentMessageId
@@ -156,17 +156,17 @@ const fileName = ref('');
 const isImageFile = ref(false);
 const showDeleteIcon = ref(false);
 
-/* 当前选中的对话组 */
+/* 현재 선택된 대화 그룹 */
 const activeGroupId = computed(() => chatStore.active);
-/* 当前对话组的详细信息 */
+/* 현재 대화 그룹의 상세 정보 */
 const activeGroupInfo = computed(() =>
 	chatStore.groupList.find((item: any) => item.uuid === chatStore.active)
 );
-/* 当前选用的模型的类型 1： openai  2: 百度  */
+/* 현재 사용 중인 모델 유형 1: openai 2: 바이두 */
 const activeModelKeyType = computed(() => Number(chatStore?.activeModelKeyType));
-/* 当前对话组是否是应用 */
+/* 현재 대화 그룹이 애플리케이션인지 여부 */
 const activeAppId = computed(() => (activeGroupInfo?.value ? activeGroupInfo.value.appId : 0));
-/* 粘贴板的文字 */
+/* 클립보드 텍스트 */
 const clipboardText = computed(() => useGlobalStore.clipboardText);
 
 watch(clipboardText, (val) => {
@@ -212,7 +212,7 @@ const modelName = computed(() => {
 	return `${modelInfo.modelName}`;
 });
 function handleOpenModelDialog() {
-	if (useGlobalStore.isChatIn) return ms.warning('请等待聊天结束后修改模型信息！');
+	if (useGlobalStore.isChatIn) return ms.warning(t('common.waitForChatToEnd'));
 
 	useGlobalStore.updateModelDialog(true);
 }
@@ -261,11 +261,11 @@ function hendleVideo(item) {
 			// }
 		})
 		.catch(function (error) {
-			console.error('There was an error fetching the audio data', error);
+			console.error('오디오 데이터를 가져오는 중 오류가 발생했습니다', error);
 		});
 }
 
-// 解析文件 gpt-4-all逆向
+// 파일 파싱 gpt-4-all 역변환
 let curFile: File | null;
 
 async function handleFileSelect(event: any) {
@@ -274,33 +274,33 @@ async function handleFileSelect(event: any) {
 	if (file.size <= 10 * 1024 * 1024) {
 		await handleSetFile(file);
 	} else {
-		return ms.error('上传文件失败，上传大小不能超过10M');
+		return ms.error(t('common.fileSizeExceeded'));
 	}
 	let trimmedFileName = file.name;
-	const maxLength = 8; // 最大长度限制
-	const extension = trimmedFileName.split('.').pop(); // 获取文件扩展名
+	const maxLength = 8; // 최대 길이 제한
+	const extension = trimmedFileName.split('.').pop(); // 파일 확장자 가져오기
 
 	if (trimmedFileName.length > maxLength) {
-		// 截取文件名并添加省略号，同时保留扩展名
+		// 파일 이름을 자르고 생략 부호를 추가하면서 확장자 유지
 		trimmedFileName =
 			trimmedFileName.substring(0, maxLength - extension.length - 1) + '….' + extension;
 	}
 
-	fileName.value = trimmedFileName; // 更新文件名
+	fileName.value = trimmedFileName; // 파일 이름 업데이트
 	console.log(file.type);
-	// 检查文件类型
+	// 파일 유형 확인
 	if (file.type.startsWith('image/')) {
-		// 处理图像文件
+		// 이미지 파일 처리
 		isImageFile.value = true;
 		handleSetFile(file);
 	} else if (file.type.startsWith('application/') || file.type.startsWith('text/')) {
-		// 处理文件类型
+		// 파일 유형 처리
 		isImageFile.value = false;
 		handleSetFile(file);
 	} else {
-		// 处理其他类型的文件或显示错误消息
-		ms.error('上传文件失败，不支持此类型文件');
-		console.log('不支持的文件类型');
+		// 다른 유형의 파일 처리 또는 오류 메시지 표시
+		ms.error(t('common.unsupportedFileType'));
+		console.log('지원되지 않는 파일 유형');
 	}
 }
 
@@ -336,7 +336,7 @@ async function uploadFile() {
 		});
 		return res?.data?.data;
 	} catch (error) {
-		ms.error('网络异常,发送失败');
+		ms.error(t('common.networkError'));
 		return null;
 	} finally {
 		dataBase64.value = null;
@@ -355,13 +355,13 @@ function updateChatPreData(val: string) {
 	nextTick(() => getTipsRefHeight());
 }
 
-/* 查询当前app详情提示用户使用 */
+/* 현재 앱 세부 정보를 쿼리하여 사용자에게 사용 방법 안내 */
 async function queryAppDetail(id: number) {
 	const res: any = await fetchQueryOneCatAPI({ id });
 	appDetail.value = res.data;
 }
 
-/* 点击快速对话话题直接对话 */
+/* 빠른 대화 주제 클릭 시 직접 대화 시작 */
 function handlePrompt(val: string) {
 	prompt.value = val;
 	handleSubmit();
@@ -371,11 +371,11 @@ function handleScrollBtm() {
 	bottomContainer.value.scrollIntoView({ behavior: 'smooth' });
 }
 
-/* 发送消息 */
+/* 메시지 전송 */
 async function handleSubmit(index?: number) {
 	if (chatStore.groupList.length === 0 || loading.value || !typingStatusEnd.value) return;
 	let message = '';
-	/* 如果有index就是重新生成 */
+	/* index가 있으면 재생성 */
 	if (index && typeof index === 'number') {
 		const { requestOptions } = dataSources.value[index];
 		message = requestOptions?.prompt ?? '';
@@ -395,7 +395,7 @@ function parseTextToJSON(input: string) {
 	return { text };
 }
 
-/* 按钮发送消息 */
+/* 버튼으로 메시지 전송 */
 async function onConversation(msg?: string) {
 	let imageUrl = null;
 	if (dataBase64.value || curFile) {
@@ -410,7 +410,7 @@ async function onConversation(msg?: string) {
 
 	controller = new AbortController();
 
-	/* 虚拟增加一条用户记录 */
+	/* 가상의 사용자 기록 추가 */
 	addGroupChat({
 		dateTime: new Date().toLocaleString(),
 		text: message,
@@ -434,10 +434,10 @@ async function onConversation(msg?: string) {
 	if (lastContext.value && usingContext.value && !usingNetwork.value)
 		options = { ...lastContext.value, ...options };
 
-	/* 虚拟增加一条ai记录 */
+	/* 가상의 AI 기록 추가 */
 	addGroupChat({
 		dateTime: new Date().toLocaleString(),
-		text: 'AI思考中',
+		text: t('common.aiThinking'),
 		loading: true,
 		inversion: false,
 		error: false,
@@ -453,7 +453,7 @@ async function onConversation(msg?: string) {
 	let userBanance: any = {};
 
 	useGlobalStore.updateIsChatIn(true);
-	/* 匀速输出 */
+	/* 균일한 속도로 출력 */
 	try {
 		const fetchChatAPIOnce = async () => {
 			let i = 0;
@@ -463,7 +463,7 @@ async function onConversation(msg?: string) {
 				if (shouldContinue) {
 					if (cacheResText && cacheResText[i]) {
 						typingStatusEnd.value = false;
-						/* 如果缓存字数太多则一次全加了 */
+						/* 캐시된 글자 수가 너무 많으면 한 번에 모두 추가 */
 						if (cacheResText.length - i > 150) {
 							currentText += cacheResText.substring(i, i + 10);
 							i += 10;
@@ -515,10 +515,10 @@ async function onConversation(msg?: string) {
 								chatStore.queryMyGroup();
 							});
 						}
-						shouldContinue = false; // 结束动画循环
+						shouldContinue = false; // 애니메이션 루프 종료
 					}
 
-					/* 有多余的再请求下一帧 */
+					/* 남은 내용이 있으면 다음 프레임 요청 */
 					if (cacheResText.length && cacheResText.length > currentText.length) {
 						requestAnimationFrame(update);
 					} else {
@@ -528,7 +528,7 @@ async function onConversation(msg?: string) {
 					}
 				}
 			}
-			requestAnimationFrame(update); // 启动动画循环
+			requestAnimationFrame(update); // 애니메이션 루프 시작
 
 			await fetchChatAPIProcess<Chat.ConversationResponse>({
 				prompt: message,
@@ -541,7 +541,7 @@ async function onConversation(msg?: string) {
 					const xhr = event.target;
 					const { responseText } = xhr;
 
-					/* 这种解析只对openai有效 其他的会漏掉前面的字 */
+					/* 이 파싱은 openai에만 유효하며 다른 모델은 앞부분의 글자를 놓칠 수 있음 */
 					if ([1].includes(activeModelKeyType.value)) {
 						const lastIndex = responseText.lastIndexOf('\n', responseText.length - 2);
 						let chunk = responseText;
@@ -550,23 +550,23 @@ async function onConversation(msg?: string) {
 						try {
 							data = JSON.parse(chunk);
 						} catch (error) {
-							/* 二次解析 */
+							/* 이차 파싱 */
 							// const parseData = parseTextToJSON(responseText)
-							// TODO 如果出现类似超时错误 会连接上次的内容一起发出来导致无法解析  后端需要处理 下
-							console.log('parse data erro from openai: ');
+							// TODO 시간 초과 오류와 같은 경우 이전 내용과 함께 전송되어 파싱할 수 없게 됨 - 백엔드에서 처리 필요
+							console.log('openai에서 데이터 파싱 오류: ');
 							if (chunk.includes('OpenAI timed out waiting for response'))
-								ms.warning('会话超时了、告知管理员吧~~~');
+								ms.warning(t('common.sessionTimeout'));
 						}
 					}
 
-					/* 处理和百度一样格式的模型消息解析 */
+					/* 바이두와 유사한 형식의 모델 메시지 파싱 처리 */
 					if ([2, 3].includes(activeModelKeyType.value)) {
 						const lines = responseText
 							.toString()
 							.split('\n')
 							.filter((line: string) => line.trim() !== '');
 
-						let cacheResult = ''; // 拿到本轮传入的所有字段信息
+						let cacheResult = ''; // 이번 라운드에 입력된 모든 필드 정보 가져오기
 						let tem: any = {};
 						for (const line of lines) {
 							try {
@@ -574,7 +574,7 @@ async function onConversation(msg?: string) {
 								cacheResult += parseData.result;
 								tem = parseData;
 							} catch (error) {
-								console.log('Json parse 2 3 type error: ');
+								console.log('Json parse 2 3 유형 오류: ');
 							}
 						}
 						tem.result = cacheResult;
@@ -582,7 +582,7 @@ async function onConversation(msg?: string) {
 					}
 
 					try {
-						/* 如果出现输出内容不一致就需要处理了 */
+						/* 출력 내용이 일치하지 않으면 처리 필요 */
 						if (activeModelKeyType.value === 1) {
 							cacheResText = data.text;
 							if (data?.userBanance) userBanance = data?.userBanance;
@@ -605,8 +605,8 @@ async function onConversation(msg?: string) {
 		isStreamIn.value = false;
 		if (
 			error.code === 402 ||
-			error?.message.includes('余额不足') ||
-			error?.message.includes('免费额度已经使用完毕')
+			error?.message.includes(t('common.insufficientBalance')) ||
+			error?.message.includes(t('common.freeQuotaExhausted'))
 		) {
 			if (isLogin.value) useGlobalStore.updateGoodsDialog(true);
 			else authStore.setLoginDialog(true);
@@ -614,7 +614,7 @@ async function onConversation(msg?: string) {
 
 		let errorMessage = error?.message ?? t('common.wrong');
 		if (errorMessage === 'Request failed with status code 401')
-			errorMessage = '非法操作、请先登录后再进行问答使用！';
+			errorMessage = t('common.unauthorized');
 
 		if (error?.message.includes('canceled')) {
 			updateGroupChatSome(dataSources.value.length - 1, { loading: false });
@@ -629,7 +629,7 @@ async function onConversation(msg?: string) {
 
 		if (currentChat?.text && currentChat.text !== '') {
 			updateGroupChatSome(dataSources.value.length - 1, {
-				text: `${currentChat.text === 'AI思考中' ? '' : currentChat.text}\n[${errorMessage}]`,
+				text: `${currentChat.text === t('common.aiThinking') ? '' : currentChat.text}\n[${errorMessage}]`,
 				error: false,
 				loading: false,
 			});
@@ -655,32 +655,32 @@ async function onConversation(msg?: string) {
 	}
 }
 
-/* 处理三方对接跳转 */
+/* 타사 연동 리디렉션 처리 */
 async function otherLoginByToken(token: string) {
 	authStore.setToken(token);
 	router.replace({ name: 'Chat', query: {} });
-	ms.success('账户登录成功、开始体验吧！');
+	ms.success(t('common.accountLoginSuccess'));
 	authStore.getUserInfo();
 }
 
-/* 支付回调处理 */
+/* 결제 콜백 처리 */
 function handleRefresh() {
 	if (tradeStatus.value.toLowerCase().includes('success')) {
-		ms.success('感谢你的购买、祝您使用愉快~', { duration: 5000 });
+		ms.success(t('common.purchaseThankYou'), { duration: 5000 });
 		authStore.getUserInfo();
 		router.replace({ name: 'Chat', query: {} });
 	} else {
-		ms.error('您还没有购买成功哦~');
+		ms.error(t('common.purchaseNotSuccessful'));
 	}
 }
 
-/* 导出 */
+/* 내보내기 */
 function handleExport() {
 	if (loading.value) return;
 
 	const d = dialog.warning({
-		title: t('chat.exportImage'),
-		content: t('chat.exportImageConfirm'),
+		title: t('common.exportImage'),
+		content: t('common.exportImageConfirm'),
 		positiveText: t('common.yes'),
 		negativeText: t('common.no'),
 		onPositiveClick: async () => {
@@ -702,10 +702,10 @@ function handleExport() {
 				document.body.removeChild(tempLink);
 				window.URL.revokeObjectURL(imgUrl);
 				d.loading = false;
-				ms.success(t('chat.exportSuccess'));
+				ms.success(t('common.exportSuccess'));
 				Promise.resolve();
 			} catch (error: any) {
-				ms.error(t('chat.exportFailed'));
+				ms.error(t('common.exportFailed'));
 			} finally {
 				d.loading = false;
 			}
@@ -713,13 +713,13 @@ function handleExport() {
 	});
 }
 
-/* 删除 */
+/* 삭제 */
 function handleDelete({ chatId }: Chat.Chat) {
 	if (loading.value) return;
 
 	dialog.warning({
-		title: t('chat.deleteMessage'),
-		content: t('chat.deleteMessageConfirm'),
+		title: t('common.deleteMessage'),
+		content: t('common.deleteMessageConfirm'),
 		positiveText: t('common.yes'),
 		negativeText: t('common.no'),
 		onPositiveClick: () => {
@@ -732,13 +732,13 @@ function handleClear() {
 	if (loading.value) return;
 
 	dialog.warning({
-		title: t('chat.clearChat'),
-		content: t('chat.clearChatConfirm'),
+		title: t('common.clearChat'),
+		content: t('common.clearChatConfirm'),
 		positiveText: t('common.yes'),
 		negativeText: t('common.no'),
 		onPositiveClick: async () => {
 			await chatStore.clearChatByGroupId();
-			ms.success('删除当前页面对话完成');
+			ms.success(t('common.deleteCurrentPageDialogComplete'));
 		},
 	});
 }
@@ -767,14 +767,14 @@ function handleStop() {
 }
 
 const placeholder = computed(() => {
-	if (isMobile.value) return t('chat.placeholderMobile');
-	return t('chat.placeholder');
+	if (isMobile.value) return t('common.placeholderMobile');
+	return t('common.placeholder');
 });
 
 const buttonDisabled = computed(() => {
 	return loading.value || !prompt.value || prompt.value.trim() === '' || !typingStatusEnd.value;
 });
-// 改动：发送后添加loading圈圈
+// 변경: 전송 후 로딩 원 추가
 const buttonLoading = computed(() => {
 	return loading.value || !typingStatusEnd.value;
 });
@@ -863,7 +863,7 @@ onUnmounted(() => {
 									<template #icon>
 										<SvgIcon icon="ri:stop-circle-line" />
 									</template>
-									停止输出
+									{{ t('common.stopOutput') }}
 								</NButton>
 							</div>
 							<div ref="bottomContainer" class="bottom" />
@@ -895,7 +895,7 @@ onUnmounted(() => {
 								/></span>
 							</button>
 						</template>
-						上下文状态
+						{{ t('common.contextStatus') }}
 					</NTooltip>
 					<NPopover
 						v-if="chatStore.chatPreList?.length"
@@ -919,7 +919,7 @@ onUnmounted(() => {
 										/></span>
 									</button>
 								</template>
-								学术快问
+								{{ t('common.quickQuestion') }}
 							</NTooltip>
 						</template>
 						<div class="w-0 h-0 opacity-0">
@@ -930,7 +930,7 @@ onUnmounted(() => {
 								:show="isShowChatPre"
 								placement="top"
 								class="w-0 h-0 opacity-0 overflow-hidden"
-								placeholder="请选用当前聊天组所需的模型！"
+								:placeholder="t('common.selectModelPlaceholder')"
 								expand-trigger="click"
 								:options="chatStore.chatPreList"
 								check-strategy="child"
@@ -969,7 +969,7 @@ onUnmounted(() => {
 								</span>
 							</button>
 						</template>
-						{{ usingNetwork ? '关闭' : '开启' }}联网访问
+						{{ usingNetwork ? t('common.closeNetworkAccess') : t('common.openNetworkAccess') }}
 					</NTooltip>
 					<button
 						v-show="isMobile"
@@ -999,7 +999,7 @@ onUnmounted(() => {
 								<span style="color: #3076fd">{{ modelName }}</span>
 							</NButton>
 						</template>
-						切换模型
+						{{ t('common.switchModel') }}
 					</NTooltip>
 				</div>
 			</div>
@@ -1028,7 +1028,7 @@ onUnmounted(() => {
 							:style="tipsHeight && { height: tipsHeight }"
 						>
 							<div class="flex w-full flex-col mb-1">
-								<span class="text-neutral-400 mb-1">提示词：</span>
+								<span class="text-neutral-400 mb-1">{{ t('common.prompt') }}</span>
 								<NInput
 									v-model:value="tipText"
 									class="border-none"
@@ -1076,44 +1076,44 @@ onUnmounted(() => {
 												/></span>
 											</button>
 										</template>
-										上传
+										{{ t('common.upload') }}
 									</NTooltip>
-									<!-- 预览容器 -->
+									<!-- 미리보기 컨테이너 -->
 									<div v-if="dataBase64" class="relative flex items-start justify-start">
 										<div
 											class="group"
 											@mouseover="showDeleteIcon = true"
 											@mouseleave="showDeleteIcon = false"
 										>
-											<!-- 根据 isImageFile 的值显示不同内容 -->
+											<!-- isImageFile 값에 따라 다른 콘텐츠 표시 -->
 											<template v-if="isImageFile">
-												<!-- 图片预览 -->
+												<!-- 이미지 미리보기 -->
 												<img
 													:src="dataBase64"
 													class="max-w-full max-h-10 border border-gray-300 rounded-lg"
-													alt="预览图片"
+													alt="미리보기 이미지"
 												/>
-												<!-- 清除图标 -->
+												<!-- 삭제 아이콘 -->
 												<SvgIcon
 													class="close-icon"
 													icon="gg:close-o"
-													@click="(dataBase64 = null), (curFile = null);"
+													@click="(dataBase64 = null), (curFile = null)"
 												/>
 											</template>
 											<template v-else>
-												<!-- 非图片文件预览（例如文件图标） -->
+												<!-- 비이미지 파일 미리보기 (예: 파일 아이콘) -->
 												<div
 													style="white-space: nowrap; padding: 0.25rem"
 													class="flex items-center justify-center border border-gray-300 rounded-lg h-8 hover:bg-gray-100 text-gray-700 dark:hover:bg-gray-700 dark:text-gray-400"
 												>
 													<span>{{ fileName }}</span>
-													<!-- 清除图标 -->
+													<!-- 삭제 아이콘 -->
 													<SvgIcon
 														class="close-icon"
 														icon="gg:close-o"
-														@click="(dataBase64 = null), (curFile = null);"
+														@click="(dataBase64 = null), (curFile = null)"
 													/>
-													<!-- 替换为适当的文件图标 -->
+													<!-- 적절한 파일 아이콘으로 대체 -->
 												</div>
 											</template>
 										</div>
@@ -1134,7 +1134,7 @@ onUnmounted(() => {
 												<SvgIcon v-else icon="line-md:loading-twotone-loop" />
 											</span>
 										</template>
-										发送
+										{{ t('common.send') }}
 									</NButton>
 								</div>
 							</div>
@@ -1147,7 +1147,7 @@ onUnmounted(() => {
 			v-if="isSetBeian && !isMobile"
 			class="w-full flex justify-center items-center py-2 text-xs text-[#aeaeae]"
 		>
-			版权所有 © {{ globaelConfig?.companyName }}
+			{{ t('common.copyrightNotice', { companyName: globaelConfig?.companyName }) }}
 			<a
 				class="ml-2 transition-all text-[#aeaeae] hover:text-[#60606d]"
 				href="https://beian.miit.gov.cn"
@@ -1158,7 +1158,7 @@ onUnmounted(() => {
 		<NModal v-model:show="showProgressModal" :mask-closable="false">
 			<NCard
 				style="width: 80%"
-				title="上传文件中"
+				:title="t('common.uploadingFile')"
 				:bordered="false"
 				size="small"
 				role="dialog"
@@ -1174,13 +1174,13 @@ onUnmounted(() => {
 	</div>
 </template>
 
-<style scroped lang="less">
+<style scoped lang="less">
 .scrollBtn {
 	display: flex;
 	flex-shrink: 0 !important;
 	overflow-x: auto;
 	overflow: -moz-scrollbars-none;
-	-ms-overflow-style: none; /* IE 和 Edge */
+	-ms-overflow-style: none; /* IE와 Edge */
 	&::-webkit-scrollbar {
 		display: none;
 	}

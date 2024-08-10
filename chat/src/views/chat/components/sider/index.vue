@@ -291,7 +291,7 @@ watch(
               </NButton>
             </div> -->
 						<!-- <NButton block @click="show = true">
-            {{ $t('store.siderButton') }}
+            {{ $t('common.siderButton') }}
           </NButton> -->
 					</div>
 				</main>
