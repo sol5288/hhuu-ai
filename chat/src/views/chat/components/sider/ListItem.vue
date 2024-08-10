@@ -3,6 +3,7 @@ import { NInput, NPopconfirm } from 'naive-ui';
 import { SvgIcon } from '@/components/common';
 import { useChatStore } from '@/store';
 import { debounce } from '@/utils/functions/debounce';
+import { t } from '@/locales';
 
 interface Props {
 	dataSources?: Chat.ChatState['groupList'];

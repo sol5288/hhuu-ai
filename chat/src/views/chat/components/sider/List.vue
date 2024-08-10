@@ -6,6 +6,7 @@ import ListItem from './ListItem.vue';
 import { SvgIcon } from '@/components/common';
 import { useAppStore, useChatStore, useAuthStore } from '@/store';
 import { useBasicLayout } from '@/hooks/useBasicLayout';
+import { t } from '@/locales';
 
 const { isMobile } = useBasicLayout();
 const router = useRouter();
@@ -110,7 +111,7 @@ onMounted(() => {
 				<ListItem
 					v-if="stickyList.length"
 					:key="1000 + customKeyId"
-					title="置顶"
+					:title="t('common.pin')"
 					:data-sources="stickyList"
 					@select="handleSelect"
 					@delete="handleDelete"
@@ -118,7 +119,7 @@ onMounted(() => {
 				<ListItem
 					v-if="appList.length"
 					:key="2000 + customKeyId"
-					title="应用分类组"
+					:title="t('common.applicationCategoryGroup')"
 					:data-sources="appList"
 					@select="handleSelect"
 					@delete="handleDelete"
@@ -126,7 +127,7 @@ onMounted(() => {
 				<ListItem
 					v-if="todayList.length"
 					:key="3000 + customKeyId"
-					title="今天"
+					:title="t('common.today')"
 					:data-sources="todayList"
 					@select="handleSelect"
 					@delete="handleDelete"
@@ -134,7 +135,7 @@ onMounted(() => {
 				<ListItem
 					v-if="otherList.length"
 					:key="4000 + customKeyId"
-					title="其他"
+					:title="t('common.other')"
 					:data-sources="otherList"
 					@select="handleSelect"
 					@delete="handleDelete"

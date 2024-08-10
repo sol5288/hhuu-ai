@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useRouter } from 'vue-router';
 import { SvgIcon } from '@/components/common';
+import { t } from '@/locales';
 const router = useRouter();
 </script>
 
@@ -10,7 +11,7 @@ const router = useRouter();
 			<button @click="router.go(-1)">
 				<SvgIcon class="text-xl" icon="ri:arrow-left-s-line" />
 			</button>
-			<h2 class="text-base font-bold">我的自定义工作台</h2>
+			<h2 class="text-base font-bold">{{ t('common.myCustomWorkbench') }}</h2>
 		</div>
 		<div class="flex items-center space-x-2" />
 	</div>

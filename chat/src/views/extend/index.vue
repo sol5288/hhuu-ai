@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { useAppStore, useAuthStore, useGlobalStoreWithOut } from '@/store';
 import { getToken } from '@/store/modules/auth/helper';
 import { fetchGetchatSyncApi } from '@/api';
+import { t } from '@/locales';
 
 const router = useRouter();
 const globalStore = useGlobalStoreWithOut();
@@ -98,13 +99,13 @@ onBeforeUnmount(() => {
 		>
 			<div class="loading">
 				<div :class="['loading-text ', darkMode ? 'text-[#fff]' : 'text-[#000]']" id="loading-text">
-					<span class="loading-text-words">内</span>
-					<span class="loading-text-words">容</span>
-					<span class="loading-text-words">正</span>
-					<span class="loading-text-words">在</span>
+					<span class="loading-text-words">{{ t('common.inside') }}</span>
+					<span class="loading-text-words">{{ t('common.content') }}</span>
+					<span class="loading-text-words">{{ t('common.correct') }}</span>
+					<span class="loading-text-words">{{ t('common.in') }}</span>
 					<span class="loading-text-words">加</span>
-					<span class="loading-text-words">载</span>
-					<span class="loading-text-words">中</span>
+					<span class="loading-text-words">{{ t('common.loading') }}</span>
+					<span class="loading-text-words">{{ t('common.medium') }}</span>
 				</div>
 			</div>
 		</div>

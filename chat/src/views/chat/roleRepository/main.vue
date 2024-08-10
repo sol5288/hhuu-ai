@@ -31,6 +31,7 @@ import {
 import { useBasicLayout } from '@/hooks/useBasicLayout';
 import type { ResData } from '@/api/types';
 import { fetchQueryModelsListAPI } from '@/api/models';
+import { t } from '@/locales';
 
 const appCatStore = useAppCatStore();
 const keywords = ref('');
@@ -41,8 +42,12 @@ const formRef = ref<FormInst | null>(null);
 const activeAppId = ref(0);
 const isAllowEditAppPublic = ref(false);
 
-const btnMsg = computed(() => (activeAppId.value === 0 ? '创建我的个人应用' : '更新我的个人应用'));
-const title = computed(() => (activeAppId.value === 0 ? '创建专属应用' : '更新个人应用'));
+const btnMsg = computed(() =>
+	activeAppId.value === 0 ? t('common.createMyPersonalApp') : t('common.updateMyPersonalApp')
+);
+const title = computed(() =>
+	activeAppId.value === 0 ? t('common.createDedicatedApp') : t('common.updatePersonalApp')
+);
 
 const mineApps = computed(() => {
 	if (!keywords.value) return appCatStore.mineApps;
@@ -64,25 +69,25 @@ const defaultForm = () => {
 
 const appForm = ref(defaultForm());
 const rules: FormRules = {
-	catId: [{ required: true, message: '请选择分类' }],
+	catId: [{ required: true, message: t('common.pleaseSelectCategory') }],
 	name: [
-		{ required: true, message: '请输入应用名称', trigger: 'blur' },
-		{ min: 2, max: 30, message: '长度应为2到10个字符之间', trigger: 'blur' },
+		{ required: true, message: t('common.enterAppName'), trigger: 'blur' },
+		{ min: 2, max: 30, message: t('common.lengthBetween2And10'), trigger: 'blur' },
 	],
 	preset: [
-		{ required: true, message: '请输入预设prompt', trigger: 'blur' },
-		{ min: 6, max: 1200, message: '长度应为6到1200个字符之间', trigger: 'blur' },
+		{ required: true, message: t('common.enterPreset'), trigger: 'blur' },
+		{ min: 6, max: 1200, message: t('common.lengthBetween6And1200'), trigger: 'blur' },
 	],
 	des: [
-		{ required: true, message: '请输入简短的应用描述', trigger: 'blur' },
-		{ max: 50, message: '长度应为0到50个字符之间', trigger: 'blur' },
+		{ required: true, message: t('common.enterShortAppDescription'), trigger: 'blur' },
+		{ max: 50, message: t('common.lengthBetween0And50'), trigger: 'blur' },
 	],
 	demoData: [
-		{ required: true, message: '请输入示例数据、按回车换行表示新增一条', trigger: 'blur' },
-		{ max: 100, message: '长度应为0到100个字符之间', trigger: 'blur' },
+		{ required: true, message: t('common.enterExampleData'), trigger: 'blur' },
+		{ max: 100, message: t('common.lengthBetween0And100'), trigger: 'blur' },
 	],
-	coverImg: [{ required: true, message: '请上传应用Logo', trigger: 'change' }],
-	public: [{ required: true, message: '请选择是否公开' }],
+	coverImg: [{ required: true, message: t('common.pleaseUploadApp'), trigger: 'change' }],
+	public: [{ required: true, message: t('common.choosePublicOrPrivate') }],
 };
 
 const { isMobile } = useBasicLayout();
@@ -140,7 +145,7 @@ async function handleUpdateFileList(val: UploadFileInfo[]) {
 			headers: { 'Content-Type': 'multipart/form-data' },
 		});
 		if (res.data.data) appForm.value.coverImg = res.data.data;
-		else ms.error('上传图片失败、请检查后再试试吧！');
+		else ms.error(t('common.uploadImageFailed'));
 	}
 }
 
@@ -149,12 +154,12 @@ function handleBeforeUpload({ file, fileList }) {
 		const { size, type } = file.file;
 		/* 如果类型不是png或者jpg jpeg告诉不能上传 */
 		if (type !== 'image/png' && type !== 'image/jpg' && type !== 'image/jpeg') {
-			ms.error('只能上传png/jpg/jpeg格式的图片');
+			ms.error(t('common.onlyPngJpgJpegAllowed'));
 			return resolve(false);
 		}
 		/* 如果图片大于300k 提示太大 */
 		if (size > 300 * 1024) {
-			ms.error('图片大小不能超过300k');
+			ms.error(t('common.imageSizeLimit'));
 			return resolve(false);
 		}
 		resolve(true);
@@ -205,7 +210,9 @@ function handlerSubmit() {
 			const params: any = appForm.value;
 			activeAppId.value && (params.appId = activeAppId.value);
 			const res: ResData = await fetchCustomAppAPI(params);
-			const msg = activeAppId.value ? '个人应用修改完成！' : '个人应用创建完成！';
+			const msg = activeAppId.value
+				? t('common.personalAppModified')
+				: t('common.personalAppCreated');
 			res.success && ms.success(msg);
 			appCatStore.queryMineApps();
 			handleResetState();
@@ -223,7 +230,7 @@ function handlerSubmit() {
 					<NInput
 						v-model="keywords"
 						type="text"
-						:placeholder="`您一共收录了${mineApps.length}个应用(关键词过滤)`"
+						:placeholder="t('common.collectedAppsCount')"
 						@input="handleInput"
 					/>
 				</div>
@@ -233,13 +240,13 @@ function handlerSubmit() {
 						<template #icon>
 							<SvgIcon icon="gridicons:create" />
 						</template>
-						创建自定义应用
+						{{ t('common.createCustomizedApp') }}
 					</NButton>
 					<NButton type="primary" @click="router.push('/app-store')">
 						<template #icon>
 							<SvgIcon icon="ri:add-line" />
 						</template>
-						前往广场添加应用
+						{{ t('common.goToSquareAddApp') }}
 					</NButton>
 				</NSpace>
 			</div>
@@ -277,10 +284,10 @@ function handlerSubmit() {
 									<template #icon>
 										<SvgIcon icon="clarity:favorite-line" class="text-base" />
 									</template>
-									取消收藏
+									{{ t('common.cancelFavorite') }}
 								</NButton>
 							</template>
-							确认取消收藏该应用吗？
+							{{ t('common.confirmUnfavoriteApp') }}
 						</NPopconfirm>
 						<NSpace>
 							<NPopconfirm
@@ -293,10 +300,10 @@ function handlerSubmit() {
 										<template #icon>
 											<SvgIcon icon="mdi-light:delete" class="text-base" />
 										</template>
-										删除应用
+										{{ t('common.deleteApplication') }}
 									</NButton>
 								</template>
-								确认移除创建的应用吗？
+								{{ t('common.confirmRemoveCreatedApp') }}
 							</NPopconfirm>
 							<NButton
 								v-if="item.appRole === 'user' && !item.public"
@@ -308,7 +315,7 @@ function handlerSubmit() {
 								<template #icon>
 									<SvgIcon icon="mdi-light:delete" class="text-base" />
 								</template>
-								编辑应用
+								{{ t('common.editApp') }}
 							</NButton>
 						</NSpace>
 					</div>
@@ -329,7 +336,7 @@ function handlerSubmit() {
 	<!-- modal -->
 	<NModal
 		:show="visible"
-		title="创建"
+		:title="t('common.create')"
 		style="width: 90%; max-width: 640px"
 		:mask-closable="false"
 		:on-after-enter="openDialog"
@@ -354,28 +361,28 @@ function handlerSubmit() {
 					require-mark-placement="right-hanging"
 					:style="{ maxWidth: '640px' }"
 				>
-					<NFormItem label="应用分类" path="catId">
+					<NFormItem :label="t('common.applicationCategory')" path="catId">
 						<NSelect
 							v-model:value="appForm.catId"
 							clearable
 							size="small"
 							label-field="name"
-							placeholder="请输入您的应用分类"
+							:placeholder="t('common.enterYourAppCategory')"
 							value-field="id"
 							:options="catList"
 						/>
 					</NFormItem>
-					<NFormItem label="应用名称" path="name">
+					<NFormItem :label="t('common.applicationName')" path="name">
 						<NInput
 							v-model:value="appForm.name"
-							placeholder="请输入您的应用名称"
+							:placeholder="t('common.enterYourAppName')"
 							type="name"
 							:maxlength="30"
 							show-name-on="click"
 							tabindex="0"
 						/>
 					</NFormItem>
-					<NFormItem label="预设指令" path="preset">
+					<NFormItem :label="t('common.presetInstructions')" path="preset">
 						<NInput
 							v-model:value="appForm.preset"
 							:max="255"
@@ -384,10 +391,10 @@ function handlerSubmit() {
 								maxRows: 10,
 							}"
 							type="textarea"
-							placeholder="请填写prompt预设指令（核心）"
+							:placeholder="t('common.fillPromptPresetInstruction')"
 						/>
 					</NFormItem>
-					<NFormItem label="应用描述" path="des">
+					<NFormItem :label="t('common.applicationDescription')" path="des">
 						<NInput
 							v-model:value="appForm.des"
 							:autosize="{
@@ -395,10 +402,10 @@ function handlerSubmit() {
 								maxRows: 10,
 							}"
 							type="textarea"
-							placeholder="请对你的应用做以简要的描述以便于大家认识它！"
+							:placeholder="t('common.describeYourApp')"
 						/>
 					</NFormItem>
-					<NFormItem label="示例内容" path="demoData">
+					<NFormItem :label="t('common.exampleContent')" path="demoData">
 						<NInput
 							v-model:value="appForm.demoData"
 							:autosize="{
@@ -406,10 +413,10 @@ function handlerSubmit() {
 								maxRows: 10,
 							}"
 							type="textarea"
-							placeholder="请填写一个示例、方便快速告诉别人如何使用、每点击回车换行一次则是新增一条示例！"
+							:placeholder="t('common.fillExampleForQuickGuide')"
 						/>
 					</NFormItem>
-					<NFormItem label="应用Logo" path="coverImg">
+					<NFormItem :label="t('common.application')" path="coverImg">
 						<NUpload
 							:on-update:file-list="handleUpdateFileList"
 							:on-before-upload="handleBeforeUpload"
@@ -419,20 +426,20 @@ function handlerSubmit() {
 							:default-file-list="fileList"
 							list-type="image-card"
 						>
-							点击上传
+							{{ t('common.clickToUpload') }}
 						</NUpload>
 					</NFormItem>
-					<NFormItem label="是否共享" path="public">
+					<NFormItem :label="t('common.isShared')" path="public">
 						<NSwitch v-model:value="appForm.public" :disabled="isAllowEditAppPublic" />
 						<NTooltip placement="top-start" trigger="hover">
 							<template #trigger>
 								<SvgIcon icon="ri:error-warning-line" class="text-base ml-3 cursor-pointer" />
 							</template>
-							<p>Tips: 请知悉</p>
-							<p>选择共享提交之后审核状态将无法编辑应用</p>
-							<p>审核通过的应用将会在应用广场公开展示</p>
-							<p>管理审核通过后将会赠送一定的站内额度奖励用户</p>
-							<p>一旦提交处于审核中、您将不能再编辑此应用</p>
+							<p>Tips: {{ t('common.pleaseNote') }}</p>
+							<p>{{ t('common.sharingSubmissionMessage') }}</p>
+							<p>{{ t('common.applicationReviewMessage') }}</p>
+							<p>{{ t('common.reviewRewardMessage') }}</p>
+							<p>{{ t('common.submitForReviewMessage') }}</p>
 						</NTooltip>
 					</NFormItem>
 

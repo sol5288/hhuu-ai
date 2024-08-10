@@ -18,6 +18,7 @@ import { useBasicLayout } from '@/hooks/useBasicLayout';
 import { TitleBar } from '@/components/base';
 import { useAppStore, useAuthStore } from '@/store';
 import OldGridManager from '@/components/common/OldGridManager/index.vue';
+import { t } from '@/locales';
 
 import Loading from '@/components/base/Loading.vue';
 const theme = computed(() => appStore.theme);
@@ -40,11 +41,7 @@ watch(isLogin, async (newVal, oldVal) => {
 	if (newVal && !oldVal) queryMyDrawList();
 });
 
-const exampleList = [
-	'超级逼真的未来世界，真实照片，虚幻引擎',
-	'帅哥，二次元，赛博朋克风格，精致脸庞',
-	'兔子，可爱，高质量，高品质',
-];
+const exampleList = [t('common.futuristicWorld'), t('common.handsome'), t('common.cuteRabbit')];
 
 const imageSizeList = [
 	{ label: '1024x1024', value: '1024x1024' },
@@ -53,8 +50,8 @@ const imageSizeList = [
 ];
 
 const qualityList = [
-	{ label: '标准(2积分)', value: 'standard' },
-	{ label: '优质(4积分)', value: 'hd' },
+	{ label: t('common.standard'), value: 'standard' },
+	{ label: t('common.premium'), value: 'hd' },
 ];
 
 // const imageNumList = [
@@ -70,20 +67,20 @@ const qualityList = [
 // ]
 
 const promptList = [
-	'古风',
-	'二次元',
-	'写实照片',
-	'油画',
-	'水彩画',
-	'油墨画',
-	'黑白雕版画',
-	'雕塑',
-	'3D模型',
-	'手绘草图',
-	'炭笔画',
+	t('common.ancientStyle'),
+	t('common.anime'),
+	t('common.realisticPhoto'),
+	t('common.oilPainting'),
+	t('common.watercolorPainting'),
+	t('common.inkPainting'),
+	t('common.blackAndWhiteWoodcut'),
+	t('common.sculpture'),
+	t('common.model'),
+	t('common.handDrawnSketch'),
+	t('common.charcoalDrawing'),
 	t('common.minimalisticLineDrawing'),
-	'电影质感',
-	'机械感',
+	t('common.cinematicFeel'),
+	t('common.mechanicalFeel'),
 ];
 
 const form = ref({
@@ -149,11 +146,11 @@ function formatFileInfo(data: any) {
 }
 
 async function drawImage() {
-	if (!form.value.prompt) return ms.error('请输入您想要生成的图片描述信息！');
+	if (!form.value.prompt) return ms.error(t('common.enterImageDescription'));
 	try {
 		loading.value = true;
 		await fetchChatDraw(form.value);
-		ms.success('生成图片成完成、前往我的生成查看图片！');
+		ms.success(t('common.imageGenerationCompleted2'));
 		await queryMyDrawList();
 		loading.value = false;
 	} catch (error) {
@@ -179,7 +176,7 @@ onMounted(() => {
 	>
 		<TitleBar
 			title="DALL-E绘画"
-			des="基于DALL-E的绘画、速度较快、同步等待到结束后在我的绘画中可以看到结果！"
+			:des="t('common.dalleDrawingMessage')"
 			:padding="isMobile ? 2 : 20"
 		/>
 		<div :class="isMobile ? ['px-2'] : ['px-20']">
@@ -187,10 +184,12 @@ onMounted(() => {
         <span class="text-[#67c23a]">每生成一张图片需要扣除您的两个基础绘画积分、我们建议您输入转为英文！</span>
       </NAlert> -->
 			<div class="flex my-5">
-				<b class="text-primary cursor-pointer select-none flex-shrink-0" @click="updateEx"
-					>换示例</b
-				>
-				<p class="mx-2 text-[#707384] select-none flex-shrink-0">Prompt示例：</p>
+				<b class="text-primary cursor-pointer select-none flex-shrink-0" @click="updateEx">{{
+					t('common.changeExample')
+				}}</b>
+				<p class="mx-2 text-[#707384] select-none flex-shrink-0">
+					Prompt{{ t('common.example') }}：
+				</p>
 				<p class="text-[#707384]">
 					{{ exampleList[index] }}
 				</p>
@@ -201,7 +200,7 @@ onMounted(() => {
 					v-model:value="form.prompt"
 					:disabled="loading"
 					clearable
-					placeholder="请输入您想要生成的图片描述信息、可以参考上面的示例文字、我们将会对其转为英文绘画、请知悉！"
+					:placeholder="t('common.enterImageDescriptionExtended')"
 				/>
 				<NButton type="success" :loading="loading" :disabled="loading" @click="drawImage">
 					<template #icon>
@@ -209,16 +208,16 @@ onMounted(() => {
 							<ImagesOutline />
 						</NIcon>
 					</template>
-					生成图片
+					{{ t('common.generateImage') }}
 				</NButton>
 			</NInputGroup>
 			<div
 				class="mt-5 py-4 bg-[#e7eaf380] dark:bg-[#2c2c32] rounded-lg"
 				:class="isMobile ? 'px-0' : 'px-4'"
 			>
-				<h4 class="text-base mb-2">参数设置</h4>
+				<h4 class="text-base mb-2">{{ t('common.parameterSettings') }}</h4>
 				<div class="flex items-center mt-5">
-					<span class="mr-2 inline-block w-20 flex-shrink-0">图片尺寸:</span>
+					<span class="mr-2 inline-block w-20 flex-shrink-0">{{ t('common.imageSize') }}:</span>
 					<div>
 						<span
 							v-for="item in imageSizeList"
@@ -234,7 +233,7 @@ onMounted(() => {
 					</div>
 				</div>
 				<div class="flex items-center mt-5">
-					<span class="mr-2 inline-block w-20 flex-shrink-0">图片质量:</span>
+					<span class="mr-2 inline-block w-20 flex-shrink-0">{{ t('common.imageQuality') }}:</span>
 					<div>
 						<span
 							v-for="item in qualityList"
@@ -257,14 +256,14 @@ onMounted(() => {
           </div>
         </div> -->
 				<div class="flex mt-5">
-					<h4 class="text-base mr-2 w-20 flex-shrink-0">修饰词参考</h4>
+					<h4 class="text-base mr-2 w-20 flex-shrink-0">{{ t('common.modifierReference') }}</h4>
 					<p class="text-[#707384]">
 						您可参考或选用下列各类修饰词丰富您的输入文本，尝试生成更加多样的图像，更多修饰词可参考
 						Prompt指南 或 自由输入 探索大模型作画更多未知能力
 					</p>
 				</div>
 				<div class="flex mt-5">
-					<h4 class="text-base mr-2 w-20 flex-shrink-0">图像类型</h4>
+					<h4 class="text-base mr-2 w-20 flex-shrink-0">{{ t('common.imageType') }}</h4>
 					<div>
 						<span
 							v-for="(item, i) in promptList"
@@ -277,18 +276,25 @@ onMounted(() => {
 				</div>
 			</div>
 			<div v-if="loading" class="mt-8 pb-10">
-				<div class="flex justify-center">
-					----------- 正在生成中、图片越大数量越多所需时间越多、预计25S -----------
-				</div>
+				<div class="flex justify-center">{{ t('common.generatingImage25s') }}</div>
 				<div class="flex flex-wrap mt-8">
 					<div class="w-44 h-44 border rounded-md relative ml-4 mt-4" v-for="i in form.n" :key="i">
-						<Loading :text-color="loadingTextColor" :words="['图', '片', '绘', '制', '中']" />
+						<Loading
+							:text-color="loadingTextColor"
+							:words="[
+								'图',
+								t('common.piece'),
+								t('common.draw'),
+								t('common.make'),
+								t('common.medium'),
+							]"
+						/>
 					</div>
 					<!-- <img v-for="i in 5" :key="i" class="w-40 rounded ml-4 mt-4" src="https://public-1300678944.cos.ap-shanghai.myqcloud.com/blog/16816463869037208e40df8ceb5ff.gif"> -->
 				</div>
 			</div>
 			<NTabs type="line" animated class="mt-5" @update:value="updateTabs">
-				<NTabPane name="all" tab="公共生成">
+				<NTabPane name="all" :tab="t('common.publicGeneration')">
 					<div v-if="allDrawList.length" class="min-h-screen">
 						<OldGridManager
 							@loadMore="loadMore"
@@ -300,9 +306,9 @@ onMounted(() => {
 							:scaleWidth="50"
 						/>
 					</div>
-					<NEmpty v-else size="huge" class="mt-20" description="暂无数据哟~" />
+					<NEmpty v-else size="huge" class="mt-20" :description="t('common.noData')哟~" />
 				</NTabPane>
-				<NTabPane name="mine" tab="我的生成">
+				<NTabPane name="mine" :tab="t('common.myGeneration')">
 					<div v-if="mineDrawList.length" class="min-h-screen">
 						<OldGridManager
 							@loadMore="loadMore"
@@ -314,7 +320,7 @@ onMounted(() => {
 							:scaleWidth="50"
 						/>
 					</div>
-					<NEmpty v-else size="huge" class="mt-20" description="暂无数据哟~" />
+					<NEmpty v-else size="huge" class="mt-20" :description="t('common.noData')哟~" />
 				</NTabPane>
 			</NTabs>
 		</div>
