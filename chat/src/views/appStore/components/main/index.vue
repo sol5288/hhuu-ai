@@ -12,6 +12,7 @@ import { fetchQueryAppCatsAPI } from '@/api/appStore';
 import { useBasicLayout } from '@/hooks/useBasicLayout';
 import { fetchQueryMenuAPI } from '@/api/config';
 import Motion from '@/utils/motion/index';
+import { t } from '@/locales';
 
 const { isMobile } = useBasicLayout();
 const authStore = useAuthStore();
@@ -93,7 +94,7 @@ async function queryCats() {
 	const res: ResData = await fetchQueryAppCatsAPI();
 	const defaultCat = {
 		id: 0,
-		name: '全部分类',
+		name: t('common.allCategories'),
 	};
 	catList.value = [defaultCat, ...res?.data?.rows];
 }
@@ -139,7 +140,7 @@ onMounted(() => {
 			<div
 				class="flex justify-center text-base text-small mb-4 mt-4 text-center text-gray-700 dark:text-gray-300 lg:text-lg"
 			>
-				{{ appMenuHeaderTips || '探索无限可能，与AI一同开创智慧未来！' }}
+				{{ appMenuHeaderTips || t('common.exploreEndlessPossibilities') }}
 			</div>
 			<div class="w-full flex justify-center my-3" :class="isMobile ? 'space-x-1' : 'space-x-5'">
 				<n-button
@@ -151,7 +152,7 @@ onMounted(() => {
 					@click="handlJumpPath('/chat')"
 				>
 					<SvgIcon icon="carbon:chat" class="text-2xl mr-2" />
-					AI 对话
+					{{ t('common.conversation') }}
 				</n-button>
 				<n-button
 					trong
@@ -173,7 +174,7 @@ onMounted(() => {
 					@click="handlJumpPath('/mind')"
 				>
 					<SvgIcon icon="ri:mind-map" class="text-2xl mr-2" />
-					思维导图
+					{{ t('common.mindMap') }}
 				</n-button>
 			</div>
 			<div class="mt-3 flex flex-col justify-center w-full items-center overflow-hidden">
@@ -181,7 +182,7 @@ onMounted(() => {
 					v-model:value="keyword"
 					class="!max-w-screen-4xl"
 					round
-					placeholder="搜索应用名称、快速查找应用..."
+					:placeholder="t('common.searchApplicationPlaceholder')""
 				>
 					<template #suffix>
 						<SvgIcon icon="iconamoon:search-thin" class="text-base" />
@@ -249,7 +250,7 @@ onMounted(() => {
 										class="text-base"
 									/>
 								</template>
-								{{ isMineApp(item) ? '取消收藏' : '加入个人工作台' }}
+								{{ isMineApp(item) ? t('common.cancelFavorite') : t('common.addToPersonalWorkbench') }}
 							</NButton>
 							<SvgIcon icon="codicon:run-all" class="run-icon text-xl text-[#5A91FC]" />
 						</div>

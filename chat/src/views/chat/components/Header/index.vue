@@ -7,6 +7,7 @@ import { useAppStore, useAuthStore, useChatStore, useGlobalStoreWithOut } from '
 import { useBasicLayout } from '@/hooks/useBasicLayout';
 
 import type { Theme } from '@/store/modules/app/helper';
+import { t } from '@/locales';
 
 defineProps<Props>();
 const emit = defineEmits<Emit>();
@@ -25,13 +26,13 @@ interface Emit {
 }
 const ms = useMessage();
 const marks = ref({
-	0: '死板',
-	0.1: '专业',
-	0.2: '准确',
-	0.8: '平衡',
-	1: '创造性',
-	1.3: '离谱',
-	1.6: '荒谬',
+	0: t('common.rigid'),
+	0.1: t('common.professional'),
+	0.2: t('common.accurate'),
+	0.8: t('common.balanced'),
+	1: t('common.creative'),
+	1.3: t('common.ridiculous'),
+	1.6: t('common.absurd'),
 });
 const themeOptions: {
 	label: string;
@@ -94,7 +95,7 @@ function handleScrollBtm() {
 }
 
 function handleOpenModelDialog() {
-	if (useGlobalStore.isChatIn) return ms.warning('请等待聊天结束后修改模型信息！');
+	if (useGlobalStore.isChatIn) return ms.warning(t('common.waitForChatToEndBeforeModifying'));
 
 	useGlobalStore.updateModelDialog(true);
 }
@@ -177,7 +178,7 @@ function handleSignIn() {
 									</span>
 								</button>
 							</template>
-							签到领福利
+							{{ t('common.signInForRewards') }}
 						</NTooltip>
 						<NTooltip trigger="hover" :disabled="isMobile">
 							<template #trigger>
@@ -191,7 +192,7 @@ function handleSignIn() {
 									</span>
 								</button>
 							</template>
-							导出本页为图片
+							{{ t('common.exportPageAsImage') }}
 						</NTooltip>
 						<NTooltip trigger="hover" :disabled="isMobile">
 							<template #trigger>
@@ -204,7 +205,7 @@ function handleSignIn() {
 									/></span>
 								</button>
 							</template>
-							删除本页内容
+							{{ t('common.deletePageContent') }}
 						</NTooltip>
 						<NTooltip trigger="hover" :disabled="isMobile">
 							<template #trigger>
@@ -217,7 +218,7 @@ function handleSignIn() {
 									/></span>
 								</button>
 							</template>
-							滚动到底部
+							{{ t('common.scrollToBottom') }}
 						</NTooltip>
 					</div>
 				</div>

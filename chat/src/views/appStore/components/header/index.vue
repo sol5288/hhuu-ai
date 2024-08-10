@@ -5,6 +5,7 @@ import { useBasicLayout } from '@/hooks/useBasicLayout';
 import { SvgIcon } from '@/components/common';
 const router = useRouter();
 const { isMobile } = useBasicLayout();
+import { t } from '@/locales';
 </script>
 
 <template>
@@ -15,9 +16,11 @@ const { isMobile } = useBasicLayout();
 		<h2 class="text-base text-[#999999] flex items-center w-full">
 			Tips:
 			<span class="text-sm ml-2"
-				>当前模式下在此处直接使用应用、加入个人工作台的应用将会与对话窗口联动使用、更加便捷、您也可以前往
-				<span class="text-[#5a91fc] cursor-pointer" @click="router.push('/role')">个人工作台</span>
-				创建您的自定义专属应用！
+				>{{ t('common.currentModeUsageInfo') }}
+				<span class="text-[#5a91fc] cursor-pointer" @click="router.push('/role')">{{
+					t('common.personalWorkbench')
+				}}</span>
+				{{ t('common.createCustomApp') }}
 			</span>
 			<span class="flex-1 ele-drag" />
 		</h2>

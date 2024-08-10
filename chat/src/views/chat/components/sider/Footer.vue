@@ -4,6 +4,7 @@ import { NIcon } from 'naive-ui';
 import { computed } from 'vue';
 import { HoverButton, UserAvatar } from '@/components/common';
 import { useAuthStore } from '@/store';
+import { t } from '@/locales';
 const authStore = useAuthStore();
 const isLogin = computed(() => !!authStore.token);
 </script>
@@ -15,7 +16,7 @@ const isLogin = computed(() => !!authStore.token);
 		<div class="flex-1 flex-shrink-0 overflow-hidden">
 			<UserAvatar />
 		</div>
-		<HoverButton v-if="isLogin" tooltip="退出账户登录">
+		<HoverButton v-if="isLogin" :tooltip="t('common.logoutAccount')">
 			<NIcon size="18" color="#0e7a0d" @click="authStore.logOut()">
 				<ExitOutline />
 			</NIcon>

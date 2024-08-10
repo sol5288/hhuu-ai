@@ -6,7 +6,7 @@ import { NButton, NInput, NLayoutSider, NNumberAnimation, useDialog, useMessage 
 import { useRouter } from 'vue-router';
 import List from './List.vue';
 import { SvgIcon } from '@/components/common';
-
+import { t } from '@/locales';
 import { useAppStore, useAuthStore, useChatStore, useGlobalStoreWithOut } from '@/store';
 import { useBasicLayout } from '@/hooks/useBasicLayout';
 const useGlobalStore = useGlobalStoreWithOut();
@@ -94,10 +94,10 @@ async function handleAdd() {
 /* 删除全部非置顶聊天 */
 async function handleDelGroup() {
 	dialog.warning({
-		title: '清空分组',
-		content: '是否删除所有非置顶的对话组？',
-		positiveText: '确认删除',
-		negativeText: '再想想',
+		title: t('common.clearGroup'),
+		content: t('common.confirmDeleteAllNonPinnedConversations'),
+		positiveText: t('common.confirmDelete'),
+		negativeText: t('common.thinkAgain'),
 		onPositiveClick: async () => {
 			await chatStore.delAllGroup();
 		},
@@ -177,7 +177,7 @@ watch(
 									ref="searchRef"
 									v-model="groupKeyWord"
 									type="text"
-									placeholder="搜索历史对话"
+									:placeholder="t('common.searchHistoryConversation')"
 									class="block h-full w-full border-0 py-0 pl-8 pr-0 text-gray-700 placeholder:text-gray-400 sm:text-sm dark:bg-gray-900 dark:text-gray-400"
 									@blur="handleBlurInput"
 									@input="handleInputGroupSearch"
@@ -223,12 +223,12 @@ watch(
 							<SvgIcon
 								icon="material-symbols:account-balance-wallet-outline"
 								class="ml-2 mr-2 text-base"
-							/>普通额度：
-							{{ `${userBalance.sumModel3Count || 0} 积分` }}
+							/>{{ t('common.normalQuota') }}： {{ `${userBalance.sumModel3Count || 0}`
+							}}{{ t('common.points') }}
 						</div>
 						<div v-if="activeModelKeyDeductType === 1" class="my-1 flex items-center select-none">
 							<SvgIcon icon="ic:twotone-hourglass-top" class="ml-2 mr-2 text-base" />
-							我已使用：
+							{{ t('common.usedCount') }}：
 							<NNumberAnimation
 								ref="model3AnimationInstRef"
 								:from="oldUse3Token"
@@ -238,11 +238,14 @@ watch(
 						</div>
 						<div v-if="activeModelKeyDeductType === 1" class="my-1 flex items-center select-none">
 							<SvgIcon icon="mingcute:bill-line" class="ml-2 mr-2 text-base" />
-							模型费用： {{ `${activeModelKeyPrice || 0}积分 / 次对话` }}
+							{{ t('common.modelCost') }}： {{ `${activeModelKeyPrice || 0}`
+							}}{{ t('common.pointsPerConversation') }}
 						</div>
 
 						<div v-if="activeModelKeyDeductType === 2" class="my-1 flex items-center select-none">
-							<SvgIcon icon="ic:twotone-hourglass-top" class="ml-2 mr-2 text-base" />我已使用：
+							<SvgIcon icon="ic:twotone-hourglass-top" class="ml-2 mr-2 text-base" />{{
+								t('common.usedCount')
+							}}：
 							<NNumberAnimation
 								ref="model4AnimationInstRef"
 								:from="oldUse4Token"
@@ -254,11 +257,13 @@ watch(
 							<SvgIcon
 								icon="material-symbols:account-balance-wallet-outline"
 								class="ml-2 mr-2 text-base"
-							/>高级额度：
-							{{ `${userBalance.sumModel4Count || 0} 积分` }}
+							/>{{ t('common.advancedQuota') }}： {{ `${userBalance.sumModel4Count || 0}` }}
+							{{ t('common.points') }}
 						</div>
 						<div v-if="activeModelKeyDeductType === 2" class="my-1 flex items-center select-none">
-							<SvgIcon icon="mingcute:bill-line" class="ml-2 mr-2 text-base" />模型费用：
+							<SvgIcon icon="mingcute:bill-line" class="ml-2 mr-2 text-base" />{{
+								t('common.modelCost')
+							}}：
 							{{ `${activeModelKeyPrice || 0}积分 / 次对话` }}
 						</div>
 
@@ -269,11 +274,11 @@ watch(
 								@click="useGlobalStore.updateNoticeDialog(true)"
 							>
 								<SvgIcon icon="mdi:notice-board" class="ml-2 mr-2 text-sm" />
-								<span class="mr-2">公告栏</span>
+								<span class="mr-2">{{ t('common.bulletinBoard') }}</span>
 							</NButton>
 							<NButton type="tertiary" size="small" @click="handleOpenRole">
 								<SvgIcon icon="ri:emoji-sticker-line" class="ml-2 mr-2 text-sm" />
-								<span class="mr-3">工作台</span>
+								<span class="mr-3">{{ t('common.workbench') }}</span>
 							</NButton>
 						</div>
 						<!-- <div class="flex justify-betweenx">
@@ -287,7 +292,7 @@ watch(
                   icon="ant-design:delete-outlined"
                   class="ml-2 mr-2 text-sm"
                 />
-                <span class="mr-3">清空全部非置顶会话</span>
+                <span class="mr-3">t('common.clearAllNonPinnedConversations')</span>
               </NButton>
             </div> -->
 						<!-- <NButton block @click="show = true">

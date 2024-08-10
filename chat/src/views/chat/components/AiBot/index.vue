@@ -7,6 +7,7 @@ import { SvgIcon } from '@/components/common';
 import { useBasicLayout } from '@/hooks/useBasicLayout';
 import { fetchGetChatBoxList } from '@/api/index';
 import { useAuthStore } from '@/store';
+import { t } from '@/locales';
 
 interface Emit {
 	(ev: 'prompt', item: string): void;
@@ -76,7 +77,7 @@ const { isMobile } = useBasicLayout();
 				</div>
 			</div>
 			<div v-if="boxData?.length" class="mt-4 text-center text-sm text-neutral-400">
-				点击以上话题，快速与我对话
+				{{ t('common.clickTopicToChat') }}
 			</div>
 		</div>
 	</div>

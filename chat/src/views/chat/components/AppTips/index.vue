@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { onMounted, reactive, ref, toRefs, watch } from 'vue';
 import { SvgIcon } from '@/components/common';
+import { t } from '@/locales';
 
 interface AppInfo {
 	demoData: string[];
@@ -43,7 +44,7 @@ function useDemo(prompt: string) {
 		</div>
 
 		<div class="flex flex-col mt-16">
-			<span class="font-bold text-[#5a91fc] mb-3">示例模板</span>
+			<span class="font-bold text-[#5a91fc] mb-3">{{ t('common.exampleTemplate') }}</span>
 			<div class="flex-1 pl-2 pr-5 py-1">
 				<div
 					v-for="(item, index) in appInfo.demoData"

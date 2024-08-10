@@ -68,7 +68,7 @@ function handleSelect(key: 'copyText' | 'delete' | 'toggleRenderType') {
 	switch (key) {
 		case 'copyText':
 			copyText({ text: props.text ?? '' });
-			ms.success('复制成功！');
+			ms.success(t('common.copySuccess')！);
 			return;
 		case 'toggleRenderType':
 			asRawText.value = !asRawText.value;
@@ -88,7 +88,7 @@ function hendleVideo() {
 
 function handleCopy() {
 	copyText({ text: props.text ?? '' });
-	props.text && ms.success('复制成功！');
+	props.text && ms.success(t('common.copySuccess'));
 }
 
 function handleRegenerate() {

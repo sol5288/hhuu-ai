@@ -5,6 +5,7 @@ import { useBasicLayout } from '@/hooks/useBasicLayout';
 import { fetchQueryAppCatsAPI } from '@/api/appStore';
 import { useAppCatStore, useAuthStore } from '@/store';
 import type { ResData } from '@/api/types';
+import { t } from '@/locales';
 
 const authStore = useAuthStore();
 const appCatStore = useAppCatStore();
@@ -26,7 +27,7 @@ async function queryCats() {
 	const res: ResData = await fetchQueryAppCatsAPI();
 	const defaultCat = {
 		id: 0,
-		name: '全部分类',
+		name: t('common.allCategories'),
 	};
 	catList.value = [defaultCat, ...res?.data?.rows];
 }
