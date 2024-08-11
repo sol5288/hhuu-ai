@@ -144,7 +144,7 @@ onMounted(() => {
 			</div>
 			<div class="w-full flex justify-center my-3" :class="isMobile ? 'space-x-1' : 'space-x-5'">
 				<n-button
-					trong
+					strong
 					secondary
 					type="primary"
 					round
@@ -182,7 +182,7 @@ onMounted(() => {
 					v-model:value="keyword"
 					class="!max-w-screen-4xl"
 					round
-					:placeholder="t('common.searchApplicationPlaceholder')""
+					:placeholder="t('common.searchApplicationPlaceholder')"
 				>
 					<template #suffix>
 						<SvgIcon icon="iconamoon:search-thin" class="text-base" />
@@ -250,7 +250,9 @@ onMounted(() => {
 										class="text-base"
 									/>
 								</template>
-								{{ isMineApp(item) ? t('common.cancelFavorite') : t('common.addToPersonalWorkbench') }}
+								{{
+									isMineApp(item) ? t('common.cancelFavorite') : t('common.addToPersonalWorkbench')
+								}}
 							</NButton>
 							<SvgIcon icon="codicon:run-all" class="run-icon text-xl text-[#5A91FC]" />
 						</div>

@@ -150,7 +150,7 @@ async function handleRun() {
 		const fetchChatAPIOnce = async () => {
 			await fetchChatAPIProcess<Chat.ConversationResponse>({
 				prompt: message,
-				appId: app.value.id,
+				appId: app.value?.id,
 				options,
 				onDownloadProgress: ({ event }) => {
 					const xhr = event.target;
@@ -206,7 +206,7 @@ function useDemo(demo: string) {
 					v-model="prompt"
 					class="textarea dark:bg-[#18181c]"
 					type="textarea"
-					placeholder="t('common.enterKeywordsAndRequirements')"
+					:placeholder="t('common.enterKeywordsAndRequirements')"
 				/>
 				<div class="ground-left-tips flex justify-between px-3 py-2">
 					<div class="text-[#999] text-xs flex items-center">
@@ -230,7 +230,7 @@ function useDemo(demo: string) {
 							<span
 								class="ml-2 font-bold text-[#5a91fc] cursor-pointer"
 								style="text-decoration: underline"
-								>{{ sumModel3Count }}{{ t('common.points') }}</span
+								>{{ sumModel3Count + t('common.points') }}</span
 							>
 						</div>
 						<div class="text-[#999] text-sm whitespace-nowrap">
@@ -248,7 +248,7 @@ function useDemo(demo: string) {
 				</div>
 			</div>
 
-			<div class="flex-1 mt-4flex flex-col mt-6">
+			<div class="flex-1 mt-4 flex flex-col mt-6">
 				<span class="font-bold text-[#5a91fc] mb-3">{{ t('common.exampleRequirements') }}</span>
 				<div class="flex-1 overflow-y-scroll pl-2 pr-5 py-4" :class="[isMobile ? '' : 'h-[150px]']">
 					<div
