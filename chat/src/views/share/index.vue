@@ -29,6 +29,7 @@ import { fetchGenInviteCodeAPI, fetchGetInviteRecordAPI } from '@/api/user';
 import { fetchSalesAccountAPI, fetchSalesOrderAPI, fetchSalesRecordsAPI } from '@/api/sales';
 import type { ResData } from '@/api/types';
 import QRCode from '@/components/common/QRCode/index.vue';
+import { t } from '@/locales';
 
 interface InviteAccount {
 	distributionBalance: number;
@@ -176,24 +177,24 @@ const paginationReg = reactive({
 /* 推介记录 */
 const recColumns = ref<any[]>([
 	{
-		title: '订单金额',
+		title: t('common.orderAmount'),
 		align: 'center',
 		orderPrice: 'address',
 		render(row: SalesRecords) {
-			return `￥${row.orderPrice}元`;
+			return `￥${row.orderPrice}` + t('common.yuan');
 		},
 	},
 	{
 		align: 'center',
-		title: '商品类型',
+		title: t('common.productType'),
 		key: 'tags',
 		render(row: SalesRecords) {
-			return '购买套餐';
+			return t('common.purchasePlan');
 		},
 	},
 	{
 		align: 'center',
-		title: '状态',
+		title: t('common.status'),
 		key: 'status',
 		render(row: SalesRecords) {
 			return h(
@@ -203,13 +204,13 @@ const recColumns = ref<any[]>([
 					size: 'small',
 					round: true,
 				},
-				() => '已入账'
+				() => t('common.accountedFor')
 			);
 		},
 	},
 	{
 		align: 'center',
-		title: '佣金比例',
+		title: t('common.commissionRatio'),
 		key: 'commissionAmount',
 		render(row: SalesRecords) {
 			return `${row.commissionPercentage}%`;
@@ -217,15 +218,15 @@ const recColumns = ref<any[]>([
 	},
 	{
 		align: 'center',
-		title: '佣金',
+		title: t('common.commission'),
 		key: 'commissionAmount',
 		render(row: SalesRecords) {
-			return `￥${row.commissionAmount}元`;
+			return `￥${row.commissionAmount}` + t('common.yuan');
 		},
 	},
 	{
 		align: 'center',
-		title: '订购时间',
+		title: t('common.orderTime'),
 		key: 'createdAt',
 	},
 ]);
@@ -242,7 +243,7 @@ function handleChangeTabDrawMoney() {
 async function genMyInviteCode() {
 	const res: ResData = await fetchGenInviteCodeAPI();
 	if (!res.data) return ms.error(res.message);
-	ms.success('生成邀请码成功');
+	ms.success(t('common.generateInvitationCodeSuccess'));
 	authStore.getUserInfo();
 }
 
@@ -298,7 +299,7 @@ async function querySalesOrder() {
 
 const drawMoneyColums = ref<any[]>([
 	{
-		title: '提现时间',
+		title: t('common.withdrawalTime'),
 		key: 'createdAt',
 		align: 'center',
 	},
@@ -319,12 +320,12 @@ const drawMoneyColums = ref<any[]>([
 					size: 'small',
 					round: true,
 				},
-				() => (row.withdrawalChannels === 1 ? '支付宝' : '微信')
+				() => (row.withdrawalChannels === 1 ? t('common.alipay') : t('common.wechat'))
 			);
 		},
 	},
 	{
-		title: '提现状态',
+		title: t('common.withdrawalStatus'),
 		key: 'paymentStatus',
 		render(row: DrawMoneyOrder) {
 			return h(
@@ -334,7 +335,12 @@ const drawMoneyColums = ref<any[]>([
 					size: 'small',
 					round: true,
 				},
-				() => (row.paymentStatus === 1 ? '已打款' : row.paymentStatus === -1 ? '被拒绝' : '审核中')
+				() =>
+					row.paymentStatus === 1
+						? t('common.paymentMade')
+						: row.paymentStatus === -1
+							? t('common.rejected')
+							: t('common.underReview')
 			);
 		},
 	},
@@ -347,7 +353,7 @@ const drawMoneyColums = ref<any[]>([
 		},
 	},
 	{
-		title: '审核人',
+		title: t('common.reviewer'),
 		key: 'auditUserId',
 		align: 'center',
 		render(row: DrawMoneyOrder) {
@@ -358,7 +364,7 @@ const drawMoneyColums = ref<any[]>([
 
 const regColums = ref<any[]>([
 	{
-		title: '头像',
+		title: t('common.avatar'),
 		align: 'center',
 		key: 'avatar',
 		render(row: InviteRecord) {
@@ -372,16 +378,16 @@ const regColums = ref<any[]>([
 	},
 	{
 		align: 'center',
-		title: '用户名',
+		title: t('common.username'),
 		key: 'username',
 	},
 	{
 		align: 'center',
-		title: '邮箱',
+		title: t('common.email'),
 		key: 'email',
 	},
 	{
-		title: '受邀人状态',
+		title: t('common.inviteeStatus'),
 		align: 'center',
 		key: 'status',
 		render(row: InviteRecord) {
@@ -392,17 +398,17 @@ const regColums = ref<any[]>([
 					size: 'small',
 					round: true,
 				},
-				() => (row.status === 1 ? '已注册' : '待激活')
+				() => (row.status === 1 ? t('common.registered') : t('common.toBeActivated'))
 			);
 		},
 	},
 	{
-		title: '注册时间',
+		title: t('common.registrationTime'),
 		align: 'center',
 		key: 'createdAt',
 	},
 	{
-		title: '最后登录',
+		title: t('common.lastLogin'),
 		align: 'center',
 		key: 'updatedAt',
 	},
@@ -428,9 +434,9 @@ async function queryInviteRecord() {
 
 /* 复制分享连接 */
 function copyUrl() {
-	if (!inviteCode.value) return ms.error('请先申请你的邀请码');
+	if (!inviteCode.value) return ms.error(t('common.applyForInvitationCodeFirst'));
 	copyText({ text: inviteUrl.value });
-	ms.success('复制推荐链接成功');
+	ms.success(t('common.copyRecommendationLinkSuccess'));
 	const element: any = selectable.value;
 	const range = document.createRange();
 	const selection: any = window.getSelection();
@@ -450,8 +456,8 @@ onMounted(() => {
 	<div class="main bg-[#f8f8fb] min-h-screen bg-center dark:bg-[#2F2E34]">
 		<TitleBar
 			:class="[isMobile ? 'px-3' : 'px-14']"
-			title="推介计划"
-			des="加入我们，共享成功！欢迎来到我们的分销页面，成为我们的合作伙伴，一同开创美好未来！"
+			:title="t('common.promotionPlan')"
+			:des="t('common.joinUsMessage')"
 		/>
 		<div class="flex-1 flex-wrap py-5 flex justify-between" :class="[isMobile ? 'px-3' : 'px-20']">
 			<div class="px-[12px] min-w-[350px]" :class="[isMobile ? 'w-full' : 'w-1/3']">
@@ -461,10 +467,10 @@ onMounted(() => {
 					class="w-full bg-[#f78400] p-6 flex flex-col justify-between rounded shadow-xl relative"
 				>
 					<div class="absolute right-4 top-6 font-bold text-base opacity-60 text-[#eee] flex">
-						{{ inviteAccount?.salesOutletName || '新秀推荐官' }}
+						{{ inviteAccount?.salesOutletName || t('common.risingStarRecommendationOfficer') }}
 						<img :src="BadgeImg" class="ml-2 w-6 h-6 opacity-50" />
 					</div>
-					<h2 class="text-[#fff] font-bold text-xl">我的推介</h2>
+					<h2 class="text-[#fff] font-bold text-xl">{{ t('common.myRecommendations') }}</h2>
 					<div class="leading-loose flex justify-between items-center py-5">
 						<div class="text-[#fff]">
 							<span class="font-bold text-4xl">
@@ -476,7 +482,7 @@ onMounted(() => {
 									:precision="2"
 								/>
 							</span>
-							<span class="ml-3">元</span>
+							<span class="ml-3">{{ t('common.yuan') }}</span>
 						</div>
 						<img :src="qianbao" class="w-20 opacity-10" alt="" />
 					</div>
@@ -484,16 +490,16 @@ onMounted(() => {
 						<div class="flex flex-col">
 							<div class="flex items-end">
 								<span class="font-bold text-xl">{{ inviteAccount?.distributionBalance || 0 }}</span>
-								<span class="ml-2">元</span>
+								<span class="ml-2">{{ t('common.yuan') }}</span>
 							</div>
-							<div>剩余可提金额</div>
+							<div>{{ t('common.remainingWithdrawableAmount') }}</div>
 						</div>
 						<div class="flex flex-col">
 							<div class="flex items-end">
 								<span class="font-bold text-xl">{{ inviteAccount?.drawMoneyIn || 0 }}</span>
-								<span class="ml-2">元</span>
+								<span class="ml-2">{{ t('common.yuan') }}</span>
 							</div>
-							<div>提现中金额</div>
+							<div>{{ t('common.withdrawingAmount') }}</div>
 						</div>
 						<div>
 							<NPopover
@@ -509,7 +515,7 @@ onMounted(() => {
 										]"
 										@click="drawMoneyVisibleDialog = true"
 									>
-										立即提现
+										{{ t('common.withdrawImmediately') }}
 									</div>
 								</template>
 								<span>最低{{ Number(globalConfig?.salesAllowDrawMoney) || 10 }}元可提现!</span>
@@ -523,21 +529,21 @@ onMounted(() => {
 					<div class="flex p-4 justify-between border-b dark:border-[#3a3a40]">
 						<div class="flex item-center">
 							<SvgIcon class="text-lg" icon="icon-park-outline:order" />
-							<span class="ml-2">购买订单数量</span>
+							<span class="ml-2">{{ t('common.orderQuantity') }}</span>
 						</div>
 						<b class="text-base">{{ inviteAccount?.orderCount || 0 }}</b>
 					</div>
 					<div class="flex p-4 justify-between border-b dark:border-[#3a3a40]">
 						<div class="flex item-center">
 							<SvgIcon class="text-lg" icon="ep:link" />
-							<span class="ml-2">推广链接访问次数</span>
+							<span class="ml-2">{{ t('common.promotionalLinkVisits') }}</span>
 						</div>
 						<b class="text-base">{{ inviteAccount?.inviteLinkCount || 0 }}</b>
 					</div>
 					<div class="flex p-4 justify-between">
 						<div class="flex item-center">
 							<SvgIcon class="text-lg" icon="ph:user" />
-							<span class="ml-2">注册用户</span>
+							<span class="ml-2">{{ t('common.registeredUser') }}</span>
 						</div>
 						<b class="text-base">{{ inviteAccount?.inviteCount || 0 }}</b>
 					</div>
@@ -547,28 +553,32 @@ onMounted(() => {
 				<div class="flex flex-col bg-[#fff] mt-5 rounded dark:bg-[#24272e] px-2">
 					<div class="py-6 px-4 flex justify-between items-center">
 						<div class="flex flex-col">
-							<h3 class="text-base">推介收益</h3>
-							<div class="text-[#999] text-xs mt-2">推介的用户注册购买产品后返佣金额</div>
+							<h3 class="text-base">{{ t('common.promotionEarnings') }}</h3>
+							<div class="text-[#999] text-xs mt-2">
+								{{ t('common.commissionAfterUserRegistration') }}
+							</div>
 						</div>
 						<NTag round :bordered="false" type="success" size="small">
-							百分比{{ salesBaseRatio }}%
+							{{ t('common.percentage') + ' ' + salesBaseRatio }}%
 						</NTag>
 					</div>
 					<div class="py-6 px-4 flex justify-between items-center">
 						<div class="flex flex-col">
-							<h3 class="text-base">申请成为高级代理</h3>
-							<div class="text-[#999] text-xs mt-2">联系站长申请高级代理可享超高返佣</div>
+							<h3 class="text-base">{{ t('common.applyForSeniorAgent') }}</h3>
+							<div class="text-[#999] text-xs mt-2">{{ t('common.contactAdminMessage') }}</div>
 						</div>
 						<NTag round :bordered="false" type="success" size="small">
-							百分比{{ salesSeniorRatio }}%
+							{{ t('common.percentage') + ' ' + salesSeniorRatio }}%
 						</NTag>
 					</div>
 					<div class="py-6 px-4 flex justify-between items-center">
 						<div class="flex flex-col">
-							<h3 class="text-base">加入我们成为合伙人</h3>
-							<div class="text-[#999] text-xs mt-2">加入我们成为合伙人共同运营社区、合作双赢！</div>
+							<h3 class="text-base">{{ t('common.becomePartner') }}</h3>
+							<div class="text-[#999] text-xs mt-2">{{ t('common.becomePartnerMessage') }}</div>
 						</div>
-						<NTag round :bordered="false" type="error" size="small"> 合作共赢，携手共进 </NTag>
+						<NTag round :bordered="false" type="error" size="small">
+							{{ t('common.winWinCooperation') }}
+						</NTag>
 					</div>
 				</div>
 			</div>
@@ -581,7 +591,7 @@ onMounted(() => {
 							class="border border-[ced4da] dark:border-[#3a3a40] text-sm py-1 rounded-l-md flex items-center"
 							:class="[isMobile ? 'px-1' : 'px-3']"
 						>
-							推荐链接：
+							{{ t('common.recommendationLink') }}：
 						</div>
 						<!-- <NInput value="https://www.asiayun.com/aff/KOSLCAQV" disabled :style="{ width: '500px' }" /> -->
 						<div
@@ -596,7 +606,7 @@ onMounted(() => {
 							class="cursor-pointer hover:text-[#5A91FC] transition-all border dark:border-[#ffffff17] flex items-center mr-[-1px] select-none"
 							@click="genMyInviteCode"
 						>
-							申请
+							{{ t('common.apply') }}
 						</div>
 						<div
 							v-if="inviteCode"
@@ -626,7 +636,7 @@ onMounted(() => {
 						type="line"
 						@update:value="handleUpdateValue"
 					>
-						<NTabPane name="rec" tab="推介记录">
+						<NTabPane name="rec" :tab="t('common.recommendationRecord')">
 							<div class="pt-5">
 								<NDataTable
 									:min-width="200"
@@ -641,7 +651,7 @@ onMounted(() => {
 								/>
 							</div>
 						</NTabPane>
-						<NTabPane name="drawMoney" tab="提现记录">
+						<NTabPane name="drawMoney" :tab="t('common.withdrawalRecord')">
 							<div class="pt-5">
 								<NDataTable
 									:loading="drawOrderLoading"
@@ -655,7 +665,7 @@ onMounted(() => {
 								/>
 							</div>
 						</NTabPane>
-						<NTabPane name="register" tab="注册用户">
+						<NTabPane name="register" :tab="t('common.registeredUser')">
 							<div class="pt-5">
 								<NDataTable
 									:loading="registerLoading"
@@ -688,7 +698,7 @@ onMounted(() => {
 						<NIcon size="22" color="#0e7a0d">
 							<ShareOutline />
 						</NIcon>
-						<span class="ml-[8px] mt-2">邀好友、赠套餐卡密、享充值返佣！</span>
+						<span class="ml-[8px] mt-2">{{ t('common.inviteFriendsPromotionMessage') }}</span>
 					</div>
 					<NIcon size="20" color="#0e7a0d" class="cursor-pointer">
 						<CloseOutline />
@@ -696,10 +706,10 @@ onMounted(() => {
 				</div>
 				<div class="w-full flex mb-5 px-6">
 					<NInputGroup>
-						<NInputGroupLabel size="small"> 邀请链接 </NInputGroupLabel>
+						<NInputGroupLabel size="small"> {{ t('common.invitationLink') }} </NInputGroupLabel>
 						<NInput size="small" :style="{ flex: 1 }" :value="inviteUrl" />
 						<NInputGroupLabel size="small" @click="copyUrl">
-							<div>复制</div>
+							<div>{{ t('common.copy') }}</div>
 						</NInputGroupLabel>
 					</NInputGroup>
 				</div>
@@ -708,7 +718,7 @@ onMounted(() => {
 					<QRCode :value="inviteUrl" :size="240" />
 				</div>
 				<div class="flex flex-col p-5 justify-center">
-					<span class="text-center"> 1. 邀请好友双方都可享受一定额度的永久次卡奖励 </span>
+					<span class="text-center"> 1. {{ t('common.inviteFriendsRewardMessage') }} </span>
 					<span class="text-center">
 						2. 邀请好友充值，您可获得充值金额的{{ salesBaseRatio || 10 }}%返佣
 					</span>

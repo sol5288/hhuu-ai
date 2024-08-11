@@ -44,11 +44,8 @@ const ms = useMessage();
 const email = computed(() => authStore.userInfo.email || '');
 const isBindWx = computed(() => authStore.userInfo.isBindWx);
 const avatar = ref(authStore.userInfo.avatar ?? defaultAvatar);
-const username = ref(authStore.userInfo.username ?? '未登录');
-const sign = ref(
-	authStore.userInfo.sign ??
-		'我是一台基于深度学习和自然语言处理技术的 AI 机器人，旨在为用户提供高效、精准、个性化的智能服务。'
-);
+const username = ref(authStore.userInfo.username ?? t('common.notLoggedIn'));
+const sign = ref(authStore.userInfo.sign ?? t('common.aiIntroduction'));
 
 const btnDisabled = ref(false);
 
@@ -62,7 +59,7 @@ async function getVisitorCount() {
 async function syncVisitorData() {
 	const res: ResData = await fetchSyncVisitorDataAPI();
 	if (res.success) {
-		ms.success('已同步数据完成');
+		ms.success(t('common.dataSyncCompleted'));
 	}
 	getVisitorCount();
 }
@@ -105,7 +102,7 @@ setTimeout(() => {
 			<div class="flex flex-col justify-center items-center">
 				<div class="text-2xl text-primary self-start mb-14 flex justify-between w-full">
 					<span>Profile</span>
-					<NButton tertiary type="error" @click="logOut"> 退出登录 </NButton>
+					<NButton tertiary type="error" @click="logOut"> {{ t('common.logout') }} </NButton>
 				</div>
 				<NAvatar :size="148" :src="avatar" :fallback-src="defaultAvatar" />
 				<b class="mt-3 text-lg text-[#555]">{{ username }}</b>
@@ -115,48 +112,70 @@ setTimeout(() => {
 				</div>
 
 				<div class="self-start mt-16">
-					<div class="text-xl text-primary">我在本站的使用记录</div>
+					<div class="text-xl text-primary">{{ t('common.mySiteUsageRecord') }}</div>
 					<div class="flex items-center space-x-4 pl-3 mt-3">
-						<span class="flex-shrink-0 w-[100px] text-keft text-primary">基础模型积分:</span>
-						<div class="w-[230px]">{{ userBalance.useModel3Count || '0' }} 积分</div>
+						<span class="flex-shrink-0 w-[100px] text-keft text-primary"
+							>{{ t('common.basicModelPoints') }}:</span
+						>
+						<div class="w-[230px]">
+							{{ userBalance.useModel3Count || '0' }} {{ t('common.points') }}
+						</div>
 					</div>
 					<div class="flex items-center space-x-4 pl-3 mt-3">
-						<span class="flex-shrink-0 w-[100px] text-keft text-primary">高级模型积分:</span>
-						<div class="w-[230px]">{{ userBalance.useModel4Count || '0' }} 积分</div>
+						<span class="flex-shrink-0 w-[100px] text-keft text-primary"
+							>{{ t('common.advancedModelPoints') }}:</span
+						>
+						<div class="w-[230px]">
+							{{ userBalance.useModel4Count || '0' }} {{ t('common.points') }}
+						</div>
 					</div>
 					<div class="flex items-center space-x-4 pl-3 mt-3">
-						<span class="flex-shrink-0 w-[100px] text-keft text-primary">基础模型使用:</span>
+						<span class="flex-shrink-0 w-[100px] text-keft text-primary"
+							>{{ t('common.basicModelUsage') }}:</span
+						>
 						<div class="w-[230px]">{{ userBalance.useModel3Token || '0' }} Token</div>
 					</div>
 					<div class="flex items-center space-x-4 pl-3 mt-3">
-						<span class="flex-shrink-0 w-[100px] text-keft text-primary">高级模型使用:</span>
+						<span class="flex-shrink-0 w-[100px] text-keft text-primary"
+							>{{ t('common.advancedModelUsage') }}:</span
+						>
 						<div class="w-[230px]">{{ userBalance.useModel4Token || '0' }} Token</div>
 					</div>
 					<div class="flex items-center space-x-4 pl-3 mt-3">
-						<span class="flex-shrink-0 w-[100px] text-keft text-primary">绘画使用积分:</span>
-						<div class="w-[230px]">{{ userBalance.useDrawMjToken || '0' }} 积分</div>
+						<span class="flex-shrink-0 w-[100px] text-keft text-primary"
+							>{{ t('common.drawingUsedPoints') }}:</span
+						>
+						<div class="w-[230px]">
+							{{ userBalance.useDrawMjToken || '0' }} {{ t('common.points') }}
+						</div>
 					</div>
 
 					<div v-if="isUseWxLogin" class="flex items-center space-x-4 pl-3 mt-3">
-						<span class="flex-shrink-0 w-[100px] text-keft text-primary">绑定微信:</span>
+						<span class="flex-shrink-0 w-[100px] text-keft text-primary"
+							>{{ t('common.bindWechat') }}:</span
+						>
 						<div class="w-[230px]">
 							<NButton v-if="!isBindWx" text @click="useGlobalStore.updateBindwxDialog(true)">
-								点击绑定微信
+								{{ t('common.clickToBindWechat') }}
 							</NButton>
-							<span v-else>已绑定微信</span>
+							<span v-else>{{ t('common.wechatBound') }}</span>
 						</div>
 					</div>
 
 					<div v-if="visitorCount > 0" class="flex items-center space-x-4 pl-3 mt-3">
-						<span class="flex-shrink-0 w-[100px] text-keft text-primary">绑定微信:</span>
+						<span class="flex-shrink-0 w-[100px] text-keft text-primary"
+							>{{ t('common.bindWechat') }}:</span
+						>
 						<div class="w-[230px]">
-							<NButton text @click="syncVisitorData"> 点击同步访客数据 </NButton>
+							<NButton text @click="syncVisitorData">
+								{{ t('common.clickToSyncVisitorData') }}
+							</NButton>
 						</div>
 					</div>
 				</div>
 			</div>
 			<div v-if="userBalance.expirationTime" class="flex text-[red] pt-8 text-base font-bold">
-				<span>会员过期时间：</span>
+				<span>{{ t('common.membershipExpirationTime') }}：</span>
 				<span>{{ userBalance.expirationTime }}</span>
 			</div>
 		</NLayoutSider>
@@ -166,20 +185,24 @@ setTimeout(() => {
 			:class="[isMobile ? 'w-full' : 'flex-1']"
 			:style="{ padding: isMobile ? '10px' : '0 28px 0 28px' }"
 		>
-			<TitleBar title="个人中心" des="编辑个人信息、查看更多详情" :padding="isMobile ? 1 : 1" />
+			<TitleBar
+				:title="t('common.personalCenter')"
+				:des="t('common.editPersonalInfoViewDetails')"
+				:padding="isMobile ? 1 : 1"
+			/>
 			<NTabs type="line" animated class="mt-5 flex-1">
-				<NTabPane v-if="isSmallLg" name="detail" tab="我的详情">
+				<NTabPane v-if="isSmallLg" name="detail" :tab="t('common.myDetails')">
 					<Detail />
 				</NTabPane>
-				<NTabPane name="account" tab="我的钱包">
+				<NTabPane name="account" :tab="t('common.myWallet')">
 					<Wallet />
 				</NTabPane>
-				<NTabPane name="baseInfo" tab="基础信息">
+				<NTabPane name="baseInfo" :tab="t('common.basicInfo')">
 					<NCard>
 						<template #header>
 							<NSkeleton v-if="loading || !isLogin" size="medium" width="20%" />
 							<template v-else>
-								<div>用户基础设置</div>
+								<div>{{ t('common.userBasicSettings') }}</div>
 							</template>
 						</template>
 						<NSpace v-if="loading || !isLogin" vertical>
@@ -193,7 +216,7 @@ setTimeout(() => {
 									<div class="flex items-center space-x-4">
 										<span class="flex-shrink-0 w-[60px]">{{ $t('common.avatarLink') }}</span>
 										<div class="flex-1">
-											<NInput v-model:value="avatar" placeholder="请填写头像地址" />
+											<NInput v-model:value="avatar" :placeholder="t('common.fillAvatarUrl')" />
 										</div>
 										<NButton size="tiny" text type="primary" @click="updateUserInfo({ avatar })">
 											{{ $t('common.update') }}
@@ -204,7 +227,7 @@ setTimeout(() => {
 										<div class="flex-1">
 											<NInput
 												v-model:value="username"
-												placeholder="请编辑您的用户名"
+												:placeholder="t('common.editYourUsername')"
 												maxlength="12"
 												show-count
 												clearable
@@ -219,7 +242,7 @@ setTimeout(() => {
 										<div class="flex-1">
 											<NInput
 												v-model:value="sign"
-												placeholder="请编辑您的签名"
+												:placeholder="t('common.editYourSignature')"
 												maxlength="128"
 												show-count
 												clearable
@@ -236,10 +259,10 @@ setTimeout(() => {
 					</NCard>
 				</NTabPane>
 
-				<NTabPane name="password" tab="密码管理">
+				<NTabPane name="password" :tab="t('common.passwordManagement')">
 					<Password />
 				</NTabPane>
-				<NTabPane name="invite" tab="邀请得福利">
+				<NTabPane name="invite" :tab="t('common.inviteBenefits')">
 					<Invite />
 				</NTabPane>
 			</NTabs>

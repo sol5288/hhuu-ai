@@ -8,6 +8,8 @@ import { fetchOrderBuyAPI } from '@/api/order';
 import { SvgIcon } from '@/components/common';
 import type { ResData } from '@/api/types';
 import { useAuthStore, useGlobalStoreWithOut } from '@/store';
+import { t } from '@/locales';
+
 const authStore = useAuthStore();
 const { isMobile } = useBasicLayout();
 const message = useMessage();
@@ -76,8 +78,8 @@ async function queryPkg() {
 
 const tips = computed(() => {
 	return isMobile.value
-		? '尽情探索，欢迎光临我们的在线商店！'
-		: '尽情探索，欢迎光临我们的在线商店、感谢您选择我们、让我们一同开启愉悦的购物之旅！';
+		? t('common.welcomeToOnlineStore')
+		: t('common.welcomeToOnlineStoreExtended');
 });
 
 function updateTabs(val: number) {
@@ -86,7 +88,7 @@ function updateTabs(val: number) {
 }
 
 async function handlePayPkg(pkg: Pkg) {
-	if (!payChannel.value.length) message.warning('管理员还未开启支付！');
+	if (!payChannel.value.length) message.warning(t('common.paymentNotEnabled'));
 	handleBuyGoods(pkg);
 }
 
@@ -140,13 +142,13 @@ function onBridgeReady(data: {
 		},
 		(res: any) => {
 			if (res.err_msg === 'get_brand_wcpay_request:ok') {
-				message.success('购买成功、祝您使用愉快!');
+				message.success(t('common.purchaseSuccessMessage'));
 				setTimeout(() => {
 					authStore.getUserInfo();
 					useGlobalStore.updateGoodsDialog(false);
 				}, 500);
 			} else {
-				message.warning('您还没有支付成功哟！');
+				message.warning(t('common.paymentNotSuccessful'));
 			}
 		}
 	);
@@ -159,15 +161,19 @@ onMounted(() => {
 
 <template>
 	<div class="main min-h-screen bg-center dark:bg-[#2F2E34] h-full flex flex-col overflow-hidden">
-		<TitleBar title="会员商场" :des="tips" :class="[isMobile ? 'px-3' : 'px-24']" />
+		<TitleBar
+			:title="t('common.memberMarket')"
+			:des="tips"
+			:class="[isMobile ? 'px-3' : 'px-24']"
+		/>
 		<div class="flex justify-center items-center" :style="{ height: isMobile ? '60px' : '180px' }">
 			<NTabs
 				type="segment"
 				:style="{ width: isMobile ? '90%' : '400px' }"
 				@update:value="updateTabs"
 			>
-				<NTabPane :name="1" tab="会员限时套餐" />
-				<NTabPane :name="-1" tab="叠加永久次卡" />
+				<NTabPane :name="1" :tab="t('common.memberLimitedTimePackage')" />
+				<NTabPane :name="-1" :tab="t('common.stackPermanentCard')" />
 			</NTabs>
 		</div>
 		<div class="flex-1 pb-10 overflow-y-auto" :class="[isMobile ? 'px-3' : 'px-28']">
@@ -202,24 +208,24 @@ onMounted(() => {
 					</div>
 					<div class="flex p-4 border-b dark:border-[#ffffff17] flex-col space-y-4">
 						<div class="flex justify-between">
-							<span>基础模型额度</span>
-							<span>{{ item.model3Count || 0 }} 积分</span>
+							<span>{{ t('common.basicModelQuota') }}</span>
+							<span>{{ item.model3Count || 0 }} {{ t('common.points') }}</span>
 						</div>
 						<div class="flex justify-between">
-							<span>高级模型额度</span>
-							<span>{{ item.model4Count || 0 }} 积分</span>
+							<span>{{ t('common.advancedModelQuota') }}</span>
+							<span>{{ item.model4Count || 0 }} {{ t('common.points') }}</span>
 						</div>
 						<div class="flex justify-between">
-							<span>MJ绘画额度</span>
-							<span>{{ item.drawMjCount || 0 }} 积分</span>
+							<span>MJ{{ t('common.drawingQuota') }}</span>
+							<span>{{ item.drawMjCount || 0 }} {{ t('common.points') }}</span>
 						</div>
 					</div>
 					<div class="px-4 flex-1 flex items-center justify-between">
 						<div class="flex items-end">
-							<span>套餐有效期 </span>
-							<span class="ml-2 text-[#3076fd] text-lg">{{
-								item.days > 0 ? `${item.days} 天` : `永久`
-							}}</span>
+							<span>{{ t('common.packageValidity') }} </span>
+							<span class="ml-2 text-[#3076fd] text-lg">
+								{{ item.days > 0 ? item.days + t('common.day') : t('common.permanent') }}</span
+							>
 						</div>
 						<div class="line" />
 						<div>

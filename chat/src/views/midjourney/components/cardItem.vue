@@ -24,6 +24,7 @@ import { useAppStore, useAuthStore } from '@/store';
 import { fetchDrawTaskAPI, fetchTranslateAPI } from '@/api/mjDraw';
 import { SvgIcon } from '@/components/common';
 import Loading from '@/components/base/Loading.vue';
+import { t } from '@/locales';
 
 interface Emits {
 	(e: 'usePrompt', val: any): void;
@@ -55,11 +56,11 @@ const statusType: any = computed(() => {
 });
 const statusMsg = computed(() => {
 	const { status } = props.drawItemInfo;
-	if (status === 1) return '等待中';
-	if (status === 2) return '绘制中';
-	if (status === 3) return '成功';
-	if (status === 4) return '失败';
-	if (status === 5) return '超时';
+	if (status === 1) return t('common.waiting');
+	if (status === 2) return t('common.drawing');
+	if (status === 3) return t('common.success');
+	if (status === 4) return t('common.failed');
+	if (status === 5) return t('common.timeout');
 });
 
 function usePrompt() {
@@ -69,10 +70,10 @@ function usePrompt() {
 /* 下载图片 */
 async function handleDownloadImg(item: any) {
 	const d = dialog.info({
-		title: '下载图片',
-		content: '是否确认下载当前图片',
-		positiveText: '下载',
-		negativeText: '取消',
+		title: t('common.downloadImage'),
+		content: t('common.confirmDownloadCurrentImage'),
+		positiveText: t('common.download'),
+		negativeText: t('common.cancel'),
 		onPositiveClick: async () => {
 			d.loading = true;
 			return new Promise(async (resolve) => {
@@ -96,15 +97,15 @@ async function handleDownloadImg(item: any) {
 /* 删除图片 */
 async function handleDeleteDraw(item: any) {
 	dialog.warning({
-		title: '删除记录',
-		content: '是否确认删除当前绘制记录？',
-		positiveText: '删除',
-		negativeText: '取消',
+		title: t('common.deleteRecord'),
+		content: t('common.confirmDeleteCurrentDrawingRecord'),
+		positiveText: t('common.delete'),
+		negativeText: t('common.cancel'),
 		onPositiveClick: async () => {
 			const { id } = item;
 			const res: ResData = await fetchDownloadImg({ id });
 			if (!res.success) return ms.error(res.message);
-			ms.success('删除绘制记录成功！');
+			ms.success(t('common.deleteDrawingRecordSuccess'));
 			emit('queryData');
 		},
 	});
@@ -114,7 +115,7 @@ async function handleDeleteDraw(item: any) {
 async function handleUpscale(item: any, orderId: number) {
 	const { drawId } = item;
 	await fetchDrawTaskAPI({ drawId: drawId, action: 'UPSCALE', orderId });
-	ms.success('提交放大绘制任务成功、请等待绘制结束！');
+	ms.success(t('common.submitEnlargementTaskSuccess'));
 	if (authStore.token) {
 		await refreshUserInfo();
 	}
@@ -125,7 +126,7 @@ async function handleUpscale(item: any, orderId: number) {
 async function handleReGenerate(item: any, orderId: number) {
 	const { drawId } = item;
 	await fetchDrawTaskAPI({ drawId: drawId, action: 'REGENERATE', orderId });
-	ms.success('提交重新生成绘制任务成功、请等待绘制结束！');
+	ms.success(t('common.submitRegenerationTaskSuccess'));
 	if (authStore.token) {
 		await refreshUserInfo();
 	}
@@ -136,7 +137,7 @@ async function handleReGenerate(item: any, orderId: number) {
 async function handleVariation(item: any, orderId: number) {
 	const { drawId } = item;
 	await fetchDrawTaskAPI({ drawId: drawId, action: 'VARIATION', orderId });
-	ms.success('提交图片变换绘制任务成功、请等待绘制结束！');
+	ms.success(t('common.submitImageTransformationTaskSuccess'));
 	if (authStore.token) {
 		await refreshUserInfo();
 	}
@@ -155,16 +156,16 @@ async function refreshUserInfo() {
 
 const calcTips = computed(() => {
 	const { progress, status } = props.drawItemInfo;
-	if (status === 1) return '正在排队中...';
-	if (status === 2 && !progress) return '正在绘制中...';
-	if (status === 2 && progress === 100) return '正在存储图片中...';
+	if (status === 1) return t('common.queueing');
+	if (status === 2 && !progress) return t('common.drawing2');
+	if (status === 2 && progress === 100) return t('common.storingImage');
 });
 
 /* 提交对单张图片调整任务 */
 async function handleVary(item: any, orderId: number) {
 	const { drawId } = item;
 	await fetchDrawTaskAPI({ drawId: drawId, action: 'VARIATION', orderId });
-	ms.success('提交图片调整绘制任务成功、请等待绘制结束！');
+	ms.success(t('common.drawingTaskSubmitted'));
 	if (authStore.token) {
 		await refreshUserInfo();
 	}
@@ -175,7 +176,7 @@ async function handleVary(item: any, orderId: number) {
 async function handleZoom(item: any, orderId: number) {
 	const { drawId } = item;
 	await fetchDrawTaskAPI({ drawId: drawId, action: 'UPSCALE', orderId });
-	ms.success('提交图片调整绘制任务成功、请等待绘制结束！');
+	ms.success(t('common.drawingTaskSubmitted'));
 	if (authStore.token) {
 		await refreshUserInfo();
 	}
@@ -203,7 +204,7 @@ function handleRegion(file) {}
 							<template #icon>
 								<SvgIcon icon="ri:brush-line" class="text-base" />
 							</template>
-							使用
+							{{ t('common.use') }}
 						</NButton>
 					</template>
 					<div style="width: 240px">
@@ -215,13 +216,13 @@ function handleRegion(file) {}
 					<template #icon>
 						<SvgIcon icon="mingcute:file-download-line" class="text-base" />
 					</template>
-					下载
+					{{ t('common.download') }}
 				</NButton>
 				<NButton size="tiny" ghost @click="handleDeleteDraw(drawItemInfo)">
 					<template #icon>
 						<SvgIcon icon="ri:delete-bin-line" class="text-base" />
 					</template>
-					删除
+					{{ t('common.delete') }}
 				</NButton>
 			</NSpace>
 		</div>
@@ -243,8 +244,8 @@ function handleRegion(file) {}
 				class="flex flex-col h-full w-full items-center justify-center overflow-hidden rounded-md"
 			>
 				<img class="w-[75px]" :src="failImg" />
-				<span class="mt-3 text-base">绘制失败</span>
-				<span class="mt-1">已退还余额至您的账户！</span>
+				<span class="mt-3 text-base">{{ t('common.drawingFailed') }}</span>
+				<span class="mt-1">{{ t('common.balanceRefunded') }}</span>
 			</div>
 			<div v-if="[1, 2].includes(drawItemInfo.status)" class="my-4 h-[280px] relative">
 				<Loading
@@ -268,14 +269,14 @@ function handleRegion(file) {}
 				class="w-full"
 			>
 				<div class="mb-2 flex items-center justify-between">
-					<span>放大：</span>
+					<span>{{ t('common.enlarge') }}：</span>
 					<span class="text-base text-neutral-400">
 						<NTooltip placement="top" trigger="hover">
 							<template #trigger>
 								<SvgIcon icon="ri:error-warning-line" class="text-base" />
 							</template>
 							<div style="width: 240px">
-								<p>参数释义：放大某张图片如 U1 放大第一张图片，以此类推</p>
+								<p>{{ t('common.parameterDescriptionEnlarge') }}</p>
 							</div>
 						</NTooltip>
 					</span>
@@ -291,7 +292,7 @@ function handleRegion(file) {}
 										<SvgIcon icon="solar:refresh-outline" class="text-base" />
 									</NButton>
 								</template>
-								<p>重新生成一次</p>
+								<p>{{ t('common.regenerateOnce') }}</p>
 							</NTooltip>
 						</div>
 					</div>
@@ -311,14 +312,14 @@ function handleRegion(file) {}
 				class="w-full"
 			>
 				<div class="mb-2 flex items-center justify-between">
-					<span>变换：</span>
+					<span>{{ t('common.variation') }}：</span>
 					<span class="text-base text-neutral-400">
 						<NTooltip placement="top" trigger="hover">
 							<template #trigger>
 								<SvgIcon icon="ri:error-warning-line" class="text-base" />
 							</template>
 							<div style="width: 240px">
-								<p>参数释义：以某张图片为基准重新生成 如 V1 则变换第一张图片，以此类推</p>
+								<p>{{ t('common.parameterDescriptionVariant') }}</p>
 							</div>
 						</NTooltip>
 					</span>
@@ -351,7 +352,9 @@ function handleRegion(file) {}
 				<!-- 已经生成成功的单张图 可以zoom和vary -->
 
 				<!-- 重新绘制套图【只在生成中显示 生成完毕即会进入group套图】 -->
-				<span v-if="drawItemInfo.orderId === 5"> 操作：正在对图片重新生成一次 </span>
+				<span v-if="drawItemInfo.orderId === 5">
+					{{ t('common.operationRegeneratingImage') }}
+				</span>
 			</div>
 
 			<!-- 新图绘制中 -->
@@ -363,7 +366,7 @@ function handleRegion(file) {}
 				"
 				class="w-full mb-2 flex items-center justify-between"
 			>
-				操作：正在火速绘制中...
+				{{ t('common.operationDrawingInProgress') }}
 			</div>
 
 			<!-- 绘制失败了 -->
@@ -371,7 +374,7 @@ function handleRegion(file) {}
 				v-if="!drawItemInfo.orderId && [4, 5, 6].includes(drawItemInfo.status)"
 				class="w-full mb-2 flex items-center justify-between"
 			>
-				执行： 换个提示词重新试试吧！
+				{{ t('common.tryDifferentPrompt') }}
 			</div>
 			<!-- 加载失败 -->
 			<div
@@ -389,14 +392,14 @@ function handleRegion(file) {}
 				"
 			>
 				<div class="mb-2 flex flex-1 items-center justify-between">
-					<span>缩放：</span>
+					<span>{{ t('common.zoom') }}：</span>
 					<span class="text-base text-neutral-400">
 						<NTooltip placement="top" trigger="hover">
 							<template #trigger>
 								<SvgIcon icon="ri:error-warning-line" class="text-base" />
 							</template>
 							<div style="width: 270px">
-								<p>参数释义：Zoom 对当前图片进行无限缩放</p>
+								<p>{{ t('common.parameterDescriptionZoom') }}</p>
 							</div>
 						</NTooltip>
 					</span>
@@ -412,7 +415,7 @@ function handleRegion(file) {}
 											U(Subtle)
 										</NButton>
 									</template>
-									<p>放大</p>
+									<p>{{ t('common.enlarge') }}</p>
 								</NTooltip>
 
 								<NTooltip placement="top" trigger="hover">
@@ -424,7 +427,7 @@ function handleRegion(file) {}
 											U(Creative)
 										</NButton>
 									</template>
-									<p>放大</p>
+									<p>{{ t('common.enlarge') }}</p>
 								</NTooltip>
 							</NSpace>
 						</div>
@@ -439,14 +442,14 @@ function handleRegion(file) {}
 				class="flex w-full"
 			>
 				<div class="mb-2 flex flex-1 items-center justify-between">
-					<span>调整：</span>
+					<span>{{ t('common.adjust') }}：</span>
 					<span class="text-base text-neutral-400">
 						<NTooltip placement="top" trigger="hover">
 							<template #trigger>
 								<SvgIcon icon="ri:error-warning-line" class="text-base" />
 							</template>
 							<div style="width: 275px">
-								<p>参数释义：Vary 以当前图片为基础调整图片</p>
+								<p>{{ t('common.parameterDescriptionVary') }}</p>
 							</div>
 						</NTooltip>
 					</span>
@@ -462,7 +465,7 @@ function handleRegion(file) {}
 											V(Strong)
 										</NButton>
 									</template>
-									<p>以当前图片为基础大幅增强</p>
+									<p>{{ t('common.enhanceCurrentImage') }}</p>
 								</NTooltip>
 
 								<NTooltip placement="top" trigger="hover">
@@ -474,7 +477,7 @@ function handleRegion(file) {}
 											V(Subtle)
 										</NButton>
 									</template>
-									<p>以当前图片为基础细微调整</p>
+									<p>{{ t('common.adjustCurrentImage') }}</p>
 								</NTooltip>
 							</NSpace>
 						</div>

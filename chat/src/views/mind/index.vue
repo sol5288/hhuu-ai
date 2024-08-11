@@ -11,6 +11,7 @@ import { SvgIcon } from '@/components/common';
 import { useAuthStore, useGlobalStoreWithOut } from '@/store';
 
 import { fetchGetchatMindApi } from '@/api/index';
+import { t } from '@/locales';
 
 const authStore = useAuthStore();
 const useGlobalStore = useGlobalStoreWithOut();
@@ -153,14 +154,14 @@ async function chatmind() {
 		await fetchChatAPIOnce();
 	} catch (error: any) {
 		loading.value = false;
-		const { code = 500, message = '好像出错了，请稍后再试！' } = error;
+		const { code = 500, message = t('common.errorTryAgainLater') } = error;
 		if (code === 429 && message.includes('balance has been exhausted'))
-			return ms.error('当前系统Key余额耗尽、请联系管理员补充！');
+			return ms.error(t('common.systemKeyBalanceExhausted'));
 
 		if (code === 500) {
 			let errorMessage = error?.message ?? '好像出错了，请稍后再试！';
 			if (errorMessage === 'Request failed with status code 401')
-				errorMessage = '非法操作、请先登录后再进行问答使用！';
+				errorMessage = t('common.illegalOperation');
 			ms.error(errorMessage);
 			return;
 		}
@@ -169,7 +170,7 @@ async function chatmind() {
 			useGlobalStore.updateGoodsDialog(true);
 			return;
 		}
-		ms.error('出了点小错误、请稍后试试吧！');
+		ms.error(t('common.smallErrorTryLater'));
 	} finally {
 		loading.value = false;
 	}
@@ -209,7 +210,7 @@ onUpdated(update);
 				<!-- <h2 class="text-2xl font-bold mb-5">
           思维导图
         </h2> -->
-				<h4 class="mb-2">您的需求？</h4>
+				<h4 class="mb-2">{{ t('common.yourRequirements') }}</h4>
 				<NInput
 					ref="inputRef"
 					v-model:value="prompt"
@@ -218,7 +219,7 @@ onUpdated(update);
 					:autosize="{
 						minRows: 3,
 					}"
-					placeholder="请输入您想要生成内容的简单描述、AI将为您输出一份完整的markdown内容及其思维导图!"
+					:placeholder="t('common.enterDescriptionForAIContent')"
 				/>
 				<div class="flex my-4">
 					<NButton
@@ -228,12 +229,12 @@ onUpdated(update);
 						:loading="loading"
 						@click="chatmind"
 					>
-						智能生成生成思维导图
+						{{ t('common.generateMindMap') }}
 					</NButton>
 				</div>
 				<div class="flex justify-between mb-2">
-					<h4 class="font-bold">内容需求</h4>
-					<NButton text @click="handleUseDemo"> 试试示例 </NButton>
+					<h4 class="font-bold">{{ t('common.contentRequirements') }}</h4>
+					<NButton text @click="handleUseDemo"> {{ t('common.tryExample') }} </NButton>
 				</div>
 				<NInput
 					v-model:value="value"
@@ -243,26 +244,26 @@ onUpdated(update);
 						minRows: 8,
 						maxRows: 24,
 					}"
-					placeholder="请用markdown语法输入您想要生成思维导图的内容或在上方使用描述让AI帮您完善！"
+					:placeholder="t('common.enterMindMapContentInMarkdown')"
 				/>
 			</div>
 			<div
 				class="py-3 bottom-0 border-t-2 border-[#00000014] w-full flex flex-col justify-center items-center"
 			>
-				<div class="items-start mb-2">每次使用消耗基础积分： 1</div>
+				<div class="items-start mb-2">{{ t('common.basicPointsConsumption') }}： 1</div>
 				<div>
 					<NButtonGroup size="small">
 						<NButton type="primary" @click="exportHTML">
 							<SvgIcon icon="ri:error-warning-line" class="text-base" />
-							导出HTML
+							{{ t('common.export') }}HTML
 						</NButton>
 						<NButton type="primary" @click="exportPNG">
 							<SvgIcon icon="ri:error-warning-line" class="text-base" />
-							导出PNG
+							{{ t('common.export') }}PNG
 						</NButton>
 						<NButton type="warning" @click="exportSVG">
 							<SvgIcon icon="ri:error-warning-line" class="text-base" />
-							导出SVG
+							{{ t('common.export') }}SVG
 						</NButton>
 					</NButtonGroup>
 				</div>
@@ -270,7 +271,7 @@ onUpdated(update);
 		</div>
 		<div class="h-full flex-1 overflow-y-auto overflow-hidden min-h-[80vh] flex flex-col">
 			<header class="flex items-center p-5">
-				<h2 class="font-bold text-2xl">思维导图</h2>
+				<h2 class="font-bold text-2xl">{{ t('common.mindMap') }}</h2>
 			</header>
 			<div class="flex-1 w-full p-4">
 				<svg ref="svgRef" class="box-border w-full h-full border rounded-md" />

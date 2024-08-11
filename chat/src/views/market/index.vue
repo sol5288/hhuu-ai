@@ -5,6 +5,7 @@ import type { ResData } from '@/api/types';
 import { NSlider, NInput, NIcon } from 'naive-ui';
 import GridManager2 from '@/components/common/GridManager2/index.vue';
 import { FlashOutline } from '@vicons/ionicons5';
+import { t } from '@/locales';
 
 const imageList = ref<any>([]);
 const wapperRef = ref<HTMLDivElement | null>(null);
@@ -51,16 +52,16 @@ function loadMore() {
 <template>
 	<div class="bg-[#fff] h-[100vh] overflow-hidden p-4 pr-0 dark:bg-[#18181c] flex flex-col">
 		<div class="p-4 flex pr-6 justify-between items-center">
-			<div class="font-bold text-xl">AI绘画广场</div>
+			<div class="font-bold text-xl">{{ t('common.drawingSquare') }}</div>
 			<div class="w-[200px] sm:w-[300px] flex justify-between">
-				<span class="hidden sm:block">尺寸调整</span>
+				<span class="hidden sm:block">{{ t('common.sizeAdjustment') }}</span>
 				<div class="flex-1 ml-5">
 					<n-slider v-model:value="scaleWidth" :step="10" />
 				</div>
 			</div>
 		</div>
 		<div class="px-4 mb-1 pr-5">
-			<n-input v-model:value="keyword" placeholder="prompt关键词搜索">
+			<n-input v-model:value="keyword" :placeholder="t('common.keywordSearch')">
 				<template #prefix>
 					<n-icon :component="FlashOutline" />
 				</template>

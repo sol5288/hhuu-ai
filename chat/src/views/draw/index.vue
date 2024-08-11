@@ -306,7 +306,7 @@ onMounted(() => {
 							:scaleWidth="50"
 						/>
 					</div>
-					<NEmpty v-else size="huge" class="mt-20" :description="t('common.noData')哟~" />
+					<NEmpty v-else size="huge" class="mt-20" :description="t('common.noData')" />
 				</NTabPane>
 				<NTabPane name="mine" :tab="t('common.myGeneration')">
 					<div v-if="mineDrawList.length" class="min-h-screen">
@@ -320,7 +320,7 @@ onMounted(() => {
 							:scaleWidth="50"
 						/>
 					</div>
-					<NEmpty v-else size="huge" class="mt-20" :description="t('common.noData')哟~" />
+					<NEmpty v-else size="huge" class="mt-20" :description="t('common.noData')" />
 				</NTabPane>
 			</NTabs>
 		</div>

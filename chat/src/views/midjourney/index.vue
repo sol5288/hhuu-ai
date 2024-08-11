@@ -30,6 +30,7 @@ import { fetchGetMjPromptAssociateApi, fetchGetMjPromptFanyiApi } from '@/api/in
 import Loading from '@/components/base/Loading.vue';
 import { useAppStore, useAuthStore } from '@/store';
 import marketImg from '@/assets/market.png';
+import { t } from '@/locales';
 
 interface PromptItem {
 	status: boolean;
@@ -99,17 +100,17 @@ const sizeList = [
 ];
 
 const styleOptions = [
-	{ label: '默认风格', value: 0 },
-	{ label: '表现力风格', value: 'expressive' },
-	{ label: '可爱风格', value: 'cute' },
-	{ label: '景观风格', value: 'scenic' },
+	{ label: t('common.defaultStyle'), value: 0 },
+	{ label: t('common.expressiveStyle'), value: 'expressive' },
+	{ label: t('common.cuteStyle'), value: 'cute' },
+	{ label: t('common.landscapeStyle'), value: 'scenic' },
 ];
 
 const qualityOptions = [
-	{ label: '普通', value: '.25' },
-	{ label: '一般', value: '.5' },
-	{ label: '高清', value: '1' },
-	{ label: '超高清', value: '2' },
+	{ label: t('common.normal'), value: '.25' },
+	{ label: t('common.general'), value: '.5' },
+	{ label: t('common.highDefinition'), value: '1' },
+	{ label: t('common.ultraHighDefinition'), value: '2' },
 ];
 
 const versionOptions = computed(() => {
@@ -193,7 +194,7 @@ async function drawLike() {
 
 /* 翻译prompt */
 async function handleFanyiPrompt() {
-	if (!prompt.value) return ms.warning('请输入描述词！');
+	if (!prompt.value) return ms.warning(t('common.enterDescription'));
 	translateLoading.value = true;
 	try {
 		const Interface =
@@ -205,7 +206,7 @@ async function handleFanyiPrompt() {
 				? { text: prompt.value }
 				: { prompt: prompt.value };
 		const res: ResData = await Interface(params);
-		if (!res.success) return ms.error('翻译失败了！');
+		if (!res.success) return ms.error(t('common.translateFailed'));
 		prompt.value = res.data;
 		translateLoading.value = false;
 	} catch (error) {
@@ -213,9 +214,9 @@ async function handleFanyiPrompt() {
 	}
 }
 const translateNoLoading = ref(false);
-/* 翻译不需要的元素 */
+/* t('common.translateUnwantedElements') */
 async function handleFanyiNoPrompt() {
-	if (!noPrompt.value) return ms.warning('请输入描述词！');
+	if (!noPrompt.value) return ms.warning(t('common.enterDescription'));
 	translateNoLoading.value = true;
 	try {
 		const Interface =
@@ -227,7 +228,7 @@ async function handleFanyiNoPrompt() {
 				? { text: noPrompt.value }
 				: { prompt: noPrompt.value };
 		const res: ResData = await Interface(params);
-		if (!res.success) return ms.error('翻译失败了！');
+		if (!res.success) return ms.error(t('common.translateFailed'));
 		noPrompt.value = res.data;
 		translateNoLoading.value = false;
 	} catch (error) {
@@ -237,13 +238,13 @@ async function handleFanyiNoPrompt() {
 
 /* 联想描述词 */
 async function handleAssociatePrompt() {
-	if (!prompt.value) return ms.warning('请输入描述词！');
+	if (!prompt.value) return ms.warning(t('common.enterDescription'));
 	associateLoading.value = true;
 	try {
 		const res: ResData = await fetchGetMjPromptAssociateApi({
 			prompt: prompt.value,
 		});
-		if (!res.success) return ms.error('联想失败了');
+		if (!res.success) return ms.error(t('common.associationFailed'));
 		prompt.value = res.data;
 		associateLoading.value = false;
 	} catch (error) {
@@ -311,11 +312,10 @@ function checkHasChinese() {
 	const isHasNoPromptChinese = hasChinese(noPrompt.value);
 	if (isHasPromptChinese || isHasNoPromptChinese) {
 		const d = dialog.warning({
-			title: '温馨提示',
-			content:
-				'您的提示词中包含中文、绘画AI可能无法识别您的中文、我们建议您翻译后进行绘画得到更准确的结果、请问需要翻译后提交么？',
-			positiveText: '翻译提示词',
-			negativeText: '不需要',
+			title: t('common.kindReminder'),
+			content: t('common.translatePromptMessage'),
+			positiveText: t('common.translatePrompt'),
+			negativeText: t('common.notNeeded'),
 			onPositiveClick: async () => {
 				d.loading = true;
 				const task = [];
@@ -355,7 +355,7 @@ async function handleSubmit() {
 		carryOptions.value = 1;
 		nextOpenCarryOptions.value = false;
 	}
-	ms.success('提交绘制任务成功、请等待绘制结束！');
+	ms.success(t('common.submitDrawingTaskSuccess'));
 	if (authStore.token) await refreshUserInfo();
 
 	!isLoopIn && queryDrawResult();
@@ -444,14 +444,14 @@ onMounted(() => {
 				class="p-4 sm:pt-6 bg-[#f8f8f8] p-4 dark:bg-[#18181c] overflow-y-auto w-full sm:w-[20rem] shrink-0 border-r-2 border-[#ffffff17]"
 			>
 				<div class="mt-4 text-sm flex items-center">
-					<div class="text-sm mr-1">图片尺寸</div>
+					<div class="text-sm mr-1">{{ t('common.imageSize') }}</div>
 
 					<div data-tool-target="tooltip-default">
 						<NTooltip placement="right-end" trigger="hover">
 							<template #trigger>
 								<SvgIcon icon="ri:error-warning-line" class="text-base" />
 							</template>
-							参数释义：生成图片尺寸比例
+							{{ t('common.parameterDescriptionSize') }}
 						</NTooltip>
 					</div>
 				</div>
@@ -485,15 +485,15 @@ onMounted(() => {
 
 				<!-- 模型 -->
 				<div class="mt-4 text-sm flex items-center">
-					<div class="mr-1">模型选择</div>
+					<div class="mr-1">{{ t('common.modelSelection') }}</div>
 					<div data-tool-target="tooltip-default">
 						<NTooltip placement="right-end" trigger="hover">
 							<template #trigger>
 								<SvgIcon icon="ri:error-warning-line" class="text-base" />
 							</template>
 							<div style="width: 240px">
-								<p>MJ: 偏真实通用模型</p>
-								<p>NIJI: 偏动漫风格、适用于二次元模型</p>
+								<p>MJ: {{ t('common.realisticGeneralModel') }}</p>
+								<p>{{ t('common.nijiStyle') }}</p>
 							</div>
 						</NTooltip>
 					</div>
@@ -518,7 +518,7 @@ onMounted(() => {
 				</ul>
 				<div class="mt-4">
 					<div class="mt-2 flex justify-between items-center space-x-2 text-xs">
-						<span class="w-[65px] block text-sm">版本</span>
+						<span class="w-[65px] block text-sm">{{ t('common.version') }}</span>
 						<span class="flex-1">
 							<NSelect v-model:value="version" size="small" :options="versionOptions" />
 						</span>
@@ -527,7 +527,7 @@ onMounted(() => {
 						v-if="model === 'NIJI'"
 						class="mt-2 flex justify-between items-center space-x-2 text-xs"
 					>
-						<span class="w-[65px] block text-sm">风格</span>
+						<span class="w-[65px] block text-sm">{{ t('common.style') }}</span>
 						<span class="flex-1">
 							<NSelect v-model:value="style" size="small" :options="styleOptions" />
 						</span>
@@ -544,13 +544,13 @@ onMounted(() => {
             </NTooltip>
           </div> -->
 					<div class="mt-3 flex justify-between items-center space-x-2 text-xs">
-						<span class="w-[65px] block text-sm">品质</span>
+						<span class="w-[65px] block text-sm">{{ t('common.quality') }}</span>
 						<span class="flex-1">
 							<NSelect v-model:value="quality" size="small" :options="qualityOptions" />
 						</span>
 					</div>
 					<div class="mt-3 flex justify-between items-center space-x-2 text-xs">
-						<span class="w-[65px] block text-sm">混乱</span>
+						<span class="w-[65px] block text-sm">{{ t('common.chaos') }}</span>
 						<span class="flex-1">
 							<NInputNumber v-model:value="chaos" :min="0" :max="100" size="small" />
 						</span>
@@ -559,9 +559,9 @@ onMounted(() => {
 								<SvgIcon icon="ri:error-warning-line" class="text-base ml-2" />
 							</template>
 							<div style="width: 270px">
-								<p>取值范围：0-100、 --chaos 或 --c</p>
-								<p>混乱级别，可以理解为让AI天马行空的空间</p>
-								<p>值越小越可靠、默认0最为精准</p>
+								<p>{{ t('common.valueRange') }}</p>
+								<p>{{ t('common.chaosLevelDescription') }}</p>
+								<p>{{ t('common.lowerValueMoreReliable') }}</p>
 							</div>
 						</NTooltip>
 					</div>
@@ -570,7 +570,7 @@ onMounted(() => {
 						v-if="model === 'MJ'"
 						class="mt-3 flex justify-between items-center space-x-2 text-xs"
 					>
-						<span class="w-[65px] block text-sm">风格化</span>
+						<span class="w-[65px] block text-sm">{{ t('common.stylized') }}</span>
 						<span class="flex-1">
 							<NInputNumber v-model:value="stylize" :min="0" :max="1000" size="small" />
 						</span>
@@ -579,15 +579,15 @@ onMounted(() => {
 								<SvgIcon icon="ri:error-warning-line" class="text-base ml-2" />
 							</template>
 							<div style="width: 270px">
-								<p>风格化：--stylize 或 --s，范围 1-1000</p>
-								<p>参数释义：数值越高，画面表现也会更具丰富性和艺术性</p>
+								<p>{{ t('common.stylizeRange') }}</p>
+								<p>{{ t('common.parameterDescriptionRichness') }}</p>
 							</div>
 						</NTooltip>
 					</div>
 
 					<!-- <div class="block text-sm mt-2 flex items-center">设定</div> -->
 					<div class="mt-3 flex justify-between items-center space-x-2 text-xs">
-						<span class="w-[65px] block text-sm">携带参数</span>
+						<span class="w-[65px] block text-sm">{{ t('common.carryParameters') }}</span>
 						<span class="flex-1">
 							<NSwitch
 								v-model:value="carryOptions"
@@ -601,16 +601,16 @@ onMounted(() => {
 								<SvgIcon icon="ri:error-warning-line" class="text-base ml-2" />
 							</template>
 							<div style="width: 240px">
-								<p>是否自动携带参数</p>
-								<p>打开：携带上述我们配置的参数</p>
-								<p>关闭：使用指令中的我们自定义的参数</p>
+								<p>{{ t('common.autoCarryParameters') }}</p>
+								<p>{{ t('common.openWithParameters') }}</p>
+								<p>{{ t('common.closeCustomParameters') }}</p>
 							</div>
 						</NTooltip>
 					</div>
 				</div>
 
 				<div class="mt-5">
-					<div class="block text-base">以图生图</div>
+					<div class="block text-base">{{ t('common.imageToImage') }}</div>
 					<div class="ant-spin-nested-loading css-4fssqp mt-5">
 						<div class="ant-spin-container">
 							<div class="mt-2 flex justify-center items-center dark:bg-black p-5 rounded-md">
@@ -634,8 +634,10 @@ onMounted(() => {
 												class="mx-auto py-2 w-11"
 												src="data:image/png;base64,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"
 											/>
-											<p class="mt-3">点击或拖拽一个图片到这里作为输入</p>
-											<p class="text-center dark:text-[#ffffff73]">支持PNG和JPG格式</p>
+											<p class="mt-3">{{ t('common.dragImageHere') }}</p>
+											<p class="text-center dark:text-[#ffffff73]">
+												{{ t('common.supportPngAndJpg') }}
+											</p>
 										</div>
 									</div>
 								</label>
@@ -654,7 +656,9 @@ onMounted(() => {
 				<div class="mt-5">
 					<div class="block flex justify-between">
 						<span class="text-base py-1"
-							>钱包余额(<b class="text-[#3076fd]">{{ sumDrawMjCount || 0 }}</b> 积分)</span
+							>{{ t('common.walletBalance')
+							}}<b class="text-[#3076fd]">{{ sumDrawMjCount || 0 }}</b>
+							{{ t('common.points2') }}</span
 						>
 						<span class="flex items-center">
 							<NButton
@@ -663,28 +667,32 @@ onMounted(() => {
 								type="primary"
 								:loading="refreshLoading"
 								@click="refreshUserInfo"
-								>刷新</NButton
+								>{{ t('common.refresh') }}</NButton
 							>
 							<NTooltip placement="right-end" trigger="hover">
 								<template #trigger>
 									<SvgIcon icon="ri:error-warning-line" class="text-base ml-2" />
 								</template>
-								绘画账户信息
+								{{ t('common.drawingAccountInfo') }}
 							</NTooltip>
 						</span>
 					</div>
 					<div class="mt-3 space-y-1 items-center text-[#3076fd]">
 						<div class="flex justify-between">
-							<span class="w-[120px] block text-sm">绘画单次消耗：</span>
-							<span class="text-sm pr-2"> 4积分 </span>
+							<span class="w-[120px] block text-sm">{{ t('common.drawingConsumption') }}：</span>
+							<span class="text-sm pr-2"> 4{{ t('common.points') }} </span>
 						</div>
 						<div class="flex justify-between">
-							<span class="w-[120px] block text-sm">图生图单次消耗：</span>
-							<span class="text-sm pr-2"> 4积分 </span>
+							<span class="w-[120px] block text-sm"
+								>{{ t('common.imageGenerationConsumption') }}：</span
+							>
+							<span class="text-sm pr-2"> 4{{ t('common.points') }} </span>
 						</div>
 						<div class="flex justify-between">
-							<span class="w-[120px] block text-sm">放大单次消耗：</span>
-							<span class="text-sm pr-2"> 1积分 </span>
+							<span class="w-[120px] block text-sm"
+								>{{ t('common.enlargementConsumption') }}：</span
+							>
+							<span class="text-sm pr-2"> 1{{ t('common.points') }} </span>
 						</div>
 					</div>
 				</div>
@@ -698,13 +706,13 @@ onMounted(() => {
 						<!-- <p>图生图：生成类似风格或类型图像；图生文：上传一张图片生成对应的提示词；融图：融合图片风格</p> -->
 						<div>
 							<div class="flex justify-between items-end">
-								<b>你想生成什么图像?</b>
+								<b>{{ t('common.whatImageGenerate') }}</b>
 								<NSpace>
 									<NButton type="primary" :loading="translateLoading" @click="handleFanyiPrompt">
 										<template #icon>
 											<SvgIcon icon="ri:translate" class="text-base" />
 										</template>
-										翻译
+										{{ t('common.translate') }}
 									</NButton>
 									<NButton
 										type="primary"
@@ -717,7 +725,7 @@ onMounted(() => {
 												class="text-base"
 											/>
 										</template>
-										联想
+										{{ t('common.associate') }}
 									</NButton>
 								</NSpace>
 							</div>
@@ -730,11 +738,11 @@ onMounted(() => {
 										minRows: 4,
 										maxRows: 6,
 									}"
-									placeholder="例如: A cute little cat (Midjourney对中文描述词有一定限制、我们建议您点击右侧翻译将您的描述词转为英文再进行提交、联想则是会将您的描述词交由GPT让其发挥想象空间为您在此基础创建更为详细的描述！)"
+									:placeholder="t('common.promptExample')"
 								/>
 								<div v-if="Number(authStore.globalConfig.mjHideNotBlock) !== 1" class="mt-4">
 									<div class="mb-3 flex justify-between items-end">
-										<b>不需要的元素</b>
+										<b>{{ t('common.unwantedElements') }}</b>
 										<NButton
 											type="primary"
 											:loading="translateNoLoading"
@@ -743,14 +751,14 @@ onMounted(() => {
 											<template #icon>
 												<SvgIcon icon="ri:translate" class="text-base" />
 											</template>
-											翻译
+											{{ t('common.translate') }}
 										</NButton>
 									</div>
 									<NInput
 										v-model:value="noPrompt"
 										type="textarea"
 										:rows="1"
-										placeholder="例：生成房间图片、但是不要床、你可以填bed！"
+										:placeholder="t('common.excludeElementExample')"
 									/>
 								</div>
 							</div>
@@ -782,7 +790,7 @@ onMounted(() => {
 									<template #icon>
 										<SvgIcon icon="ri:ai-generate" class="text-base" />
 									</template>
-									提交绘画任务
+									{{ t('common.submitDrawingTask') }}
 								</NButton>
 							</div>
 						</div>
@@ -792,9 +800,9 @@ onMounted(() => {
 						<div v-if="Number(authStore.globalConfig.mjHideWorkIn) !== 1">
 							<div class="mt-6 mb-4 flex flex-col">
 								<span class="text-xl font-bold flex items-end">
-									<b>工作中的内容</b>
+									<b>{{ t('common.workContent') }}</b>
 									<span v-if="countQueue" class="text-xs font-family ml-2"
-										>当前系统进行中任务[{{ countQueue }}]</span
+										>{{ t('common.currentSystemTasks') }}[{{ countQueue }}]</span
 									>
 								</span>
 							</div>
@@ -804,9 +812,9 @@ onMounted(() => {
 							>
 								<img class="w-18" :src="marketImg" />
 								<span class="mt-4">
-									<NButton text size="small" @click="readMore"
-										>点击前往市场看看别人的作品吧！</NButton
-									>
+									<NButton text size="small" @click="readMore">{{
+										t('common.clickToViewOthersWorks')
+									}}</NButton>
 								</span>
 							</div>
 
@@ -818,7 +826,8 @@ onMounted(() => {
 									<Loading :text-color="loadingTextColor" />
 								</div>
 								<p class="mb-3">
-									当前{{
+									{{ t('common.current')
+									}}{{
 										curDrawTask.length
 									}}个任务正在进行中、请耐心等候绘制完成、您可以前往其他页面稍后回来查看结果！
 								</p>
@@ -828,7 +837,8 @@ onMounted(() => {
 						<div class="min-h-[500px] mt-5">
 							<div class="mt-6 mb-10 flex flex-col">
 								<span class="text-xl font-bold"
-									>我的绘图 <span class="text-base text-[gray]">[{{ drawList.length }}]</span></span
+									>{{ t('common.myDrawings') }}
+									<span class="text-base text-[gray]">[{{ drawList.length }}]</span></span
 								>
 								<span class="mt-2 text-xs font-bold text-[#444]"
 									>点击下面的编号按钮以获取升级版（U: 放大图片更细节）或变化版（V:

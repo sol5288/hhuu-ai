@@ -68,7 +68,7 @@ function handleSelect(key: 'copyText' | 'delete' | 'toggleRenderType') {
 	switch (key) {
 		case 'copyText':
 			copyText({ text: props.text ?? '' });
-			ms.success(t('common.copySuccess')！);
+			ms.success(t('common.copySuccess'));
 			return;
 		case 'toggleRenderType':
 			asRawText.value = !asRawText.value;

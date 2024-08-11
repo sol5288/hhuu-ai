@@ -19,6 +19,7 @@ import { fetchGetRechargeLogAPI } from '@/api/balance';
 import { fetchGetPackageAPI, fetchUseCramiAPI } from '@/api/crami';
 import { RechargeTypeMap } from '@/constants';
 import type { ResData } from '@/api/types';
+import { t } from '@/locales';
 const { isSmallMd, isMobile } = useBasicLayout();
 const authStore = useAuthStore();
 const ms = useMessage();
@@ -71,34 +72,34 @@ const paginationReg = reactive({
 const columns = computed(() => {
 	return [
 		{
-			title: '订单编号',
+			title: t('common.orderNumber'),
 			key: 'uid',
 		},
 		{
-			title: '充值类型',
+			title: t('common.rechargeType'),
 			key: 'rechargeType',
 			render(row: RechargeLog) {
 				return RechargeTypeMap[row.rechargeType];
 			},
 		},
 		{
-			title: '基础模型额度',
+			title: t('common.basicModelQuota'),
 			key: 'model3Count',
 		},
 		{
-			title: '高级模型额度',
+			title: t('common.advancedModelQuota'),
 			key: 'model4Count',
 		},
 		{
-			title: 'MJ绘画额度',
+			title: 'MJ' + t('common.drawingQuota'),
 			key: 'drawMjCount',
 		},
 		{
-			title: '有效期',
+			title: t('common.validityPeriod'),
 			key: 'expireDateCn',
 		},
 		{
-			title: '充值时间',
+			title: t('common.rechargeTime'),
 			key: 'createdAt',
 			render(row: RechargeLog) {
 				return row.createdAt;
@@ -119,11 +120,11 @@ async function queryRechargeLog() {
 }
 
 async function useCrami() {
-	if (!code.value) return ms.warning('请先填写卡密！');
+	if (!code.value) return ms.warning(t('common.pleaseEnterCardCode'));
 	try {
 		loading.value = true;
 		await fetchUseCramiAPI({ code: code.value });
-		ms.success('卡密兑换成功、祝您使用愉快！');
+		ms.success(t('common.cardKeyExchangeSuccess'));
 		queryRechargeLog();
 		authStore.getUserInfo();
 		loading.value = false;
@@ -156,43 +157,51 @@ onMounted(() => {
 	<div class="flex h-full flex-col">
 		<NCard>
 			<template #header>
-				<div>用户钱包余额</div>
+				<div>{{ t('common.userWalletBalance') }}</div>
 			</template>
 			<NGrid :x-gap="24" :y-gap="24" :cols="isSmallMd ? 1 : 2" class="mt-3">
 				<NGridItem class="border dark:border-[#ffffff17] rounded-sm p-3">
-					<div class="text-[#95aac9] mb-2 text-base">基础模型余额</div>
+					<div class="text-[#95aac9] mb-2 text-base">{{ t('common.basicModelBalance') }}</div>
 					<b class="text-3xl text-[#555]">{{ userBalance.sumModel3Count ?? 0 }}</b>
-					<span class="ml-4 text-[#989898]">不同模型消费不同积分！</span>
+					<span class="ml-4 text-[#989898]">{{ t('common.differentModelConsumption') }}</span>
 				</NGridItem>
 				<NGridItem class="border dark:border-[#ffffff17] rounded-sm p-3">
-					<div class="text-[#95aac9] mb-2 text-base">高级模型余额</div>
+					<div class="text-[#95aac9] mb-2 text-base">{{ t('common.advancedModelBalance') }}</div>
 					<b class="text-3xl text-[#555]">{{ userBalance.sumModel4Count ?? 0 }}</b>
-					<span class="ml-4 text-[#989898]">不同模型消费不同积分！</span> </NGridItem
+					<span class="ml-4 text-[#989898]">{{
+						t('common.differentModelConsumption')
+					}}</span> </NGridItem
 				><NGridItem class="border dark:border-[#ffffff17] rounded-sm p-3">
-					<div class="text-[#95aac9] mb-2 text-base">MJ绘画余额</div>
+					<div class="text-[#95aac9] mb-2 text-base">{{ t('common.drawingBalance') }}</div>
 					<b class="text-3xl text-[#555]">{{ userBalance.sumDrawMjCount ?? 0 }}</b>
-					<span class="ml-4 text-[#989898]">不同画图消耗不同积分！</span> </NGridItem
+					<span class="ml-4 text-[#989898]">{{
+						t('common.differentDrawingConsumption')
+					}}</span> </NGridItem
 				><NGridItem class="border dark:border-[#ffffff17] rounded-sm p-3">
-					<div class="text-[#95aac9] mb-2 text-base">卡密充值</div>
+					<div class="text-[#95aac9] mb-2 text-base">{{ t('common.cardKeyRecharge') }}</div>
 					<NSpace :wrap="false">
 						<NInput
 							v-model:value="code"
-							placeholder="请粘贴或填写您的卡密信息！"
+							:placeholder="t('common.pasteOrEnterCardInfo')"
 							class="mr-3"
 							maxlength="128"
 							show-count
 							clearable
 						/>
 
-						<NButton type="primary" :loading="loading" @click="useCrami"> 兑换 </NButton>
-						<NButton v-if="buyCramiAddress" type="success" @click="openDrawer"> 购买卡密 </NButton>
+						<NButton type="primary" :loading="loading" @click="useCrami">
+							{{ t('common.exchange') }}
+						</NButton>
+						<NButton v-if="buyCramiAddress" type="success" @click="openDrawer">
+							{{ t('common.buyCardKey') }}
+						</NButton>
 					</NSpace>
 				</NGridItem>
 			</NGrid>
 		</NCard>
 		<NCard class="mt-5 flex-1">
 			<template #header>
-				<div>充值记录</div>
+				<div>{{ t('common.rechargeRecord') }}</div>
 			</template>
 			<NDataTable
 				:columns="columns"
@@ -208,7 +217,7 @@ onMounted(() => {
 			:width="isSmallMd ? '100%' : 502"
 			:on-after-enter="openDrawerAfter"
 		>
-			<NDrawerContent title="套餐购买" closable>
+			<NDrawerContent :title="t('common.purchasePackage')" closable>
 				<NGrid :x-gap="15" :y-gap="15" :cols="isSmallMd ? 1 : 2" class="mt-3">
 					<NGridItem v-for="(item, index) in packageList" :key="index">
 						<NCard size="small" embedded>
@@ -223,21 +232,21 @@ onMounted(() => {
 							<div>
 								<p>{{ item.des }}</p>
 								<div class="flex justify-between items-end min-h-28">
-									<span class="text-sm font-bold mr-1">基础模型额度</span>
+									<span class="text-sm font-bold mr-1">{{ t('common.basicModelQuota') }}</span>
 									<span class="font-bold">{{ item.model3Count }}</span>
 								</div>
 								<div class="flex justify-between items-end min-h-28">
-									<span class="text-sm font-bold mr-1">高级模型额度</span>
+									<span class="text-sm font-bold mr-1">{{ t('common.advancedModelQuota') }}</span>
 									<span class="font-bold">{{ item.model4Count }}</span>
 								</div>
 								<div class="flex justify-between items-end min-h-28">
-									<span class="text-sm font-bold mr-1">MJ绘画额度</span>
+									<span class="text-sm font-bold mr-1">{{ t('common.drawingQuota') }}</span>
 									<span class="font-bold">{{ item.drawMjCount }}</span>
 								</div>
 								<div class="flex justify-between items-end mt-5">
 									<i class="text-xl text-[red] font-bold">{{ `￥${item.price}` }}</i>
 									<NButton type="primary" dashed size="small" @click="buyPackage">
-										购买套餐
+										{{ t('common.purchasePlan') }}
 									</NButton>
 								</div>
 							</div>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
+import { t } from '@/locales';
 
 const router = useRouter();
 function toHome() {
@@ -12,7 +13,7 @@ function toHome() {
 		<div class="store-container">
 			<div class="border-animation">
 				<svg id="store" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="130 0 1230 930">
-					<title xml:lang="en">欢迎来到本社区......</title>
+					<title xml:lang="en">{{ t('common.welcomeToCommunity') }}</title>
 					<defs>
 						<filter id="f1">
 							<feGaussianBlur in="SourceGraphic" stdDeviation="0,4" />
@@ -296,7 +297,7 @@ function toHome() {
 								font-size="34"
 								fill="#0170BB"
 							>
-								欢迎来访、祝你玩的开心......
+								{{ t('common.welcomeAndEnjoy') }}
 							</text>
 							<path
 								fill="#a5c7e4"

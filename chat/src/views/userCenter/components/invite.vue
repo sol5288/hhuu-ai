@@ -15,6 +15,8 @@ import { useBasicLayout } from '@/hooks/useBasicLayout';
 import { useAuthStore } from '@/store';
 import { fetchGenInviteCodeAPI, fetchGetInviteRecordAPI } from '@/api/user';
 import type { ResData } from '@/api/types';
+import { t } from '@/locales';
+
 const { toClipboard } = clipboard3();
 
 const authStore = useAuthStore();
@@ -51,7 +53,7 @@ const paginationReg = reactive({
 const columns = computed(() => {
 	return [
 		{
-			title: '头像',
+			title: t('common.avatar'),
 			key: 'avatar',
 			render(row: InviteRecord) {
 				return h(NAvatar, {
@@ -62,15 +64,15 @@ const columns = computed(() => {
 			},
 		},
 		{
-			title: '用户名称',
+			title: t('common.userName'),
 			key: 'username',
 		},
 		{
-			title: '用户邮箱',
+			title: t('common.userEmail'),
 			key: 'email',
 		},
 		{
-			title: '受邀人状态',
+			title: t('common.inviteeStatus'),
 			key: 'status',
 			render(row: InviteRecord) {
 				return h(
@@ -82,13 +84,13 @@ const columns = computed(() => {
 						quaternary: true,
 					},
 					{
-						default: () => (row.status === 1 ? '已认证' : '未激活'),
+						default: () => (row.status === 1 ? t('common.verified') : t('common.notActivated')),
 					}
 				);
 			},
 		},
 		{
-			title: '邀请时间',
+			title: t('common.invitationTime'),
 			key: 'createdAt',
 			render(row: InviteRecord) {
 				return h(
@@ -104,7 +106,7 @@ const columns = computed(() => {
 			},
 		},
 		{
-			title: '获得奖励状态',
+			title: t('common.rewardStatus'),
 			key: 'status',
 			render(row: InviteRecord) {
 				return h(
@@ -116,7 +118,10 @@ const columns = computed(() => {
 						quaternary: true,
 					},
 					{
-						default: () => (row.status === 1 ? '已领取邀请奖励' : '等待受邀人确认'),
+						default: () =>
+							row.status === 1
+								? t('common.invitationRewardClaimed')
+								: t('common.waitingForInviteeConfirmation'),
 					}
 				);
 			},
@@ -129,7 +134,7 @@ const data = ref([]);
 async function genMyInviteCode() {
 	const res: ResData = await fetchGenInviteCodeAPI();
 	if (!res.data) return ms.error(res.message);
-	ms.success('生成邀请链接成功');
+	ms.success(t('common.generateInvitationLinkSuccess'));
 	authStore.getUserInfo();
 }
 
@@ -148,13 +153,13 @@ async function queryInviteRecord() {
 }
 
 async function copyInviteCode() {
-	if (!inviteCode.value) return ms.error('请先生成您的专属邀请链接！');
+	if (!inviteCode.value) return ms.error(t('common.generateInvitationLinkFirst'));
 	const path = `${window.location.href}?inVitecode=${inviteCode.value}`;
 	try {
 		await toClipboard(path);
-		ms.success('复制专属邀请链接成功！');
+		ms.success(t('common.copyExclusiveInvitationLinkSuccess'));
 	} catch (error) {
-		ms.error('当前设置不支持自动复制、手动复制吧！');
+		ms.error(t('common.manualCopyRequired'));
 	}
 }
 
@@ -166,18 +171,22 @@ onMounted(() => {
 <template>
 	<NCard>
 		<template #header>
-			<div>邀用户、得福利!</div>
+			<div>{{ t('common.inviteUsersGetBenefits') }}</div>
 		</template>
 		<NGrid :x-gap="24" :y-gap="24" :cols="isSmallXl ? 1 : 3" class="mt-3">
 			<NGridItem class="border rounded-sm p-3 dark:border-[#ffffff17]" :span="2">
-				<div class="text-[#95aac9] mb-2 text-base">我的邀请码</div>
+				<div class="text-[#95aac9] mb-2 text-base">{{ t('common.myInvitationCode') }}</div>
 				<div class="flex justify-between" :class="[isSmallXl ? 'flex-col mt-3' : '']">
 					<b class="text-2xl text-[#555] dark:text-[#fff] whitespace-nowrap">
 						{{ inviteCode || '********' }}</b
 					>
 					<NSpace :class="[isSmallXl ? ' mt-3' : '']">
-						<NButton type="success" @click="genMyInviteCode"> 生成专属邀请码 </NButton>
-						<NButton type="primary" @click="copyInviteCode"> 复制专属邀请链接 </NButton>
+						<NButton type="success" @click="genMyInviteCode">
+							{{ t('common.generateExclusiveInvitationCode') }}
+						</NButton>
+						<NButton type="primary" @click="copyInviteCode">
+							{{ t('common.copyExclusiveInvitationLink') }}
+						</NButton>
 					</NSpace>
 				</div>
 			</NGridItem>
@@ -204,7 +213,7 @@ onMounted(() => {
 	</NCard>
 	<NCard class="mt-5">
 		<template #header>
-			<div>邀请记录</div>
+			<div>{{ t('common.invitationRecord') }}</div>
 		</template>
 		<NDataTable
 			:loading="regLoading"

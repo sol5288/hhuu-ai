@@ -39,27 +39,23 @@ const darkMode = computed(() => appStore.theme === 'dark');
 
 const drawSize = ref(4);
 
-const exampleList = [
-	'超级逼真的未来世界，真实照片，虚幻引擎',
-	'帅哥，二次元，赛博朋克风格，精致脸庞',
-	'兔子，可爱，高质量，高品质',
-];
+const exampleList = [t('common.futuristicWorld'), t('common.handsome'), t('common.cuteRabbit')];
 
 const promptList = [
-	'古风',
-	'二次元',
-	'写实照片',
-	'油画',
-	'水彩画',
-	'油墨画',
-	'黑白雕版画',
-	'雕塑',
-	'3D模型',
-	'手绘草图',
-	'炭笔画',
+	t('common.ancientStyle'),
+	t('common.anime'),
+	t('common.realisticPhoto'),
+	t('common.oilPainting'),
+	t('common.watercolorPainting'),
+	t('common.inkPainting'),
+	t('common.blackAndWhiteWoodcut'),
+	t('common.sculpture'),
+	'3D' + t('common.model'),
+	t('common.handDrawnSketch'),
+	t('common.charcoalDrawing'),
 	t('common.minimalisticLineDrawing'),
-	'电影质感',
-	'机械感',
+	t('common.cinematicFeel'),
+	t('common.mechanicalFeel'),
 ];
 
 const form = ref({
@@ -92,8 +88,7 @@ function hasAllChinese(str: string) {
 
 /* 绘制图片 */
 async function drawImage() {
-	if (!form.value.prompt)
-		return ms.error('请输入您想要生成的图片描述信息、尽可能详细可能效果会更好！');
+	if (!form.value.prompt) return ms.error(t('common.enterDetailedImageDescription'));
 	// const isHas = hasChinese(form.value.prompt)
 	// const isAll = hasAllChinese(form.value.prompt)
 	// if (isAll || isHas)
@@ -101,17 +96,17 @@ async function drawImage() {
 
 	try {
 		notification.success({
-			title: '图片开始绘制了！',
+			title: t('common.imageGenerationStarted'),
 			duration: 10000,
-			content: '当前有图片已经开始进行绘制了、绘制图片时间大约70-90S、请您耐心等待！',
+			content: t('common.imageGenerationStarted2'),
 		});
 		drawSize.value = 4;
 		loading.value = true;
 		await fetchMjDtawAPI(form.value);
 		notification.success({
-			title: '图片绘制完成',
+			title: t('common.imageGenerationCompleted'),
 			duration: 10000,
-			content: '您的图片已经绘制完成了、快去看看吧、前往我的生成中即可查看！',
+			content: t('common.imageGenerationCompleted3'),
 		});
 		await queryMyDrawList();
 		loading.value = false;
@@ -125,22 +120,22 @@ async function handlervariationSingleImg(item: any, orderId: number) {
 	const { message_id } = item;
 	if (loading.value) {
 		return notification.warning({
-			title: '已有进行中的绘制',
+			title: t('common.drawingInProgress'),
 			duration: 3000,
-			content: '当前已有图片正在绘制中、请耐心等待、频繁请求可能会短时间限制您的账号！',
+			content: t('common.drawingInProgressWarning'),
 		});
 	}
 
-	if (!message_id) return ms.error('当前图片不支持变体绘制！');
+	if (!message_id) return ms.error(t('common.currentImageNotSupportedForVariation'));
 	const params = { message_id, orderId };
 	try {
 		drawSize.value = 4;
-		form.value.prompt = '正在对图片进行变体绘制中......';
+		form.value.prompt = t('common.imageVariationInProgress');
 		loading.value = true;
 		notification.success({
-			title: '图片开始变体绘制了！',
+			title: t('common.imageVariationStarted'),
 			duration: 10000,
-			content: '当前图片已经开始进行变体绘制了、绘制图片时间大约70-90S、请您耐心等待！',
+			content: t('common.imageVariationStarted2'),
 		});
 		await fetchVariationSingleImgAPI(params);
 		form.value.prompt = '';
@@ -150,9 +145,9 @@ async function handlervariationSingleImg(item: any, orderId: number) {
 		form.value.prompt = '';
 		loading.value = false;
 		notification.error({
-			title: '图片变体绘制失败了！',
+			title: t('common.imageVariationFailed'),
 			duration: 10000,
-			content: '您的图片变体绘制失败了、请休息片刻再试一次吧！',
+			content: t('common.imageVariationFailed2'),
 		});
 	}
 }
@@ -162,49 +157,48 @@ async function handlerUpscaleImg(item: any, orderId: number) {
 	const { message_id } = item;
 	if (loading.value) {
 		return notification.warning({
-			title: '已有进行中的绘制',
+			title: t('common.drawingInProgress'),
 			duration: 3000,
-			content: '当前有图片正在绘制中、请耐心等待、频繁请求可能会短时间限制您的账号！',
+			content: t('common.drawingInProgressMessage'),
 		});
 	}
 
-	if (!message_id) return ms.error('当前图片不支持单独绘制！');
+	if (!message_id) return ms.error(t('common.currentImageNotSupportedForDrawing'));
 	const params = { message_id, orderId };
 	try {
 		notification.success({
-			title: '图片放大绘制中',
+			title: t('common.imageEnlargementInProgress'),
 			duration: 5000,
-			content: '当前图片已经开始进行放大绘制了、预计时间10-20S、请耐心等待！',
+			content: t('common.imageEnlargementStarted'),
 		});
 		drawSize.value = 1;
-		form.value.prompt = '正在对单张图片进行细节绘制中......';
+		form.value.prompt = t('common.singleImageDetailDrawing');
 		loading.value = true;
 		await fetchUpscaleSingleImgAPI(params);
 		form.value.prompt = '';
 		await queryMyDrawList();
 		loading.value = false;
 		notification.success({
-			title: '图片放大绘制完成',
+			title: t('common.imageEnlargementCompleted'),
 			duration: 10000,
-			content: '您的图片放大操作已经绘制完成了、快去看看吧、前往我的生成中即可查看！',
+			content: t('common.imageEnlargementCompleted2'),
 		});
 	} catch (error) {
 		form.value.prompt = '';
 		loading.value = false;
 		notification.error({
-			title: '图片放大失败了！',
+			title: t('common.imageEnlargementFailed'),
 			duration: 10000,
-			content: '您的图片放大失败了、请休息片刻再试一次吧！',
+			content: t('common.imageEnlargementFailed2'),
 		});
 	}
 }
 
 function tips() {
 	notification.create({
-		title: '免费开放体验中！',
+		title: t('common.freeTrialInProgress'),
 		duration: 0,
-		content:
-			'今日开放免费体验、所有用户均可免费体验三个额度、对于生成图片和对图片变体是需要扣除额度的、对于放大单张图片我们是免费的、请勿使用敏感词、否则可能触发风控机制直接封禁您的账号！',
+		content: t('common.freeTrialMessage'),
 		meta: '2023-5-11',
 		avatar: () =>
 			h(NAvatar, {
@@ -239,21 +233,21 @@ onMounted(() => {
 		:class="[!darkMode ? 'lightBg' : 'darkBg', isMobile ? 'px-3' : 'px-10']"
 	>
 		<TitleBar
-			title="AI绘画专业版"
+			:title="t('common.drawingProVersion')"
 			des="专业版绘画时间预计60~80S、请耐心等待、您的描述词将会被我们转化为英文、请知悉、请合理绘图、触发敏感词将直接封禁账户、请合理使用工具！"
 			:padding="isMobile ? 2 : 20"
 		/>
 		<div :class="isMobile ? ['px-2'] : ['px-20']" class="pb-5">
 			<NAlert :show-icon="false" type="success" class="mt-5">
-				<span class="text-[#67c23a]"
-					>每次绘画或者对图片变体扣除一个MJ绘画余额、放大图片是免费的、不会扣除您的余额！</span
-				>
+				<span class="text-[#67c23a]">{{ t('common.drawingConsumptionMessage') }}</span>
 			</NAlert>
 			<div class="flex my-5">
-				<b class="text-primary cursor-pointer select-none flex-shrink-0" @click="updateEx"
-					>换示例</b
-				>
-				<p class="mx-2 text-[#707384] select-none flex-shrink-0">Prompt示例：</p>
+				<b class="text-primary cursor-pointer select-none flex-shrink-0" @click="updateEx">{{
+					t('common.changeExample')
+				}}</b>
+				<p class="mx-2 text-[#707384] select-none flex-shrink-0">
+					Prompt{{ t('common.example') }}：
+				</p>
 				<p class="text-[#707384]">
 					{{ exampleList[index] }}
 				</p>
@@ -265,7 +259,7 @@ onMounted(() => {
 					size="large"
 					clearable
 					:disabled="loading"
-					placeholder="请输入提示词、可以参考上述的提示词、我们将会对你的描述词转为英文!"
+					:placeholder="t('common.enterPromptWord')"
 					@keyup.enter="drawImage"
 				/>
 				<NButton
@@ -280,19 +274,19 @@ onMounted(() => {
 							<ImagesOutline />
 						</NIcon>
 					</template>
-					生成图片
+					{{ t('common.generateImage') }}
 				</NButton>
 			</NInputGroup>
 			<div class="mt-5 p-4 bg-[#e7eaf380] dark:bg-[#2c2c32] rounded-lg">
 				<div class="flex">
-					<h4 class="text-base mr-2 w-20 flex-shrink-0">修饰词参考</h4>
+					<h4 class="text-base mr-2 w-20 flex-shrink-0">{{ t('common.modifierReference') }}</h4>
 					<p class="text-[#707384]">
 						您可参考或选用下列各类修饰词丰富您的输入文本，尝试生成更加多样的图像，更多修饰词可参考
 						Prompt指南 或 自由输入 探索大模型作画更多未知能力
 					</p>
 				</div>
 				<div class="flex mt-5">
-					<h4 class="text-base mr-2 w-20 flex-shrink-0">图像类型</h4>
+					<h4 class="text-base mr-2 w-20 flex-shrink-0">{{ t('common.imageType') }}</h4>
 					<div>
 						<span
 							v-for="(item, i) in promptList"
@@ -306,7 +300,7 @@ onMounted(() => {
 			</div>
 			<div v-if="loading" class="mt-8 pb-10">
 				<div class="flex justify-center">
-					----------- 正在生成中、图片越大数量越多所需时间越多、预计15S -----------
+					{{ t('common.generatingImage15s') }}
 				</div>
 				<div class="flex flex-wrap mt-8">
 					<img
@@ -318,7 +312,7 @@ onMounted(() => {
 				</div>
 			</div>
 			<NTabs type="line" animated class="mt-5" @update:value="updateTabs">
-				<NTabPane name="all" tab="公共生成">
+				<NTabPane name="all" :tab="t('common.publicGeneration')">
 					<div
 						v-if="allDrawList.length"
 						class="flex flex-wrap mt-8"
@@ -336,9 +330,9 @@ onMounted(() => {
 							</NEllipsis>
 						</div>
 					</div>
-					<NEmpty v-else size="huge" class="mt-20" description="暂无数据哟~" />
+					<NEmpty v-else size="huge" class="mt-20" :description="t('common.noData')" />
 				</NTabPane>
-				<NTabPane name="mine" tab="我的生成">
+				<NTabPane name="mine" :tab="t('common.myGeneration')">
 					<div
 						v-if="mineDrawList.length"
 						class="flex flex-wrap mt-8"
@@ -362,7 +356,7 @@ onMounted(() => {
 												@click="handlerUpscaleImg(item, orderId)"
 											/>
 										</template>
-										将此图片绘制单张完整图片[免费]
+										{{ t('common.drawSingleCompleteImage') }}
 									</NTooltip>
 									<NTooltip trigger="hover">
 										<template #trigger>
@@ -374,7 +368,7 @@ onMounted(() => {
 												@click="handlervariationSingleImg(item, orderId)"
 											/>
 										</template>
-										在此图片的基础上进行变体、以此为基础生成新的图片
+										{{ t('common.imageVariationDescription') }}
 									</NTooltip>
 								</div>
 								<div class="circle">
@@ -388,7 +382,7 @@ onMounted(() => {
 												@click="handlerPreImg(item.id)"
 											/>
 										</template>
-										点击预览放大图片
+										{{ t('common.clickToPreviewEnlargedImage') }}
 									</NTooltip>
 								</div>
 							</div>
@@ -404,7 +398,7 @@ onMounted(() => {
 							</NEllipsis>
 						</div>
 					</div>
-					<NEmpty v-else size="huge" class="mt-20" description="暂无数据哟~" />
+					<NEmpty v-else size="huge" class="mt-20" :description="t('common.noData')" />
 				</NTabPane>
 			</NTabs>
 		</div>
