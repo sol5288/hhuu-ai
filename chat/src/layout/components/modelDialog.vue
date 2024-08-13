@@ -22,15 +22,13 @@ import { CloseOutline, SettingsOutline } from '@vicons/ionicons5';
 import { fetchQueryModelsListAPI } from '@/api/models';
 import { useAuthStore, useGlobalStoreWithOut, useChatStore } from '@/store';
 import { fetchUpdateGroupAPI } from '@/api/group';
-import { useI18n } from 'vue-i18n';
+import { t } from '@/locales';
 
 defineProps<Props>();
 interface ModelType {
 	label: string;
 	val: number;
 }
-
-const { t } = useI18n();
 
 const useGlobalStore = useGlobalStoreWithOut();
 const authStore = useAuthStore();
@@ -202,7 +200,7 @@ async function handleUpdateConfig() {
 		loading.value = true;
 		await fetchUpdateGroupAPI(params);
 		loading.value = false;
-		message.success(t('updateConfigSuccess'));
+		message.success(t('common.updateConfigSuccess'));
 		await chatStore.queryMyGroup();
 		useGlobalStore.updateModelDialog(false);
 	} catch (error) {
@@ -245,16 +243,16 @@ function handleCloseDialog() {
 					<SettingsOutline />
 				</NIcon>
 
-				<span class="ml-[8px] mt-1 text-lg">{{ t('modelPersonalization') }}</span>
+				<span class="ml-[8px] mt-1 text-lg">{{ t('common.modelPersonalization') }}</span>
 			</div>
 
 			<div class="flex justify-between items-center mt-6 pb-4">
-				<span class="font-bold">{{ t('modelSelection') }}</span>
+				<span class="font-bold">{{ t('common.modelSelection') }}</span>
 				<div style="max-width: 70%">
 					<n-cascader
 						class="w-full"
 						v-model:value="model"
-						:placeholder="t('selectModelPlaceholder')"
+						:placeholder="t('common.selectModelPlaceholder')"
 						expand-trigger="click"
 						:options="options"
 						check-strategy="child"
@@ -265,12 +263,12 @@ function handleCloseDialog() {
 			</div>
 
 			<div>
-				<div class="pb-1">{{ t('customRolePreset') }}</div>
+				<div class="pb-1">{{ t('common.customRolePreset') }}</div>
 				<n-input
 					v-model:value="systemMessage"
 					type="textarea"
 					:disabled="disabled"
-					:placeholder="t('customRolePresetPlaceholder')"
+					:placeholder="t('common.customRolePresetPlaceholder')"
 				/>
 			</div>
 
@@ -279,19 +277,21 @@ function handleCloseDialog() {
 					<n-collapse-item name="1">
 						<template #header>
 							<div>
-								{{ t('advancedSettings') }}
-								<span class="text-xs text-neutral-500">{{ t('advancedSettingsDescription') }}</span>
+								{{ t('common.advancedSettings') }}
+								<span class="text-xs text-neutral-500">{{
+									t('common.advancedSettingsDescription')
+								}}</span>
 							</div>
 						</template>
 						<template #header-extra>
 							<div @click.stop="handleReset">
-								<NButton text type="error" v-if="showResetBtn"> {{ t('reset') }} </NButton>
+								<NButton text type="error" v-if="showResetBtn"> {{ t('common.reset') }} </NButton>
 							</div>
 						</template>
 						<div class="mt-2">
 							<div>
 								<div class="w-full flex justify-between">
-									<span class="w-[150px]">{{ t('topicRandomness') }}</span>
+									<span class="w-[150px]">{{ t('common.topicRandomness') }}</span>
 									<div class="flex w-[200px] items-center">
 										<n-slider v-model:value="topN" :step="0.1" :max="maxTemperature" />
 										<span class="w-[55px] text-right">
@@ -300,12 +300,12 @@ function handleCloseDialog() {
 									</div>
 								</div>
 								<div class="mt-2 text-xs text-slate-500 dark:text-slate-400">
-									{{ t('topicRandomnessDescription') }}
+									{{ t('common.topicRandomnessDescription') }}
 								</div>
 							</div>
 							<div class="mt-4">
 								<div class="w-full flex justify-between">
-									<span class="w-[150px]">{{ t('replyTokenCount') }}</span>
+									<span class="w-[150px]">{{ t('common.replyTokenCount') }}</span>
 									<div class="flex w-[200px] items-center">
 										<n-slider v-model:value="maxResponseTokens" :step="100" :max="maxModelTokens" />
 										<span class="w-[55px] text-right">
@@ -314,12 +314,12 @@ function handleCloseDialog() {
 									</div>
 								</div>
 								<div class="mt-2 text-xs text-slate-500 dark:text-slate-400">
-									{{ t('replyTokenCountDescription') }}
+									{{ t('common.replyTokenCountDescription') }}
 								</div>
 							</div>
 							<div class="mt-4">
 								<div class="w-full flex justify-between">
-									<span class="w-[150px]">{{ t('contextCount') }}</span>
+									<span class="w-[150px]">{{ t('common.contextCount') }}</span>
 									<div class="flex w-[200px] items-center">
 										<n-slider v-model:value="rounds" :step="1" :max="maxRounds" />
 										<span class="w-[55px] text-right">
@@ -328,7 +328,7 @@ function handleCloseDialog() {
 									</div>
 								</div>
 								<div class="mt-2 text-xs text-slate-500 dark:text-slate-400">
-									{{ t('contextCountDescription') }}
+									{{ t('common.contextCountDescription') }}
 								</div>
 							</div>
 						</div>
@@ -336,9 +336,11 @@ function handleCloseDialog() {
 				</n-collapse>
 			</div>
 			<div class="mt-4 flex items-center justify-end space-x-4">
-				<NButton @click="useGlobalStore.updateModelDialog(false)"> {{ t('cancel') }} </NButton>
+				<NButton @click="useGlobalStore.updateModelDialog(false)">
+					{{ t('common.cancel') }}
+				</NButton>
 				<NButton type="primary" @click="handleUpdateConfig" :loading="loading">
-					{{ t('save') }}
+					{{ t('common.save') }}
 				</NButton>
 			</div>
 		</div>
