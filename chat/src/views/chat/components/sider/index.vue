@@ -261,10 +261,9 @@ watch(
 							{{ t('common.points') }}
 						</div>
 						<div v-if="activeModelKeyDeductType === 2" class="my-1 flex items-center select-none">
-							<SvgIcon icon="mingcute:bill-line" class="ml-2 mr-2 text-base" />{{
-								t('common.modelCost')
-							}}：
-							{{ `${activeModelKeyPrice || 0}积分 / 次对话` }}
+							<SvgIcon icon="mingcute:bill-line" class="ml-2 mr-2 text-base" />
+							{{ t('common.modelCost') }}： {{ `${activeModelKeyPrice || 0}`
+							}}{{ t('common.pointsPerConversation') }}
 						</div>
 
 						<div class="flex justify-between my-3">

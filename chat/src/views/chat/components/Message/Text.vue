@@ -178,7 +178,7 @@ defineExpose({ textRef });
 						@click="handleCopy"
 					>
 						<SvgIcon class="flex h-3 w-3 mx-1" icon="tabler:copy" />
-						<span class="flex text-xs">复制</span>
+						<span class="flex text-xs">{{ t('common.copy') }}</span>
 					</button>
 
 					<button
@@ -188,7 +188,7 @@ defineExpose({ textRef });
 						@click="handleRegenerate"
 					>
 						<SvgIcon class="flex h-3 w-3 mx-1" icon="clarity:refresh-line" />
-						<span class="flex text-xs">重新生成</span>
+						<span class="flex text-xs">{{ t('common.regenerate') }}</span>
 					</button>
 
 					<button
@@ -198,7 +198,7 @@ defineExpose({ textRef });
 						@click="handleDelete"
 					>
 						<SvgIcon class="flex h-3 w-3 mx-1" icon="fluent:delete-48-regular" />
-						<span class="flex text-xs">删除</span>
+						<span class="flex text-xs">{{ t('common.delete') }}</span>
 					</button>
 
 					<button
@@ -238,7 +238,7 @@ defineExpose({ textRef });
 						@click="handleCopy"
 					>
 						<SvgIcon class="flex h-3 w-3 mx-1" icon="tabler:copy" />
-						<span class="flex text-xs">复制</span>
+						<span class="flex text-xs">{{ t('common.copy') }}</span>
 					</button>
 					<button
 						class="flex ml-0 items-center text-gray-400 hover:text-gray-700 dark:text-gray-600 dark:hover:text-gray-400 mx-1"
@@ -247,7 +247,7 @@ defineExpose({ textRef });
 						@click="handleDelete"
 					>
 						<SvgIcon class="flex h-3 w-3 mx-1" icon="fluent:delete-48-regular" />
-						<span class="flex text-xs">删除</span>
+						<span class="flex text-xs">{{ t('common.delete') }}</span>
 					</button>
 				</div>
 			</div>

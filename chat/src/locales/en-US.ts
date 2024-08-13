@@ -779,5 +779,21 @@ export default {
 		themeSwitch: 'Theme switch',
 		loginAccount: 'Login account',
 		loginFirst: 'Please log in first to access!',
+		modelPersonalization: 'Model Personalization',
+		selectModelPlaceholder: 'Please select the model needed for the current chat group!',
+		customRolePreset: 'Custom Role Preset',
+		customRolePresetPlaceholder:
+			'Customize header preset, give your AI a preset identity, for more interesting roles please go to "Application Square"...',
+		advancedSettings: 'Advanced Settings',
+		advancedSettingsDescription: "(No need to modify if you don't understand)",
+		topicRandomness: 'Topic Randomness',
+		topicRandomnessDescription:
+			'Higher values will make the output results more random for the same question',
+		replyTokenCount: 'Reply Token Count',
+		replyTokenCountDescription: 'Single reply count, but it will also consume more quota',
+		contextCount: 'Associated Context Count',
+		contextCountDescription: 'Single reply count, but it will also consume more quota',
+		updateConfigSuccess:
+			'Successfully modified the custom model configuration for the current conversation group!',
 	},
 };

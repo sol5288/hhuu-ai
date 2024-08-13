@@ -22,6 +22,7 @@ import { CloseOutline, SettingsOutline } from '@vicons/ionicons5';
 import { fetchQueryModelsListAPI } from '@/api/models';
 import { useAuthStore, useGlobalStoreWithOut, useChatStore } from '@/store';
 import { fetchUpdateGroupAPI } from '@/api/group';
+import { useI18n } from 'vue-i18n';
 
 defineProps<Props>();
 interface ModelType {
@@ -29,29 +30,31 @@ interface ModelType {
 	val: number;
 }
 
+const { t } = useI18n();
+
 const useGlobalStore = useGlobalStoreWithOut();
 const authStore = useAuthStore();
 const chatStore = useChatStore();
 const loading = ref(false);
 
-/* 当前对话组的配置信息 */
+/* 현재 대화 그룹의 설정 정보 */
 const activeConfig = computed(() => {
 	return chatStore.activeConfig;
 });
 
 const activeGroupAppId = computed(() => chatStore.activeGroupAppId);
 
-/* 不是openai的模型暂时不让设置预设 */
+/* openai 모델이 아닌 경우 임시로 프리셋 설정을 허용하지 않음 */
 const disabled = computed(() => {
 	return Number(activeConfig.value?.modelTypeInfo?.val) !== 1 || Number(activeGroupAppId.value) > 0;
 });
 
-/* 温度 */
+/* 온도 */
 const maxTemperature = computed(() => {
 	return Number(chatStore.activeModelKeyType) === 1 ? 1.2 : 1;
 });
 
-/* 当前的对话组id */
+/* 현재 대화 그룹 ID */
 const chatGroupId = computed(() => chatStore.active);
 
 watch(activeConfig, (val) => {
@@ -93,7 +96,7 @@ function compilerConfig(val: any) {
 	rounds.value = modelInfo.rounds > modelInfo.maxRounds ? modelInfo.maxRounds : modelInfo.rounds;
 }
 
-/* 应用只可以使用openai模型 */
+/* 애플리케이션은 openai 모델만 사용 가능 */
 const options = computed(() => {
 	const data = !activeGroupAppId.value
 		? modelTypeListCache
@@ -140,7 +143,7 @@ async function queryModelsList() {
 		/* 设置默认为第一项 使用 ---- 分割  前面是 模型类型 后面是模型的名称  */
 		// model.value = `${modelTypes.value[0].val}----${modelMaps[typeValue][0].model}`
 	} catch (error) {
-		console.log('error: ', error);
+		console.log('오류: ', error);
 	}
 }
 
@@ -157,17 +160,17 @@ function handleUpdate(val: any) {
 	showResetBtn.value = val.includes('1');
 }
 
-/* 获取模型的单项信息 */
+/* 모델의 개별 정보 가져오기 */
 function getModelTypeInfo(type: any) {
 	return modelTypeListCache.find((item: any) => item.val === type);
 }
 
-/* 获取模型名称 */
+/* 모델 이름 가져오기 */
 function getModelDetailInfo(type: any, model: any) {
 	return modelMapsCache[type].find((item: any) => item.model === model);
 }
 
-/* 修改对话组模型配置 */
+/* 대화 그룹 모델 설정 수정 */
 async function handleUpdateConfig() {
 	const [type, m] = model.value.split('----');
 	const { maxModelTokens } = activeConfig.value.modelInfo;
@@ -199,7 +202,7 @@ async function handleUpdateConfig() {
 		loading.value = true;
 		await fetchUpdateGroupAPI(params);
 		loading.value = false;
-		message.success('修改当前对话组自定义模型配置成功！');
+		message.success(t('updateConfigSuccess'));
 		await chatStore.queryMyGroup();
 		useGlobalStore.updateModelDialog(false);
 	} catch (error) {
@@ -242,16 +245,16 @@ function handleCloseDialog() {
 					<SettingsOutline />
 				</NIcon>
 
-				<span class="ml-[8px] mt-1 text-lg">模型个性化</span>
+				<span class="ml-[8px] mt-1 text-lg">{{ t('modelPersonalization') }}</span>
 			</div>
 
 			<div class="flex justify-between items-center mt-6 pb-4">
-				<span class="font-bold">模型选用</span>
+				<span class="font-bold">{{ t('modelSelection') }}</span>
 				<div style="max-width: 70%">
 					<n-cascader
 						class="w-full"
 						v-model:value="model"
-						placeholder="请选用当前聊天组所需的模型！"
+						:placeholder="t('selectModelPlaceholder')"
 						expand-trigger="click"
 						:options="options"
 						check-strategy="child"
@@ -262,12 +265,12 @@ function handleCloseDialog() {
 			</div>
 
 			<div>
-				<div class="pb-1">自定义角色预设</div>
+				<div class="pb-1">{{ t('customRolePreset') }}</div>
 				<n-input
 					v-model:value="systemMessage"
 					type="textarea"
 					:disabled="disabled"
-					placeholder="自定义头部预设、给你的AI预设一个身份、更多有趣的角色请前往「应用广场」..."
+					:placeholder="t('customRolePresetPlaceholder')"
 				/>
 			</div>
 
@@ -276,19 +279,19 @@ function handleCloseDialog() {
 					<n-collapse-item name="1">
 						<template #header>
 							<div>
-								高级配置
-								<span class="text-xs text-neutral-500">（不了解不需要修改）</span>
+								{{ t('advancedSettings') }}
+								<span class="text-xs text-neutral-500">{{ t('advancedSettingsDescription') }}</span>
 							</div>
 						</template>
 						<template #header-extra>
 							<div @click.stop="handleReset">
-								<NButton text type="error" v-if="showResetBtn"> 重置 </NButton>
+								<NButton text type="error" v-if="showResetBtn"> {{ t('reset') }} </NButton>
 							</div>
 						</template>
 						<div class="mt-2">
 							<div>
 								<div class="w-full flex justify-between">
-									<span class="w-[150px]">话题随机性</span>
+									<span class="w-[150px]">{{ t('topicRandomness') }}</span>
 									<div class="flex w-[200px] items-center">
 										<n-slider v-model:value="topN" :step="0.1" :max="maxTemperature" />
 										<span class="w-[55px] text-right">
@@ -297,12 +300,12 @@ function handleCloseDialog() {
 									</div>
 								</div>
 								<div class="mt-2 text-xs text-slate-500 dark:text-slate-400">
-									较高的数值会使同问题每次输出的结果更随机
+									{{ t('topicRandomnessDescription') }}
 								</div>
 							</div>
 							<div class="mt-4">
 								<div class="w-full flex justify-between">
-									<span class="w-[150px]">回复Token数</span>
+									<span class="w-[150px]">{{ t('replyTokenCount') }}</span>
 									<div class="flex w-[200px] items-center">
 										<n-slider v-model:value="maxResponseTokens" :step="100" :max="maxModelTokens" />
 										<span class="w-[55px] text-right">
@@ -311,12 +314,12 @@ function handleCloseDialog() {
 									</div>
 								</div>
 								<div class="mt-2 text-xs text-slate-500 dark:text-slate-400">
-									单条回复数，但也会消耗更多的额度
+									{{ t('replyTokenCountDescription') }}
 								</div>
 							</div>
 							<div class="mt-4">
 								<div class="w-full flex justify-between">
-									<span class="w-[150px]">关联上下文数量</span>
+									<span class="w-[150px]">{{ t('contextCount') }}</span>
 									<div class="flex w-[200px] items-center">
 										<n-slider v-model:value="rounds" :step="1" :max="maxRounds" />
 										<span class="w-[55px] text-right">
@@ -325,7 +328,7 @@ function handleCloseDialog() {
 									</div>
 								</div>
 								<div class="mt-2 text-xs text-slate-500 dark:text-slate-400">
-									单条回复数，但也会消耗更多的额度
+									{{ t('contextCountDescription') }}
 								</div>
 							</div>
 						</div>
@@ -333,8 +336,10 @@ function handleCloseDialog() {
 				</n-collapse>
 			</div>
 			<div class="mt-4 flex items-center justify-end space-x-4">
-				<NButton @click="useGlobalStore.updateModelDialog(false)"> 取消 </NButton>
-				<NButton type="primary" @click="handleUpdateConfig" :loading="loading"> 保存 </NButton>
+				<NButton @click="useGlobalStore.updateModelDialog(false)"> {{ t('cancel') }} </NButton>
+				<NButton type="primary" @click="handleUpdateConfig" :loading="loading">
+					{{ t('save') }}
+				</NButton>
 			</div>
 		</div>
 	</NModal>
