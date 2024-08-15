@@ -325,7 +325,7 @@ export default {
 		modifyPrompt: '프롬프트 수정',
 		dataStatistics: '데이터 통계',
 		invitationRewardMessage:
-			'초대받은 사용자는 기본 모델 포인트 { globalConfig.invitedGuestSendModel3Count }개, 고급 모델 포인트 { globalConfig.invitedGuestSendModel4Count }개, MJ 그리기 포인트 { globalConfig.invitedGuestSendDrawMjCount }개를 받습니다',
+			'초대받은 사용자는 기본 모델 포인트 {model3Count}개, 고급 모델 포인트 {model4Count}개, MJ 그리기 포인트 {mjCount}개를 받습니다',
 		searchBox: '검색창',
 		searchIconButton: '검색 버튼',
 		searchHistoryConversation: '대화 기록 검색',
@@ -380,7 +380,7 @@ export default {
 		invitationCode: '초대 코드',
 		invitationTime: '초대 시간',
 		inviteRewardMessage:
-			'친구 1명 초대 시 { globalConfig.inviteGiveSendModel3Count } 기본 모델 포인트 + { globalConfig.inviteGiveSendModel4Count } 고급 모델 포인트 + { globalConfig.inviteGiveSendDrawMjCount } MJ 그리기 포인트 지급',
+			'친구 1명 초대 시 {model3Count} 기본 모델 포인트 + {model4Count} 고급 모델 포인트 + {mjCount} MJ 그리기 포인트 지급',
 		inviteFriendsRewardMessage: '친구를 초대하면 서로 일정량의 영구 이용권을 받을 수 있어요',
 		inviteFriendsPromotionMessage: '친구 초대하고 이용권도 받고 충전 수수료도 받아가세요!',
 		content: '내용',
@@ -554,6 +554,7 @@ export default {
 		drawingFailedMessage: '이미지 그리기에 실패했습니다',
 		drawingPoint: '그리기 포인트',
 		drawing: '그리는 중',
+		drawingTitle: 'AI 그림',
 		drawingConsumption: '그리기 1회 사용',
 		drawingUsedPoints: '그리기에 사용된 포인트',
 		drawingSquare: '그리기 광장',

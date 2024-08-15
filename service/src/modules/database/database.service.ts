@@ -13,7 +13,7 @@ interface UserInfo {
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
-  constructor(private connection: Connection) { }
+  constructor(private connection: Connection) {}
   async onModuleInit() {
     await this.checkSuperAdmin();
     await this.checkSiteBaseConfig();
@@ -71,8 +71,8 @@ export class DatabaseService implements OnModuleInit {
       const code = ``;
 
       const noticeInfo = `
-#### YiAi 欢迎您
- - 欢迎使用YiAi
+#### hhuu.io 欢迎您
+ - 欢迎使用 hhuu.io
  - 初始管理员账号密码  super  123456 【前台后台登录都可以修改】
  - 初始预览账号密码  admin  123456 【为后台查看账号 仅可查看部分非敏感数据】
 `;

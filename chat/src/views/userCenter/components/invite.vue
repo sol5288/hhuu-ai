@@ -198,15 +198,23 @@ onMounted(() => {
 				<b class="text-[000]">Tips</b>
 				<div class="flex flex-col text-[#707384]">
 					<span
-						>邀请一位用户赠送{{ globalConfig.inviteGiveSendModel3Count }}积分基础模型额度+{{
-							globalConfig.inviteGiveSendModel4Count
-						}}积分高级模型额度+{{ globalConfig.inviteGiveSendDrawMjCount }}MJ绘画积分额度</span
-					>
+						v-html="
+							$t('common.inviteRewardMessage', {
+								model3Count: globalConfig.inviteGiveSendModel3Count,
+								model4Count: globalConfig.inviteGiveSendModel4Count,
+								mjCount: globalConfig.inviteGiveSendDrawMjCount,
+							})
+						"
+					></span>
 					<span
-						>收到邀请用户获得{{ globalConfig.invitedGuestSendModel3Count }}积分基础模型额度+{{
-							globalConfig.invitedGuestSendModel4Count
-						}}积分高级模型额度+{{ globalConfig.invitedGuestSendDrawMjCount }}MJ绘画积分额度</span
-					>
+						v-html="
+							$t('common.invitationRewardMessage', {
+								model3Count: globalConfig.invitedGuestSendModel3Count,
+								model4Count: globalConfig.invitedGuestSendModel4Count,
+								mjCount: globalConfig.invitedGuestSendDrawMjCount,
+							})
+						"
+					></span>
 				</div>
 			</NGridItem>
 		</NGrid>

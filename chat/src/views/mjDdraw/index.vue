@@ -281,8 +281,7 @@ onMounted(() => {
 				<div class="flex">
 					<h4 class="text-base mr-2 w-20 flex-shrink-0">{{ t('common.modifierReference') }}</h4>
 					<p class="text-[#707384]">
-						您可参考或选用下列各类修饰词丰富您的输入文本，尝试生成更加多样的图像，更多修饰词可参考
-						Prompt指南 或 自由输入 探索大模型作画更多未知能力
+						{{ t('common.modifierReference2') }}
 					</p>
 				</div>
 				<div class="flex mt-5">

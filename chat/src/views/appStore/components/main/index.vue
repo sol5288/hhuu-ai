@@ -163,7 +163,7 @@ onMounted(() => {
 					@click="handlJumpPath('/midjourney')"
 				>
 					<SvgIcon icon="ph:pencil-slash-duotone" class="text-2xl mr-2" />
-					AI 绘画
+					{{ t('common.drawingTitle') }}
 				</n-button>
 				<n-button
 					trong

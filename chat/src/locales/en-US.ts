@@ -333,7 +333,7 @@ export default {
 		modifyPrompt: 'Modify prompt',
 		dataStatistics: 'Data statistics',
 		invitationRewardMessage:
-			'Invited users receive { globalConfig.invitedGuestSendModel3Count } basic model points + { globalConfig.invitedGuestSendModel4Count } advanced model points + { globalConfig.invitedGuestSendDrawMjCount } MJ drawing points',
+			'Invited users receive {model3Count} basic model points + {model4Count} advanced model points + {mjCount} MJ drawing points',
 		searchBox: 'Search box',
 		searchIconButton: 'Search icon button',
 		searchHistoryConversation: 'Search history conversation',
@@ -391,7 +391,7 @@ export default {
 		invitationCode: 'Invitation code',
 		invitationTime: 'Invitation time',
 		inviteRewardMessage:
-			'Invite 1 user and receive { globalConfig.inviteGiveSendModel3Count } basic model points + { globalConfig.inviteGiveSendModel4Count } advanced model points + { globalConfig.inviteGiveSendDrawMjCount } MJ drawing points',
+			'Invite 1 user and receive {model3Count} basic model points + {model4Count} advanced model points + {mjCount} MJ drawing points',
 		inviteFriendsRewardMessage:
 			'Invite friends and both of you will receive a certain number of permanent usage rights as a reward',
 		inviteFriendsPromotionMessage:
@@ -684,6 +684,7 @@ export default {
 		drawingFailedMessage: 'Drawing has failed',
 		drawingPoint: 'Drawing point',
 		drawing: 'Drawing',
+		drawingTitle: 'AI Draw Image',
 		drawingConsumption: 'Drawing consumption per use',
 		drawingUsedPoints: 'Drawing used points',
 		drawingSquare: 'Drawing square',

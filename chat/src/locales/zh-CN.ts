@@ -317,7 +317,7 @@ export default {
 		modifyPrompt: '修改提示词',
 		dataStatistics: '数据统计',
 		invitationRewardMessage:
-			'收到邀请用户获得{ globalConfig.invitedGuestSendModel3Count }积分基础模型额度+{ globalConfig.invitedGuestSendModel4Count }积分高级模型额度+{ globalConfig.invitedGuestSendDrawMjCount }}MJ绘画积分额度',
+			'收到邀请用户获得{model3Count}积分基础模型额度+{model4Count}积分高级模型额度+{mjCount}MJ绘画积分额度',
 		searchBox: '搜索框',
 		searchIconButton: '搜索图标按钮',
 		searchHistoryConversation: '搜索历史对话',
@@ -372,7 +372,7 @@ export default {
 		invitationCode: '邀请码',
 		invitationTime: '邀请时间',
 		inviteRewardMessage:
-			'邀请一位用户赠送{ globalConfig.inviteGiveSendModel3Count }积分基础模型额度+{ globalConfig.inviteGiveSendModel4Count }积分高级模型额度+{ globalConfig.inviteGiveSendDrawMjCount }MJ绘画积分额度',
+			'邀请一位用户赠送{model3Count}积分基础模型额度+{model4Count}积分高级模型额度+{mjCount}MJ绘画积分额度',
 		inviteFriendsRewardMessage: '邀请好友双方都可享受一定额度的永久次卡奖励',
 		inviteFriendsPromotionMessage: '邀好友、赠套餐卡密、享充值返佣！',
 		content: '容',
@@ -642,6 +642,7 @@ export default {
 		drawingFailedMessage: '绘制失败了',
 		drawingPoint: '绘制点',
 		drawing: '绘制中',
+		drawingTitle: 'AI 绘画',
 		drawingConsumption: '绘画单次消耗',
 		drawingUsedPoints: '绘画使用积分',
 		drawingSquare: '绘画广场',
