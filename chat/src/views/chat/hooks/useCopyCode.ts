@@ -10,7 +10,7 @@ export function useCopyCode() {
 			if (copyBtn && codeBlock) {
 				copyBtn.addEventListener('click', () => {
 					if (navigator.clipboard?.writeText) {
-						// window.$message?.success('复制成功!')
+						// window.$message?.success('t('common.copySuccessful')!')
 						navigator.clipboard.writeText(codeBlock.textContent ?? '');
 					} else {
 						copyText({ text: codeBlock.textContent ?? '', origin: true });

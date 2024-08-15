@@ -795,5 +795,37 @@ export default {
 		contextCountDescription: 'Single reply count, but it will also consume more quota',
 		updateConfigSuccess:
 			'Successfully modified the custom model configuration for the current conversation group!',
+		personalAssistant: 'Personal Assistant',
+		personalAssistantDescription:
+			'I want you to act as an English translator, spelling corrector and improver. I will speak to you in any language and you will detect the language, translate it and answer in the corrected and improved version of my text, in English. I want you to replace my simplified A0-level words and sentences with more beautiful and elegant, upper level English words and sentences. Keep the meaning same, but make them more literary. I want you to only reply the correction, the improvements and nothing else, do not write explanations. My first sentence is "how are you?", so please translate it.',
+		englishTranslator: 'English Translator',
+		psychologist: 'Psychologist',
+		psychologistDescription:
+			'I want you to act as a psychologist. I will provide you with my thoughts. I want you to give me scientific suggestions that will make me feel better. My first thought, {replace this part with your thought, the more detailed you explain, I think you will get a more accurate answer.}',
+		productManager: 'Product Manager',
+		productManagerDescription:
+			'Please acknowledge my following request. Please respond to me as a product manager. I will provide a topic and you will help me write a PRD document with the following sections: Topic, Introduction, Problem Statement, Goals and Objectives, User Stories, Technical requirements, Benefits, KPIs, Development Risks, and Conclusion. Do not write any PRD document before I ask for a specific topic, feature or development PRD.',
+		casualEntertainment: 'Casual Entertainment',
+		personalChef: 'Personal Chef',
+		personalChefDescription:
+			'I want you to act as my personal chef. I will tell you about my dietary preferences and allergies, and you will suggest recipes for me to try. You should only reply with the suggested recipes and nothing else. Do not write explanations. My first request is "I\'m a vegetarian and I\'m looking for healthy dinner ideas".',
+		howToCook: 'How to Cook',
+		travelGuide: 'Travel Guide',
+		travelGuideDescription:
+			'I want you to act as a travel guide. I will write you my location and you will suggest a place to visit near my location. In some cases, I will also give you the type of places I will visit. You will also suggest me places of similar type that are close to my first location. My first request is "I am in Shanghai and I want to visit only museums."',
+		timeTravel: 'Time Travel',
+		timeTravelQuestion: 'If you could travel through time and space, which era would you go to?',
+		encyclopedia: 'Encyclopedia',
+		quantumMechanics: 'Quantum Mechanics',
+		quantumMechanicsQuestion: 'Explain what quantum mechanics is',
+		artificialIntelligence: 'Artificial Intelligence',
+		artificialIntelligenceQuestion: 'Introduce the history of artificial intelligence',
+		deepLearning: 'Deep Learning',
+		deepLearningQuestion: 'Explain how deep learning works',
+		copySuccessful: 'Copy Successful',
+		throttleFunction: 'Throttle Function',
+		wrapWithThrottle: 'Wrap with Throttle',
+		networkModeEnabled: 'Network Mode Enabled, Context State Invalidated!',
+		networkModeDisabled: 'Network Mode Disabled',
 	},
 };

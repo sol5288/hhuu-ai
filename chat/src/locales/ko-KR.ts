@@ -759,5 +759,37 @@ export default {
 		contextCount: '연관 컨텍스트 수',
 		contextCountDescription: '단일 응답 수, 하지만 더 많은 할당량을 소비합니다',
 		updateConfigSuccess: '현재 대화 그룹의 사용자 지정 모델 구성을 성공적으로 수정했습니다!',
+		personalAssistant: '개인 비서',
+		personalAssistantDescription:
+			'영어 번역, 맞춤법 교정, 문장 개선을 도와드릴게요. 어떤 언어로 말씀하셔도 이해하고 번역한 뒤, 세련되고 간결한 영어로 답변해 드리겠습니다. 평범한 표현을 우아하고 세련된 표현으로 바꿔드릴게요. 의미는 그대로 유지하면서 더 문학적인 느낌을 살려드리겠습니다. 수정 및 개선된 부분만 알려드리고 별도 설명은 하지 않을게요. 첫 문장으로 "어떻게 지내세요?"를 번역해 드릴게요.',
+		englishTranslator: '영어 번역가',
+		psychologist: '심리 상담사',
+		psychologistDescription:
+			'심리 상담사 역할을 해드릴게요. 당신의 생각을 들려주시면, 과학적인 조언으로 기분이 나아지도록 도와드리겠습니다. 첫 번째로 "여기에 당신의 생각을 적어주세요. 자세히 설명할수록 더 정확한 답변을 드릴 수 있어요."라고 말씀해 주세요.',
+		productManager: '제품 기획자',
+		productManagerDescription:
+			'제품 기획자 입장에서 답변 드리겠습니다. 주제를 말씀해 주시면 PRD 문서 작성을 도와드릴게요. 문서에는 다음 항목이 포함됩니다: 주제, 소개, 문제 정의, 목표, 사용자 시나리오, 기술 요구사항, 기대효과, 성과 지표, 개발 리스크, 결론. 특정 주제나 기능에 대한 PRD를 요청하시기 전까지는 문서를 작성하지 않을게요.',
+		casualEntertainment: '가벼운 오락',
+		personalChef: '전담 요리사',
+		personalChefDescription:
+			'당신의 전담 요리사가 되어드릴게요. 식단 선호도와 알레르기 정보를 알려주시면, 맞춤 요리법을 추천해 드리겠습니다. 추천 요리법만 알려드리고 다른 설명은 하지 않을게요. 첫 번째 요청으로 "저는 채식주의자예요. 건강한 저녁 메뉴 좀 추천해 주세요."라고 말씀해 주세요.',
+		howToCook: '요리 배우기',
+		travelGuide: '여행 가이드',
+		travelGuideDescription:
+			'여행 가이드가 되어드릴게요. 현재 위치를 알려주시면 주변 명소를 추천해 드리겠습니다. 특정 유형의 장소를 원하시면 말씀해 주세요. 첫 번째 위치 근처의 비슷한 장소도 함께 추천해 드릴게요. 첫 번째 추천 요청으로 "상하이에 왔어요. 박물관만 가고 싶은데요."라고 말씀해 주세요.',
+		timeTravel: '시간 여행',
+		timeTravelQuestion: '시간과 공간을 마음대로 오갈 수 있다면, 어느 시대로 가보고 싶으세요?',
+		encyclopedia: '백과사전',
+		quantumMechanics: '양자역학',
+		quantumMechanicsQuestion: '양자역학이 뭔지 쉽게 설명해주세요.',
+		artificialIntelligence: '인공지능',
+		artificialIntelligenceQuestion: '인공지능의 발전 과정을 간단히 소개해주세요.',
+		deepLearning: '딥러닝',
+		deepLearningQuestion: '딥러닝이 어떤 원리로 작동하는지 설명해주세요.',
+		copySuccessful: '복사 완료',
+		throttleFunction: '스로틀 함수',
+		wrapWithThrottle: '스로틀 적용하기',
+		networkModeEnabled: '네트워크 모드 켜짐, 컨텍스트 상태 초기화됨!',
+		networkModeDisabled: '네트워크 모드 꺼짐',
 	},
 };
