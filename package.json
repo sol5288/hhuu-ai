@@ -9,6 +9,9 @@
     "AIGC",
     "AI"
   ],
+  "scripts": {
+    "build-deploy": "build.cmd"
+  },
   "dependencies": {
     "dayjs": "^1.11.10",
     "eslint": "^8.39.0",

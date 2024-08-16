@@ -279,6 +279,7 @@ export default {
 		unwantedElements: '不需要的元素',
 		illegalOperation: '非法操作、请先登录后再进行问答使用！',
 		thinking: '思考中',
+		aiThinking: '思考中',
 		queryNineGridContent: '查询九宫格内容',
 		queryMyAccount: '查询我的账户',
 		queryMyWithdrawalOrder: '查询我的提现工单',

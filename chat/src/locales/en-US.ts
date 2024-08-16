@@ -294,6 +294,7 @@ export default {
 		unwantedElements: 'Unwanted elements',
 		illegalOperation: 'Illegal operation. Please log in first before using questions!',
 		thinking: 'Thinking',
+		aiThinking: 'Thinking',
 		queryNineGridContent: 'Query nine-grid content',
 		queryMyAccount: 'Query my account',
 		queryMyWithdrawalOrder: 'Query my withdrawal order',

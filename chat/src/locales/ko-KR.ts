@@ -287,6 +287,7 @@ export default {
 		unwantedElements: '제외할 요소',
 		illegalOperation: '잘못된 작업입니다. 먼저 로그인한 후 질문을 입력해 주세요!',
 		thinking: '생각 중',
+		aiThinking: '답변생성중',
 		queryNineGridContent: '9칸 그리드 내용 조회',
 		queryMyAccount: '내 계정 조회',
 		queryMyWithdrawalOrder: '내 출금 내역 조회',

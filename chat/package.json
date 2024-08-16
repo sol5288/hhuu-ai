@@ -108,8 +108,8 @@
 		]
 	},
 	"build": {
-		"productName": "Yiai",
-		"appId": "ai.jiangly.com",
+		"productName": "hhuu.io",
+		"appId": "hhuu.io",
 		"icon": "icons/icon.icns",
 		"directories": {
 			"output": "build"
