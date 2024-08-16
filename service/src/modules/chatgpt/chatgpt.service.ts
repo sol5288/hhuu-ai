@@ -43,6 +43,7 @@ import { ChatBoxTypeEntity } from './chatBoxType.entity';
 import { ChatBoxEntity } from './chatBox.entity';
 import { ChatPreEntity } from './chatPre.entity';
 import { ChatPreTypeEntity } from './chatPreType.entity';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 interface Key {
   id: number;
@@ -83,6 +84,7 @@ export class ChatgptService implements OnModuleInit {
     private readonly fanyiService: FanyiService,
     private readonly chatGroupService: ChatGroupService,
     private readonly modelsService: ModelsService,
+    @I18n() private readonly i18n: I18nService,
   ) {}
 
   private api;
@@ -204,7 +206,7 @@ export class ChatgptService implements OnModuleInit {
     if (appId) {
       const appInfo = await this.appEntity.findOne({ where: { id: appId, status: In([1, 3, 4, 5]) } });
       if (!appInfo) {
-        throw new HttpException('你当前使用的应用已被下架、请删除当前对话开启新的对话吧！', HttpStatus.BAD_REQUEST);
+        throw new HttpException('你当前使用的应用已被下架、请删除当前对话开启新的对话吧', HttpStatus.BAD_REQUEST);
       }
       appInfo.preset && (setSystemMessage = appInfo.preset);
     } else if (cusromPrompt) {
@@ -260,7 +262,7 @@ export class ChatgptService implements OnModuleInit {
             userId: req.user.id,
             type: DeductionKey.CHAT_TYPE,
             prompt,
-            imageUrl:imageUrl,
+            imageUrl: imageUrl,
             activeModel,
             answer: '',
             promptTokens: prompt_tokens,
@@ -327,22 +329,26 @@ export class ChatgptService implements OnModuleInit {
             activeModel,
           });
           let firstChunk = true;
-          response = await sendMessageFromOpenAi(messagesHistory, {
-            maxToken,
-            maxTokenRes,
-            apiKey: modelKey,
-            model,
-            prompt,
-            activeModel,
-            imageUrl,
-            temperature,
-            proxyUrl: proxyResUrl,
-            onProgress: (chat) => {
-              res.write(firstChunk ? JSON.stringify(chat) : `\n${JSON.stringify(chat)}`);
-              lastChat = chat;
-              firstChunk = false;
+          response = await sendMessageFromOpenAi(
+            messagesHistory,
+            {
+              maxToken,
+              maxTokenRes,
+              apiKey: modelKey,
+              model,
+              prompt,
+              activeModel,
+              imageUrl,
+              temperature,
+              proxyUrl: proxyResUrl,
+              onProgress: (chat) => {
+                res.write(firstChunk ? JSON.stringify(chat) : `\n${JSON.stringify(chat)}`);
+                lastChat = chat;
+                firstChunk = false;
+              },
             },
-          },this.uploadService);
+            this.uploadService,
+          );
           isSuccess = true;
         }
 
@@ -551,32 +557,34 @@ export class ChatgptService implements OnModuleInit {
         }
       }
 
-      let message = OpenAiErrorCodeMessage[status] ? OpenAiErrorCodeMessage[status] : '服务异常、请重新试试吧！！！';
+      let message = OpenAiErrorCodeMessage[status]
+        ? OpenAiErrorCodeMessage[status]
+        : this.i18n.t('common.serviceError', { lang: I18nContext.current().lang });
 
       if (error?.message.includes('The OpenAI account associated with this API key has been deactivated.') && Number(keyType) === 1) {
-        await this.modelsService.lockKey(keyId, '当前模型key已被封禁、已冻结当前调用Key、尝试重新对话试试吧！', -1);
+        await this.modelsService.lockKey(keyId, '当前模型key已被封禁、已冻结当前调用Key、尝试重新对话试试吧', -1);
         message = '当前模型key已被封禁';
       }
 
       if (error?.statusCode === 429 && error.message.includes('billing') && Number(keyType) === 1) {
-        await this.modelsService.lockKey(keyId, '当前模型key余额已耗尽、已冻结当前调用Key、尝试重新对话试试吧！', -3);
+        await this.modelsService.lockKey(keyId, '当前模型key余额已耗尽、已冻结当前调用Key、尝试重新对话试试吧', -3);
         message = '当前模型key余额已耗尽';
       }
 
       if (error?.statusCode === 429 && error?.statusText === 'Too Many Requests') {
-        message = '当前模型调用过于频繁、请重新试试吧！';
+        message = '当前模型调用过于频繁、请重新试试吧';
       }
 
       /* 提供了错误的秘钥 */
       if (error?.statusCode === 401 && error.message.includes('Incorrect API key provided') && Number(keyType) === 1) {
         await this.modelsService.lockKey(keyId, '提供了错误的模型秘钥', -2);
-        message = '提供了错误的模型秘钥、已冻结当前调用Key、请重新尝试对话！';
+        message = '提供了错误的模型秘钥、已冻结当前调用Key、请重新尝试对话';
       }
 
       /* 模型有问题 */
       if (error?.statusCode === 404 && error.message.includes('This is not a chat model and thus not supported') && Number(keyType) === 1) {
         await this.modelsService.lockKey(keyId, '当前模型不是聊天模型', -4);
-        message = '当前模型不是聊天模型、已冻结当前调用Key、请重新尝试对话！';
+        message = '当前模型不是聊天模型、已冻结当前调用Key、请重新尝试对话';
       }
 
       if (code === 400) {
@@ -656,22 +664,22 @@ export class ChatgptService implements OnModuleInit {
       console.log('openai-draw error: ', JSON.stringify(error), key, status);
       const message = error?.response?.data?.error?.message;
       if (status === 429) {
-        throw new HttpException('当前请求已过载、请稍等会儿再试试吧！', HttpStatus.BAD_REQUEST);
+        throw new HttpException('当前请求已过载、请稍等会儿再试试吧', HttpStatus.BAD_REQUEST);
       }
       if (status === 400 && message.includes('This request has been blocked by our content filters')) {
         throw new HttpException('您的请求已被系统拒绝。您的提示可能存在一些非法的文本。', HttpStatus.BAD_REQUEST);
       }
       if (status === 400 && message.includes('Billing hard limit has been reached')) {
-        await this.modelsService.lockKey(keyId, '当前模型key已被封禁、已冻结当前调用Key、尝试重新对话试试吧！', -1);
-        throw new HttpException('当前Key余额已不足、请重新再试一次吧！', HttpStatus.BAD_REQUEST);
+        await this.modelsService.lockKey(keyId, '当前模型key已被封禁、已冻结当前调用Key、尝试重新对话试试吧', -1);
+        throw new HttpException('当前Key余额已不足、请重新再试一次吧', HttpStatus.BAD_REQUEST);
       }
       if (status === 500) {
-        throw new HttpException('绘制图片失败，请检查你的提示词是否有非法描述！', HttpStatus.BAD_REQUEST);
+        throw new HttpException('绘制图片失败，请检查你的提示词是否有非法描述', HttpStatus.BAD_REQUEST);
       }
       if (status === 401) {
-        throw new HttpException('绘制图片失败，此次绘画被拒绝了！', HttpStatus.BAD_REQUEST);
+        throw new HttpException('绘制图片失败，此次绘画被拒绝了', HttpStatus.BAD_REQUEST);
       }
-      throw new HttpException('绘制图片失败，请稍后试试吧！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('绘制图片失败，请稍后试试吧', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -794,11 +802,11 @@ export class ChatgptService implements OnModuleInit {
   async delChatBoxType(req: Request, body) {
     const { id } = body;
     if (!id) {
-      throw new HttpException('非法操作！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('非法操作', HttpStatus.BAD_REQUEST);
     }
     const count = await this.chatBoxEntity.count({ where: { typeId: id } });
     if (count) {
-      throw new HttpException('当前分类下有未处理数据不可移除！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('当前分类下有未处理数据不可移除', HttpStatus.BAD_REQUEST);
     }
     return await this.chatBoxTypeEntity.delete({ id });
   }
@@ -812,7 +820,7 @@ export class ChatgptService implements OnModuleInit {
   async setChatBox(req: Request, body) {
     const { title, prompt, appId, order, status, typeId, id, url } = body;
     if (!typeId) {
-      throw new HttpException('缺失必要参数！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('缺失必要参数', HttpStatus.BAD_REQUEST);
     }
     try {
       const params: any = { title, order, status, typeId, url };
@@ -831,7 +839,7 @@ export class ChatgptService implements OnModuleInit {
   async delChatBox(req: Request, body) {
     const { id } = body;
     if (!id) {
-      throw new HttpException('非法操作！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('非法操作', HttpStatus.BAD_REQUEST);
     }
     return await this.chatBoxEntity.delete({ id });
   }
@@ -884,11 +892,11 @@ export class ChatgptService implements OnModuleInit {
   async delChatPreType(req: Request, body) {
     const { id } = body;
     if (!id) {
-      throw new HttpException('非法操作！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('非法操作', HttpStatus.BAD_REQUEST);
     }
     const count = await this.chatBoxEntity.count({ where: { typeId: id } });
     if (count) {
-      throw new HttpException('当前分类下有未处理数据不可移除！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('当前分类下有未处理数据不可移除', HttpStatus.BAD_REQUEST);
     }
     return await this.chatPreTypeEntity.delete({ id });
   }
@@ -902,7 +910,7 @@ export class ChatgptService implements OnModuleInit {
   async setChatPre(req: Request, body) {
     const { title, prompt, appId, order, status, typeId, id, url } = body;
     if (!typeId) {
-      throw new HttpException('缺失必要参数！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('缺失必要参数', HttpStatus.BAD_REQUEST);
     }
     try {
       const params: any = { title, prompt, order, status, typeId, url };
@@ -919,7 +927,7 @@ export class ChatgptService implements OnModuleInit {
   async delChatPre(req: Request, body) {
     const { id } = body;
     if (!id) {
-      throw new HttpException('非法操作！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('非法操作', HttpStatus.BAD_REQUEST);
     }
     return await this.chatPreEntity.delete({ id });
   }
