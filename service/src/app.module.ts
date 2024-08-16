@@ -37,6 +37,8 @@ import { SalesModule } from './modules/sales/sales.module';
 import { SigninModule } from './modules/signin/signin.module';
 import { MenuModule } from './modules/menu/menu.module';
 import { ModelsModule } from './modules/models/models.module';
+import { AcceptLanguageResolver, I18nJsonLoader, I18nModule, QueryResolver } from 'nestjs-i18n';
+import * as path from 'path';
 
 @Global()
 @Module({
@@ -75,6 +77,15 @@ import { ModelsModule } from './modules/models/models.module';
     SigninModule,
     MenuModule,
     ModelsModule,
+    I18nModule.forRoot({
+      fallbackLanguage: 'ko',
+      loader: I18nJsonLoader,
+      loaderOptions: {
+        path: path.join(__dirname, '/i18n/'),
+        watch: true,
+      },
+      resolvers: [{ use: QueryResolver, options: ['lang'] }, AcceptLanguageResolver],
+    }),
   ],
   providers: [
     {
