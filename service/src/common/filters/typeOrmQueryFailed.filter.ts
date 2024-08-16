@@ -8,7 +8,7 @@ export class TypeOrmQueryFailedFilter implements ExceptionFilter {
     const response = ctx.getResponse();
     const request = ctx.getRequest();
     if ((exception as any).code === 'ER_DUP_ENTRY') {
-      throw new BadRequestException('该记录已经存在，请勿重复添加！');
+      throw new BadRequestException('该记录已经存在，请勿重复添加');
     } else {
       console.log('other query error');
     }

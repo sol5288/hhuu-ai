@@ -44,7 +44,7 @@ export class VerificationService {
       throw new HttpException('验证码不存在', HttpStatus.BAD_REQUEST);
     }
     if (v.used === VerificationUseStatusEnum.USED) {
-      throw new HttpException('当前验证码已被使用！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('当前验证码已被使用', HttpStatus.BAD_REQUEST);
     } else {
       v.used = VerificationUseStatusEnum.USED;
       await this.verifycationEntity.update({ id }, v);
@@ -77,7 +77,7 @@ export class VerificationService {
     const { accessKeyId, accessKeySecret, SignName, TemplateCode } = await this.globalConfigService.getPhoneVerifyConfig();
     const { phone, code } = messageInfo;
     if (!phone || !code) {
-      throw new HttpException('确实必要参数错误！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('确实必要参数错误', HttpStatus.BAD_REQUEST);
     }
     const client = new Core({ accessKeyId, accessKeySecret, endpoint: 'https://dysmsapi.aliyuncs.com', apiVersion: '2017-05-25' });
     const params = { PhoneNumbers: phone, SignName, TemplateCode, TemplateParam: JSON.stringify({ code }) };
@@ -87,10 +87,10 @@ export class VerificationService {
       if (response.Code === 'OK') {
         return true;
       } else {
-        throw new HttpException(response.Message || '验证码发送失败！', HttpStatus.BAD_REQUEST);
+        throw new HttpException(response.Message || '验证码发送失败', HttpStatus.BAD_REQUEST);
       }
     } catch (error) {
-      throw new HttpException(error?.data?.Message || '验证码发送失败！', HttpStatus.BAD_REQUEST);
+      throw new HttpException(error?.data?.Message || '验证码发送失败', HttpStatus.BAD_REQUEST);
     }
   }
 }

@@ -13,7 +13,7 @@ export class SuperAuthGuard extends JwtAuthGuard {
     if (user && user.role === 'super') {
       return true;
     } else {
-      throw new UnauthorizedException('非法操作、非超级管理员无权操作！');
+      throw new UnauthorizedException('非法操作、非超级管理员无权操作');
     }
   }
 }

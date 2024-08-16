@@ -58,7 +58,7 @@ export class AutoreplyService implements OnModuleInit {
     }
     await this.autoReplyEntity.save(body);
     await this.loadAutoReplyList();
-    return '添加问题成功！';
+    return '添加问题成功';
   }
 
   async updateAutoreply(body: UpdateAutpReplyDto) {

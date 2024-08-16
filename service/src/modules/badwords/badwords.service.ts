@@ -42,7 +42,7 @@ export class BadwordsService implements OnModuleInit {
     }
     if (triggeredWords.length) {
       await this.recordUserBadWords(userId, content, triggeredWords, ['自定义'], '自定义检测');
-      const tips = `您提交的信息中包含违规的内容、我们已对您的账户进行标记、请合规使用！`;
+      const tips = `您提交的信息中包含违规的内容、我们已对您的账户进行标记、请合规使用`;
       throw new HttpException(tips, HttpStatus.BAD_REQUEST);
     }
   }
@@ -90,7 +90,7 @@ export class BadwordsService implements OnModuleInit {
     if (conclusionType !== 1) {
       const types = [...new Set(data.map((item) => this.extractContent(item.msg)))];
       await this.recordUserBadWords(userId, content, ['***'], types, '百度云检测');
-      const tips = `您提交的信息中包含${types.join(',')}的内容、我们已对您的账户进行标记、请合规使用！`;
+      const tips = `您提交的信息中包含${types.join(',')}的内容、我们已对您的账户进行标记、请合规使用`;
       throw new HttpException(tips, HttpStatus.BAD_REQUEST);
     }
   }
@@ -122,7 +122,7 @@ export class BadwordsService implements OnModuleInit {
   formarTips(wordList) {
     const categorys = wordList.map((t) => t.category);
     const unSet = [...new Set(categorys)];
-    return `您提交的内容中包含${unSet.join(',')}的信息、我们已对您账号进行标记、请合规使用！`;
+    return `您提交的内容中包含${unSet.join(',')}的信息、我们已对您账号进行标记、请合规使用`;
   }
 
   /* 加载自定义的敏感词 */

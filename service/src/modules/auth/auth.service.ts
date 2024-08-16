@@ -72,10 +72,10 @@ export class AuthService {
     const key = `${nameSpace}:PHONECODE:${phone}`;
     const redisPhoneCode = await this.redisCacheService.get({ key });
     if (!redisPhoneCode) {
-      throw new HttpException('验证码已过期、请重新发送！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('验证码已过期、请重新发送', HttpStatus.BAD_REQUEST);
     }
     if (phoneCode !== redisPhoneCode) {
-      throw new HttpException('验证码填写错误、请重新输入！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('验证码填写错误、请重新输入', HttpStatus.BAD_REQUEST);
     }
 
     /* 创建用户 */
@@ -188,10 +188,10 @@ export class AuthService {
   async updatePassword(req: Request, body: UpdatePasswordDto) {
     const { id, client, role } = req.user;
     if (client && Number(client) > 0) {
-      throw new HttpException('无权此操作、请联系管理员！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('无权此操作、请联系管理员', HttpStatus.BAD_REQUEST);
     }
     if (role === 'admin') {
-      throw new HttpException('非法操作、请联系管理员！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('非法操作、请联系管理员', HttpStatus.BAD_REQUEST);
     }
     const bool = await this.userService.verifyUserPassword(id, body.oldPassword);
     if (!bool) {
@@ -204,7 +204,7 @@ export class AuthService {
   async updatePassByOther(req: Request, body: UpdatePassByOtherDto) {
     const { id, client } = req.user;
     if (!client) {
-      throw new HttpException('无权此操作！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('无权此操作', HttpStatus.BAD_REQUEST);
     }
     this.userService.updateUserPassword(id, body.password);
     return '密码修改成功';
@@ -249,14 +249,14 @@ export class AuthService {
 
     const ttl = await this.redisCacheService.ttl(key);
     if (ttl && ttl > 0) {
-      throw new HttpException(`${ttl}秒内不得重复发送短信！`, HttpStatus.BAD_REQUEST);
+      throw new HttpException(`${ttl}秒内不得重复发送短信`, HttpStatus.BAD_REQUEST);
     }
     const code = createRandomCode();
     const messageInfo = { phone, code };
     await this.verificationService.sendPhoneCode(messageInfo);
     /* 记录发送的验证码是什么 */
     await this.redisCacheService.set({ key, val: code }, 1 * 60);
-    return '验证码发送成功、请填写验证码完成注册！';
+    return '验证码发送成功、请填写验证码完成注册';
   }
 
   /* create token */

@@ -11,7 +11,7 @@ export class MailerService {
       await this.mailerService.sendMail(options);
     } catch (error) {
       console.log('error: ', error);
-      throw new HttpException('邮件发送失败！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('邮件发送失败', HttpStatus.BAD_REQUEST);
     }
   }
 }

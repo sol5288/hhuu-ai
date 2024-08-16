@@ -15,11 +15,11 @@ export class QueueService implements OnApplicationBootstrap {
     private readonly midjourneyService: MidjourneyService,
     private readonly userBalanceService: UserBalanceService,
     private readonly globalConfigService: GlobalConfigService,
-  ) { }
+  ) {}
   private readonly jobIds: any[] = [];
 
   async onApplicationBootstrap() {
-    // Logger.debug('服务启动时清除所有之前未执行完毕的队列任务！', 'QueueService');
+    // Logger.debug('服务启动时清除所有之前未执行完毕的队列任务', 'QueueService');
     await this.mjDrawQueue.clean(0, 'active');
     /* 改变所有数据库状态不对的值 */
     await this.midjourneyService.cleanQueue();
@@ -41,11 +41,7 @@ export class QueueService implements OnApplicationBootstrap {
       const res = await this.midjourneyService.addDrawQueue(params);
       const timeout = (await this.globalConfigService.getConfigs(['mjTimeoutMs'])) || 200000;
       /* 添加任务到队列 通过imgUrl判断是不是图生图 */
-      const job = await this.mjDrawQueue.add(
-        'mjDraw',
-        { id: res.id, action: action, userId: req.user.id },
-        { delay: 1000, timeout: +timeout },
-      );
+      const job = await this.mjDrawQueue.add('mjDraw', { id: res.id, action: action, userId: req.user.id }, { delay: 1000, timeout: +timeout });
       /* 绘图和图生图扣除余额4 */
       this.jobIds.push(job.id);
       return true;
@@ -61,10 +57,9 @@ export class QueueService implements OnApplicationBootstrap {
     }
 
     if (!drawId || !orderId) {
-      throw new HttpException('缺少必要参数！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('缺少必要参数', HttpStatus.BAD_REQUEST);
     }
     /* 图片操作 */
-
   }
 
   /* 查询队列 */

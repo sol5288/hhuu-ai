@@ -13,7 +13,7 @@ export class TaskService {
     private readonly userBalanceEntity: Repository<UserBalanceEntity>,
     private readonly globalConfigService: GlobalConfigService,
     private readonly modelsService: ModelsService,
-  ) { }
+  ) {}
 
   /* 每小时刷新一次微信的token */
   @Cron(CronExpression.EVERY_HOUR)
@@ -34,7 +34,7 @@ export class TaskService {
       this.userBalanceEntity
         .update({ id: user.id }, { expirationTime: null, packageId: 0, memberModel3Count: 0, memberModel4Count: 0, memberDrawMjCount: 0 })
         .then((res) => {
-          Logger.debug(`${user.id}会员已到期、清空所有余额并移除会员身份！`, 'TaskService');
+          Logger.debug(`${user.id}会员已到期、清空所有余额并移除会员身份`, 'TaskService');
         });
     });
   }

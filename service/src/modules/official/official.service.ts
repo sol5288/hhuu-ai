@@ -16,7 +16,7 @@ export class OfficialService {
     private readonly userService: UserService,
     private readonly authService: AuthService,
     private readonly globalConfigService: GlobalConfigService,
-    private readonly chatgptService: ChatgptService
+    private readonly chatgptService: ChatgptService,
   ) {}
   private sceneStrMap = {};
   private scanedSceneStrMap = {};
@@ -162,14 +162,16 @@ export class OfficialService {
         reject(new Error('请求超时'));
       }, 4800);
     });
-    let question: any = ''
+    let question: any = '';
     try {
       console.log('来自公众号的询问问题 =======> ', msg);
       const response = await Promise.race([this.chatgptService.chatSyncFree(msg), timeoutPromise]);
-      question = response || await this.autoreplyService.checkAutoReply(msg);
+      question = response || (await this.autoreplyService.checkAutoReply(msg));
     } catch (error) {
-      console.log('来自公众号的回复问题 =======> 超时导致问题无法回答完整')
-      question = (await this.globalConfigService.getConfigs(['officialAutoReplyText'])) || '由于公众号的回复限制、过长的问题我们可能无法回复、您可以前往我们的官方站点享受更加完善的服务、如果您有更多问题、欢迎像我提问！'
+      console.log('来自公众号的回复问题 =======> 超时导致问题无法回答完整');
+      question =
+        (await this.globalConfigService.getConfigs(['officialAutoReplyText'])) ||
+        '由于公众号的回复限制、过长的问题我们可能无法回复、您可以前往我们的官方站点享受更加完善的服务、如果您有更多问题、欢迎像我提问';
     }
     return question;
   }

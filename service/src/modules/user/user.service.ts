@@ -59,7 +59,7 @@ export class UserService {
     if (invitedBy) {
       const b = await this.userEntity.findOne({ where: { inviteCode: invitedBy } });
       if (!b) {
-        throw new HttpException('无效的邀请码！', HttpStatus.BAD_REQUEST);
+        throw new HttpException('无效的邀请码', HttpStatus.BAD_REQUEST);
       }
     }
 
@@ -68,7 +68,7 @@ export class UserService {
     const u: UserEntity = await this.userEntity.findOne({ where: where });
 
     if (u && u.status !== UserStatusEnum.PENDING) {
-      throw new HttpException('用户名或者邮箱已被注册！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('用户名或者邮箱已被注册', HttpStatus.BAD_REQUEST);
     }
 
     try {
@@ -153,12 +153,12 @@ export class UserService {
     if (uid > 0) {
       u = await this.userEntity.findOne({ where: { id: uid } });
       if (!u) {
-        throw new HttpException('当前账户不存在！', HttpStatus.BAD_REQUEST);
+        throw new HttpException('当前账户不存在', HttpStatus.BAD_REQUEST);
       }
       if (u.password.startsWith('$2a$') || u.password.startsWith('$2b$') || u.password.startsWith('$2y$')) {
         // 如果是默认
         if (!bcrypt.compareSync(password, u.password)) {
-          throw new HttpException('当前密码错误！', HttpStatus.BAD_REQUEST);
+          throw new HttpException('当前密码错误', HttpStatus.BAD_REQUEST);
         }
       } else {
         //如果是md5加密
@@ -167,7 +167,7 @@ export class UserService {
         const md5 = crypto.createHash('md5').update(password).digest('hex');
         console.log('----,', md5);
         if (md5 !== u.password) {
-          throw new HttpException('当前密码错误！', HttpStatus.BAD_REQUEST);
+          throw new HttpException('当前密码错误', HttpStatus.BAD_REQUEST);
         }
       }
     }
@@ -177,12 +177,12 @@ export class UserService {
       const where: any = [{ username }, { email: username }];
       u = await this.userEntity.findOne({ where: where });
       if (!u) {
-        throw new HttpException('当前账户不存在！', HttpStatus.BAD_REQUEST);
+        throw new HttpException('当前账户不存在', HttpStatus.BAD_REQUEST);
       }
       if (u.password.startsWith('$2a$') || u.password.startsWith('$2b$') || u.password.startsWith('$2y$')) {
         // 如果是默认
         if (!bcrypt.compareSync(password, u.password)) {
-          throw new HttpException('当前密码错误！', HttpStatus.BAD_REQUEST);
+          throw new HttpException('当前密码错误', HttpStatus.BAD_REQUEST);
         }
       } else {
         //如果是md5加密
@@ -192,7 +192,7 @@ export class UserService {
         console.log('----,', md5);
 
         if (md5 !== u.password) {
-          throw new HttpException('当前密码错误！', HttpStatus.BAD_REQUEST);
+          throw new HttpException('当前密码错误', HttpStatus.BAD_REQUEST);
         }
       }
     }
@@ -202,12 +202,12 @@ export class UserService {
       const where: any = [{ phone }];
       u = await this.userEntity.findOne({ where: where });
       if (!u) {
-        throw new HttpException('当前账户不存在！', HttpStatus.BAD_REQUEST);
+        throw new HttpException('当前账户不存在', HttpStatus.BAD_REQUEST);
       }
       if (u.password.startsWith('$2a$') || u.password.startsWith('$2b$') || u.password.startsWith('$2y$')) {
         // 如果是默认
         if (!bcrypt.compareSync(password, u.password)) {
-          throw new HttpException('当前密码错误！', HttpStatus.BAD_REQUEST);
+          throw new HttpException('当前密码错误', HttpStatus.BAD_REQUEST);
         }
       } else {
         //如果是md5加密
@@ -217,13 +217,13 @@ export class UserService {
         console.log('----,', md5);
 
         if (md5 !== u.password) {
-          throw new HttpException('当前密码错误！', HttpStatus.BAD_REQUEST);
+          throw new HttpException('当前密码错误', HttpStatus.BAD_REQUEST);
         }
       }
     }
 
     if (!u) {
-      throw new HttpException('当前账户不存在！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('当前账户不存在', HttpStatus.BAD_REQUEST);
     }
     if (u.status !== UserStatusEnum.ACTIVE) {
       throw new HttpException(UserStatusErrMsg[u.status], HttpStatus.BAD_REQUEST);
@@ -270,13 +270,13 @@ export class UserService {
     if (role === 'visitor') return true;
     const u = await this.userEntity.findOne({ where: { id: userId } });
     if (!u) {
-      throw new HttpException('当前用户信息失效、请重新登录！', HttpStatus.UNAUTHORIZED);
+      throw new HttpException('当前用户信息失效、请重新登录', HttpStatus.UNAUTHORIZED);
     }
     if (u.status === UserStatusEnum.BLACKLISTED) {
-      throw new HttpException('您的账户已被永久加入黑名单、如有疑问、请联系管理员！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('您的账户已被永久加入黑名单、如有疑问、请联系管理员', HttpStatus.BAD_REQUEST);
     }
     if (u.status === UserStatusEnum.LOCKED) {
-      throw new HttpException('您的账户已被封禁、如有疑问、请联系管理员！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('您的账户已被封禁、如有疑问、请联系管理员', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -287,7 +287,7 @@ export class UserService {
       select: ['username', 'avatar', 'role', 'email', 'sign', 'inviteCode', 'openId', 'consecutiveDays'],
     });
     if (!userInfo) {
-      throw new HttpException('当前用户信息失效、请重新登录！', HttpStatus.UNAUTHORIZED);
+      throw new HttpException('当前用户信息失效、请重新登录', HttpStatus.UNAUTHORIZED);
     }
     userInfo.isBindWx = !!userInfo?.openId;
     delete userInfo.openId;
@@ -311,23 +311,23 @@ export class UserService {
 
     const u = await this.userEntity.findOne({ where: { id } });
     if (!u) {
-      throw new HttpException('当前用户不存在！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('当前用户不存在', HttpStatus.BAD_REQUEST);
     }
     if (body.username && u.username === body.username) {
-      throw new HttpException('没有变更，无需更改！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('没有变更，无需更改', HttpStatus.BAD_REQUEST);
     }
 
     if (body.username) {
       const u = await this.userEntity.findOne({ where: { username: body.username, id: Not(id) } });
       if (u) {
-        throw new HttpException('用户名已存在！', HttpStatus.BAD_REQUEST);
+        throw new HttpException('用户名已存在', HttpStatus.BAD_REQUEST);
       }
     }
     const r = await this.userEntity.update({ id }, body);
     if (r.affected <= 0) {
-      throw new HttpException('修改用户信息失败！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('修改用户信息失败', HttpStatus.BAD_REQUEST);
     }
-    return '修改用户信息成功！';
+    return '修改用户信息成功';
   }
 
   /* 修改用户密码 */
@@ -349,11 +349,11 @@ export class UserService {
     const inviteCode = generateRandomString();
     const user = await this.userEntity.findOne({ where: { inviteCode } });
     if (user) {
-      throw new HttpException('生成邀请码失败，请重新试一次吧！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('生成邀请码失败，请重新试一次吧', HttpStatus.BAD_REQUEST);
     }
     const r = await this.userEntity.update({ id }, { inviteCode });
     if (r.affected <= 0) {
-      throw new HttpException('生成邀请码失败，请重新试一次吧！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('生成邀请码失败，请重新试一次吧', HttpStatus.BAD_REQUEST);
     }
     return inviteCode;
   }
@@ -380,7 +380,7 @@ export class UserService {
       return { rows, count };
     } catch (error) {
       console.log('error: ', error);
-      throw new HttpException('获取邀请记录失败！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('获取邀请记录失败', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -455,26 +455,26 @@ export class UserService {
     const { id, status } = body;
     const n = await this.userEntity.findOne({ where: { id } });
     if (!n) {
-      throw new HttpException('用户不存在！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('用户不存在', HttpStatus.BAD_REQUEST);
     }
     if (n.role === 'super') {
-      throw new HttpException('超级管理员不可被操作！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('超级管理员不可被操作', HttpStatus.BAD_REQUEST);
     }
 
     if (n.status === UserStatusEnum.PENDING) {
-      throw new HttpException('未激活用户不可手动变更状态！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('未激活用户不可手动变更状态', HttpStatus.BAD_REQUEST);
     }
     if (n.role === 'super') {
-      throw new HttpException('超级管理员不可被操作！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('超级管理员不可被操作', HttpStatus.BAD_REQUEST);
     }
     if (status === UserStatusEnum.PENDING) {
-      throw new HttpException('不可将用户置为未激活状态！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('不可将用户置为未激活状态', HttpStatus.BAD_REQUEST);
     }
     const r = await this.userEntity.update({ id }, { status });
     if (r.affected <= 0) {
-      throw new HttpException('修改用户状态失败！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('修改用户状态失败', HttpStatus.BAD_REQUEST);
     }
-    return '修改用户状态成功！';
+    return '修改用户状态成功';
   }
 
   /* 重置用户密码 */
@@ -482,13 +482,13 @@ export class UserService {
     const { id } = body;
     const u = await this.userEntity.findOne({ where: { id } });
     if (!u) {
-      throw new HttpException('用户不存在！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('用户不存在', HttpStatus.BAD_REQUEST);
     }
     const defaultPassword = '123456';
     const hashPassword = bcrypt.hashSync(defaultPassword, 10);
     const raw = await this.userEntity.update({ id }, { password: hashPassword });
     if (raw.affected <= 0) {
-      throw new HttpException('重置密码失败！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('重置密码失败', HttpStatus.BAD_REQUEST);
     }
     return `密码重置为[${defaultPassword}]成功!`;
   }
@@ -530,14 +530,14 @@ export class UserService {
   async bindWx(openId, userId) {
     try {
       const user = await this.userEntity.findOne({ where: { id: userId } });
-      if (!user) return { status: false, msg: '当前绑定用户不存在！' };
+      if (!user) return { status: false, msg: '当前绑定用户不存在' };
       const bindU = await this.userEntity.findOne({ where: { openId } });
-      if (bindU) return { status: false, msg: '该微信已绑定其他账号！' };
+      if (bindU) return { status: false, msg: '该微信已绑定其他账号' };
       const res = await this.userEntity.update({ id: userId }, { openId });
-      if (res.affected <= 0) return { status: false, msg: '绑定微信失败、请联系管理员！' };
-      return { status: true, msg: '恭喜您绑定成功、后续可直接扫码登录了！' };
+      if (res.affected <= 0) return { status: false, msg: '绑定微信失败、请联系管理员' };
+      return { status: true, msg: '恭喜您绑定成功、后续可直接扫码登录了' };
     } catch (error) {
-      return { status: false, msg: '绑定微信失败、请联系管理员！' };
+      return { status: false, msg: '绑定微信失败、请联系管理员' };
     }
   }
 
@@ -552,10 +552,10 @@ export class UserService {
     const { username, password, phone, phoneCode } = params;
     const user = await this.userEntity.findOne({ where: [{ username }, { phone }] });
     if (user && user.username === username) {
-      throw new HttpException('用户名已存在、请更换用户名！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('用户名已存在、请更换用户名', HttpStatus.BAD_REQUEST);
     }
     if (user && user.phone === phone) {
-      throw new HttpException('当前手机号已注册、请勿重复注册！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('当前手机号已注册、请勿重复注册', HttpStatus.BAD_REQUEST);
     }
   }
 

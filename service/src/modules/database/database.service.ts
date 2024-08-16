@@ -49,7 +49,7 @@ export class DatabaseService implements OnModuleInit {
       );
     } catch (error) {
       console.log('error: ', error);
-      throw new HttpException('创建默认超级管理员失败！', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException('创建默认超级管理员失败', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -147,7 +147,7 @@ export class DatabaseService implements OnModuleInit {
       Logger.log(`初始化网站配置信息成功、如您需要修改网站配置信息，请前往管理系统系统配置设置 ==============> 请注意查阅`, 'DatabaseService');
     } catch (error) {
       console.log('error: ', error);
-      throw new HttpException('创建默认网站配置失败！', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException('创建默认网站配置失败', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

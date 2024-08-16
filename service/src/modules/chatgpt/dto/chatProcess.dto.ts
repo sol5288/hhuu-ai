@@ -13,7 +13,7 @@ export class Options {
 
 export class ChatProcessDto {
   @ApiProperty({ example: 'hello, Who are you', description: '对话信息' })
-  @IsNotEmpty({ message: '提问信息不能为空！' })
+  @IsNotEmpty({ message: '提问信息不能为空' })
   prompt: string;
 
   @ApiProperty({ example: '{ parentMessageId: 0 }', description: '上次对话信息', required: false })

@@ -158,7 +158,7 @@ export class UserBalanceService {
       await this.userBalanceEntity.save({ userId, model3Count, model4Count, drawMjCount, useTokens: 0 });
     } catch (error) {
       console.log('error: ', error);
-      throw new HttpException('注册赠送失败,请联系管理员！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('注册赠送失败,请联系管理员', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -182,12 +182,12 @@ export class UserBalanceService {
     /* 如果是会员 */
     if (b.packageId && b[memberKey] < amount) {
       if (b[baseKey] < amount) {
-        throw new HttpException(`您的账户余额不足,如果想继续体验服务,请联系管理员 <VX: ${vxNumber}> 或购买专属套餐 ！`, HttpStatus.PAYMENT_REQUIRED);
+        throw new HttpException(`您的账户余额不足,如果想继续体验服务,请联系管理员 <VX: ${vxNumber}> 或购买专属套餐 `, HttpStatus.PAYMENT_REQUIRED);
       }
     }
     /* 如果不是会员 */
     if (!b.packageId && b[baseKey] < amount) {
-      throw new HttpException(`您的账户余额不足,如果想继续体验服务,请联系管理员 <VX: ${vxNumber}> 或购买专属套餐 ！`, HttpStatus.PAYMENT_REQUIRED);
+      throw new HttpException(`您的账户余额不足,如果想继续体验服务,请联系管理员 <VX: ${vxNumber}> 或购买专属套餐 `, HttpStatus.PAYMENT_REQUIRED);
     }
     return b;
   }
@@ -220,7 +220,7 @@ export class UserBalanceService {
       data[baseKey] = data[baseKey] + amount;
       /* 判断余额 */
       if (data[baseKey] > settings[baseKey]) {
-        throw new HttpException(`今日当前类型免费额度已经使用完毕、建议您注册账户体验更加完整的服务内容！`, HttpStatus.PAYMENT_REQUIRED);
+        throw new HttpException(`今日当前类型免费额度已经使用完毕、建议您注册账户体验更加完整的服务内容`, HttpStatus.PAYMENT_REQUIRED);
       } else {
         await this.fingerprintLogEntity.save(data);
         return true;
@@ -248,7 +248,7 @@ export class UserBalanceService {
         data[baseKey] = data[baseKey] + amount;
       }
       if (data[baseKey] > settings[baseKey]) {
-        throw new HttpException(`今日当前类型免费额度已经使用完毕、建议您注册账户体验更加完整的服务内容！`, HttpStatus.PAYMENT_REQUIRED);
+        throw new HttpException(`今日当前类型免费额度已经使用完毕、建议您注册账户体验更加完整的服务内容`, HttpStatus.PAYMENT_REQUIRED);
       } else {
         await this.fingerprintLogEntity.update({ fingerprint: id }, data);
         return true;
@@ -267,7 +267,7 @@ export class UserBalanceService {
   async deductFromBalance(userId, deductionType, amount, UseAmount = 0) {
     const b = await this.userBalanceEntity.findOne({ where: { userId } });
     if (!b) {
-      throw new HttpException('缺失当前用户账户记录！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('缺失当前用户账户记录', HttpStatus.BAD_REQUEST);
     }
 
     /* 如果是会员 */
@@ -304,7 +304,7 @@ export class UserBalanceService {
     useKey === 'useModel4Token' && (updateBalance['useModel4Count'] = b['useModel4Count'] + amount);
     const result = await this.userBalanceEntity.update({ userId }, updateBalance);
     if (result.affected === 0) {
-      throw new HttpException('消费余额失败！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('消费余额失败', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -334,7 +334,7 @@ export class UserBalanceService {
         if (user) {
           return await this.queryUserBalance(userId);
         } else {
-          throw new HttpException('查询当前用户余额失败！', HttpStatus.BAD_REQUEST);
+          throw new HttpException('查询当前用户余额失败', HttpStatus.BAD_REQUEST);
         }
       }
       res.sumModel3Count = res.packageId ? res.model3Count + res.memberModel3Count : res.model3Count;
@@ -362,7 +362,7 @@ export class UserBalanceService {
     const { model3Count = 0, model4Count = 0, drawMjCount = 0 } = userBalanceInfo;
     const balance = await this.userBalanceEntity.findOne({ where: { userId } });
     if (balance) {
-      throw new HttpException('当前用户无需创建账户信息！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('当前用户无需创建账户信息', HttpStatus.BAD_REQUEST);
     }
     return await this.userBalanceEntity.save({ userId, model3Count, model4Count, drawMjCount });
   }
@@ -372,7 +372,7 @@ export class UserBalanceService {
     try {
       const userBalanceInfo = (await this.userBalanceEntity.findOne({ where: { userId } })) || (await this.createBaseUserBalance(userId));
       if (!userBalanceInfo) {
-        throw new HttpException('查询用户账户信息失败！', HttpStatus.BAD_REQUEST);
+        throw new HttpException('查询用户账户信息失败', HttpStatus.BAD_REQUEST);
       }
       const { model3Count, model4Count, drawMjCount, memberModel3Count, memberModel4Count, memberDrawMjCount } = userBalanceInfo;
       let params = {};
@@ -380,11 +380,11 @@ export class UserBalanceService {
       if (days > 0) {
         const { packageId } = balance;
         if (!packageId) {
-          throw new HttpException('缺失当前套餐ID、充值失败！', HttpStatus.BAD_REQUEST);
+          throw new HttpException('缺失当前套餐ID、充值失败', HttpStatus.BAD_REQUEST);
         }
         const pkgInfo = await this.cramiPackageEntity.findOne({ where: { id: packageId } });
         if (!pkgInfo) {
-          throw new HttpException('当前套餐不存在！', HttpStatus.BAD_REQUEST);
+          throw new HttpException('当前套餐不存在', HttpStatus.BAD_REQUEST);
         }
         const { weight } = pkgInfo; // 套餐的权重 = 会员等级
         /* 如果不是会员那么则直接充值进入并修改会员信息为会员身份 */
@@ -438,7 +438,7 @@ export class UserBalanceService {
       }
     } catch (error) {
       console.log('error: ', error);
-      throw new HttpException('用户充值失败！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('用户充值失败', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -449,7 +449,7 @@ export class UserBalanceService {
       const { userId, goodsId } = order;
       const pkg = await this.cramiPackageEntity.findOne({ where: { id: order.goodsId, status: 1 } });
       if (!pkg) {
-        throw new HttpException('非法操作、当前充值套餐暂不存在！', HttpStatus.BAD_REQUEST);
+        throw new HttpException('非法操作、当前充值套餐暂不存在', HttpStatus.BAD_REQUEST);
       }
       const { model3Count, model4Count, drawMjCount, days, name: pkgName } = pkg;
       const money = {
@@ -488,7 +488,7 @@ export class UserBalanceService {
       }
     } catch (error) {
       console.log('error: ', error);
-      throw new HttpException('充值失败！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('充值失败', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -542,7 +542,7 @@ export class UserBalanceService {
       return { rows, count };
     } catch (error) {
       console.log('error: ', error);
-      throw new HttpException('查询用户账户失败！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('查询用户账户失败', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -564,7 +564,7 @@ export class UserBalanceService {
     if (!upgradeStatus) {
       await this.globalConfigService.setConfig({ settings: [{ configKey: 'upgradeStatus', configVal: '1' }] });
     } else {
-      throw new HttpException('您已经升级过了、请勿重复操作！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('您已经升级过了、请勿重复操作', HttpStatus.BAD_REQUEST);
     }
     users.forEach((user: any) => {
       const { id } = user;

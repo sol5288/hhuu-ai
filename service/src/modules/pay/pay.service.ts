@@ -105,7 +105,7 @@ export class PayService {
       'payHupiSecret',
       'payHupiNotifyUrl',
       'payHupiReturnUrl',
-      'payHupiGatewayUrl'
+      'payHupiGatewayUrl',
     ]);
     const params = {};
     params['version'] = '1.1';
@@ -394,7 +394,7 @@ export class PayService {
       const res = await pay.transactions_h5(params);
       if (res.status === 403) {
         const errmsg = res?.errRaw?.response?.text?.message;
-        throw new HttpException(res?.message || '微信H5支付失败！', HttpStatus.BAD_REQUEST);
+        throw new HttpException(res?.message || '微信H5支付失败', HttpStatus.BAD_REQUEST);
       }
       const { h5_url } = res;
       return { url: h5_url };

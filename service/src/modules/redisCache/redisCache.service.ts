@@ -57,8 +57,8 @@ export class RedisCacheService implements OnModuleInit {
 
   /* 检测token是否有效 */
   async checkTokenAuth(token, req) {
-    const {id: userId, role} = req.user
-    if(role === 'visitor') return true
+    const { id: userId, role } = req.user;
+    if (role === 'visitor') return true;
     const storedToken = await this.redisClient.get(`token:${userId}`);
 
     /* first set token */
@@ -72,7 +72,7 @@ export class RedisCacheService implements OnModuleInit {
       /* 管理员属于白名单 */
       if (['super', 'admin'].includes(role)) return true;
       // 如果 Token 不存在或者不匹配，则认为验证失败
-      throw new HttpException('您已在其他设备覆盖登录、请您重新登录！', HttpStatus.UNAUTHORIZED);
+      throw new HttpException('您已在其他设备覆盖登录、请您重新登录', HttpStatus.UNAUTHORIZED);
       // return true;
     }
   }

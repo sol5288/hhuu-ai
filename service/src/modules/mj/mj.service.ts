@@ -95,7 +95,7 @@ export class MjService {
       /* 发送绘画指令 sendRes 如果有结果表示历史有存在的 本次不发新的绘图指令了 false表示正常发送了指令 */
       const sendRes = await this.sendDrawInteractions(prompt, histroyMessageIds, randomId);
       if (sendRes) {
-        console.log(`历史中存在当前图片、直接获取！`);
+        console.log(`历史中存在当前图片、直接获取`);
         drawDetail = sendRes;
       } else {
         drawDetail = await this.pollForResult(prompt, histroyMessageIds, randomId);
@@ -111,9 +111,9 @@ export class MjService {
       const { filename, url, width, height, size } = attachments[0];
       console.log('拿到了远程地址: ', url);
 
-      const mjNotSaveImg = this.globalConfigService.getConfigs(['mjNotSaveImg'])
-      let cosUrl = ''
-      if(!Number(mjNotSaveImg) || Number(mjNotSaveImg) === 0 ){
+      const mjNotSaveImg = this.globalConfigService.getConfigs(['mjNotSaveImg']);
+      let cosUrl = '';
+      if (!Number(mjNotSaveImg) || Number(mjNotSaveImg) === 0) {
         /* 将图片存入cos */
         cosUrl = await this.uploadService.uploadFileFromUrl({ filename, url });
         console.log('存入图片完成: ', cosUrl);
@@ -132,7 +132,7 @@ export class MjService {
         variationId: id,
         upscaleId: id, // 后续放大图片的时候需要排除掉这个id避免比对拿到老的
         group: 1,
-        isSaveImg:  !Number(mjNotSaveImg) || Number(mjNotSaveImg) === 0,
+        isSaveImg: !Number(mjNotSaveImg) || Number(mjNotSaveImg) === 0,
         fileInfo: JSON.stringify({ width, height, size, filename, cosUrl }),
       };
       await this.chatLogService.saveChatLog(logInfo);
@@ -168,11 +168,11 @@ export class MjService {
         throw new HttpException('当前图片已经放大过了、请勿重复放大!', HttpStatus.BAD_REQUEST);
       }
       const { prompt, extend } = historyLog;
-      let historyDetailDrawInfo:any = null
+      let historyDetailDrawInfo: any = null;
       try {
         historyDetailDrawInfo = JSON.parse(extend);
       } catch (error) {
-        historyDetailDrawInfo = []
+        historyDetailDrawInfo = [];
       }
       const { components = [] } = historyDetailDrawInfo;
       if (!components.length) {
@@ -201,9 +201,9 @@ export class MjService {
         throw new HttpException('放大当前图片失败', HttpStatus.BAD_REQUEST);
       }
       const { filename, url, width, height, size } = attachments[0];
-      const mjNotSaveImg = this.globalConfigService.getConfigs(['mjNotSaveImg'])
-      let cosUrl = ''
-      if(!Number(mjNotSaveImg) || Number(mjNotSaveImg) === 0 ){
+      const mjNotSaveImg = this.globalConfigService.getConfigs(['mjNotSaveImg']);
+      let cosUrl = '';
+      if (!Number(mjNotSaveImg) || Number(mjNotSaveImg) === 0) {
         /* 将图片存入cos */
         cosUrl = await this.uploadService.uploadFileFromUrl({ filename, url });
         console.log('存入图片完成: ', cosUrl);
@@ -253,11 +253,11 @@ export class MjService {
         throw new HttpException('历史记录中不存在当前图片、请确认您需要变换的图片是否存在', HttpStatus.BAD_REQUEST);
       }
       const { prompt, extend } = historyLog;
-      let historyDetailDrawInfo:any = null
+      let historyDetailDrawInfo: any = null;
       try {
         historyDetailDrawInfo = JSON.parse(extend);
       } catch (error) {
-        historyDetailDrawInfo = []
+        historyDetailDrawInfo = [];
       }
       const { components = [] } = historyDetailDrawInfo;
       if (!components.length) {
@@ -284,9 +284,9 @@ export class MjService {
       }
       const { filename, url, width, height, size } = attachments[0];
       /* 将图片存入cos */
-      const mjNotSaveImg = this.globalConfigService.getConfigs(['mjNotSaveImg'])
-      let cosUrl = ''
-      if(!Number(mjNotSaveImg) || Number(mjNotSaveImg) === 0 ){
+      const mjNotSaveImg = this.globalConfigService.getConfigs(['mjNotSaveImg']);
+      let cosUrl = '';
+      if (!Number(mjNotSaveImg) || Number(mjNotSaveImg) === 0) {
         cosUrl = await this.uploadService.uploadFileFromUrl({ filename, url });
         console.log('存入图片完成: ', cosUrl);
       }
@@ -305,7 +305,7 @@ export class MjService {
         variationId: id, // 变换图片的id 后续在比对中排除就可以拿到最新的变化信息了
         action: 'enlarge',
         orderId: params.orderId,
-        isSaveImg:  !Number(mjNotSaveImg) || Number(mjNotSaveImg) === 0,
+        isSaveImg: !Number(mjNotSaveImg) || Number(mjNotSaveImg) === 0,
         fileInfo: JSON.stringify({ width, height, size, filename, cosUrl }),
       };
       await this.chatLogService.saveChatLog(logInfo);
@@ -398,7 +398,7 @@ export class MjService {
     }
 
     if (!variationImgDetail) {
-      throw new HttpException('变换当前图片超时！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('变换当前图片超时', HttpStatus.BAD_REQUEST);
     }
     return variationImgDetail;
   }
@@ -487,14 +487,14 @@ export class MjService {
         pollingCount++;
       }
       if (!drawDetail) {
-        throw new HttpException('绘画超时，请稍后再试！', HttpStatus.BAD_REQUEST);
+        throw new HttpException('绘画超时，请稍后再试', HttpStatus.BAD_REQUEST);
       }
       const endTime = Date.now();
       console.log(`本次绘图耗时: ${Math.floor((endTime - startTime) / 1000)} S`);
       return drawDetail;
     } catch (err) {
       console.error(err.message);
-      throw new HttpException('网络连接失败，请稍后再试！', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException('网络连接失败，请稍后再试', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -578,7 +578,7 @@ export class MjService {
     const m = await this.balanceEntity.findOne({ where: { userId: req.user.id } });
     const { id, balance } = m;
     if (!balance || m?.balance < 1) {
-      throw new HttpException('您当前暂无MJ绘画余额！！！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('您当前暂无MJ绘画余额', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -599,8 +599,8 @@ export class MjService {
     if (this.rateLimits[id]) {
       const val = this.rateLimits[id];
       if (val > Date.now()) {
-        console.log(`当前用户 ${id} 请求过于频繁！`);
-        throw new HttpException(`由于速率限制、当前普通用户限制为${mjRateLimit}秒请求一次、请合理使用！`, HttpStatus.BAD_REQUEST);
+        console.log(`当前用户 ${id} 请求过于频繁`);
+        throw new HttpException(`由于速率限制、当前普通用户限制为${mjRateLimit}秒请求一次、请合理使用`, HttpStatus.BAD_REQUEST);
       } else {
         this.rateLimits[id] = Date.now() + Number(mjRateLimit) * 1000;
       }

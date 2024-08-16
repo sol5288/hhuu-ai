@@ -1,11 +1,10 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { get_encoding } from '@dqbd/tiktoken'
+import { get_encoding } from '@dqbd/tiktoken';
 import { removeSpecialCharacters } from '@/common/utils';
 import { ConsoleLogger, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import * as uuid from 'uuid';
 
-
-const tokenizer = get_encoding('cl100k_base')
+const tokenizer = get_encoding('cl100k_base');
 
 interface SendMessageResult {
   id?: string;
@@ -16,12 +15,12 @@ interface SendMessageResult {
 
 function getFullUrl(proxyUrl) {
   const processedUrl = proxyUrl.endsWith('/') ? proxyUrl.slice(0, -1) : proxyUrl;
-  const baseUrl = processedUrl || 'https://api.openai.com'
-  return `${baseUrl}/v1/chat/completions`
+  const baseUrl = processedUrl || 'https://api.openai.com';
+  return `${baseUrl}/v1/chat/completions`;
 }
 
 export async function sendMessageFromOpenAi(messagesHistory, inputs, uploadService?) {
-  const { onProgress, maxToken, apiKey, model, temperature = 0.8, proxyUrl, prompt } = inputs
+  const { onProgress, maxToken, apiKey, model, temperature = 0.8, proxyUrl, prompt } = inputs;
   if (model.includes('dall')) {
     let result: any = { text: '', imageUrl: '' };
     try {
@@ -35,16 +34,16 @@ export async function sendMessageFromOpenAi(messagesHistory, inputs, uploadServi
         data: {
           prompt: prompt,
           model: model,
-          response_format: 'b64_json'
+          response_format: 'b64_json',
         },
-      }
+      };
       const response: any = await axios(options);
-      const { b64_json, revised_prompt } = response.data.data[0]
+      const { b64_json, revised_prompt } = response.data.data[0];
       const buffer = Buffer.from(b64_json, 'base64');
       let imgUrl = '';
       try {
         const filename = uuid.v4().slice(0, 10) + '.png';
-        Logger.debug(`------> 开始上传图片！！！`, 'MidjourneyService');
+        Logger.debug(`------> 开始上传图片`, 'MidjourneyService');
         const buffer = Buffer.from(b64_json, 'base64');
         // imgUrl = await uploadService.uploadFileFromUrl({ filename, url })
         imgUrl = await uploadService.uploadFile({ filename, buffer });
@@ -52,16 +51,16 @@ export async function sendMessageFromOpenAi(messagesHistory, inputs, uploadServi
       } catch (error) {
         Logger.error(`上传图片过程中出现错误: ${error}`, 'MidjourneyService');
       }
-      result.imageUrl = imgUrl
+      result.imageUrl = imgUrl;
       result.text = revised_prompt;
-      onProgress && onProgress({ text: result.text })
+      onProgress && onProgress({ text: result.text });
       return result;
     } catch (error) {
       const status = error?.response?.status || 500;
       console.log('openai-draw error: ', JSON.stringify(error), status);
       const message = error?.response?.data?.error?.message;
       if (status === 429) {
-        result.text = '当前请求已过载、请稍等会儿再试试吧！';
+        result.text = '当前请求已过载、请稍等会儿再试试吧';
         return result;
       }
       if (status === 400 && message.includes('This request has been blocked by our content filters')) {
@@ -69,18 +68,18 @@ export async function sendMessageFromOpenAi(messagesHistory, inputs, uploadServi
         return result;
       }
       if (status === 400 && message.includes('Billing hard limit has been reached')) {
-        result.text = '当前模型key已被封禁、已冻结当前调用Key、尝试重新对话试试吧！';
+        result.text = '当前模型key已被封禁、已冻结当前调用Key、尝试重新对话试试吧';
         return result;
       }
       if (status === 500) {
-        result.text = '绘制图片失败，请检查你的提示词是否有非法描述！';
+        result.text = '绘制图片失败，请检查你的提示词是否有非法描述';
         return result;
       }
       if (status === 401) {
-        result.text = '绘制图片失败，此次绘画被拒绝了！';
+        result.text = '绘制图片失败，此次绘画被拒绝了';
         return result;
       }
-      result.text = '绘制图片失败，请稍后试试吧！';
+      result.text = '绘制图片失败，请稍后试试吧';
       return result;
     }
   } else {
@@ -91,7 +90,7 @@ export async function sendMessageFromOpenAi(messagesHistory, inputs, uploadServi
       responseType: 'stream',
       headers: {
         'Content-Type': 'application/json',
-        Accept: "application/json",
+        Accept: 'application/json',
         Authorization: `Bearer ${apiKey}`,
       },
       data: {
@@ -112,7 +111,10 @@ export async function sendMessageFromOpenAi(messagesHistory, inputs, uploadServi
         const stream = response.data;
 
         stream.on('data', (chunk) => {
-          const splitArr = chunk.toString().split('\n\n').filter((line) => line.trim() !== '');
+          const splitArr = chunk
+            .toString()
+            .split('\n\n')
+            .filter((line) => line.trim() !== '');
           for (const line of splitArr) {
             const data = line.replace('data:', '');
             let ISEND = false;
@@ -127,7 +129,7 @@ export async function sendMessageFromOpenAi(messagesHistory, inputs, uploadServi
               return result;
             }
             try {
-              if (data !== " [DONE]" && data !== "[DONE]" && data != "[DONE] ") {
+              if (data !== ' [DONE]' && data !== '[DONE]' && data != '[DONE] ') {
                 const parsedData = JSON.parse(data);
                 if (parsedData.id) {
                   result.id = parsedData.id;
@@ -141,36 +143,36 @@ export async function sendMessageFromOpenAi(messagesHistory, inputs, uploadServi
                   }
                   result.detail = parsedData;
                 }
-                onProgress && onProgress({ text: result.text })
+                onProgress && onProgress({ text: result.text });
               }
             } catch (error) {
-              console.log('parse Error', data)
+              console.log('parse Error', data);
             }
           }
         });
 
         let totalText = '';
-        messagesHistory.forEach(message => {
+        messagesHistory.forEach((message) => {
           totalText += message.content + ' ';
         });
         stream.on('end', () => {
           // 手动计算token
           if (result.detail && result.text) {
-            const promptTokens = getTokenCount(totalText)
-            const completionTokens = getTokenCount(result.text)
+            const promptTokens = getTokenCount(totalText);
+            const completionTokens = getTokenCount(result.text);
             result.detail.usage = {
               prompt_tokens: promptTokens,
               completion_tokens: completionTokens,
               total_tokens: promptTokens + completionTokens,
-              estimated: true
-            }
+              estimated: true,
+            };
           }
           return resolve(result);
         });
       } catch (error) {
-        reject(error)
+        reject(error);
       }
-    })
+    });
   }
 }
 
@@ -180,8 +182,6 @@ export function getTokenCount(text: string) {
   if (typeof text !== 'string') {
     text = String(text);
   }
-  text = text.replace(/<\|endoftext\|>/g, '')
-  return tokenizer.encode(text).length
+  text = text.replace(/<\|endoftext\|>/g, '');
+  return tokenizer.encode(text).length;
 }
-
-

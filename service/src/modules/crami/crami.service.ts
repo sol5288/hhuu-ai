@@ -64,7 +64,7 @@ export class CramiService {
     const { name, weight } = body;
     const p = await this.cramiPackageEntity.findOne({ where: [{ name }, { weight }] });
     if (p) {
-      throw new HttpException('套餐名称或套餐等级重复、请检查！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('套餐名称或套餐等级重复、请检查', HttpStatus.BAD_REQUEST);
     }
     try {
       return await this.cramiPackageEntity.save(body);
@@ -79,7 +79,7 @@ export class CramiService {
     const { id, name, weight } = body;
     const op = await this.cramiPackageEntity.findOne({ where: { id } });
     if (!op) {
-      throw new HttpException('当前套餐不存在、请检查你的输入参数！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('当前套餐不存在、请检查你的输入参数', HttpStatus.BAD_REQUEST);
     }
     const count = await this.cramiPackageEntity.count({
       where: [
@@ -88,13 +88,13 @@ export class CramiService {
       ],
     });
     if (count) {
-      throw new HttpException('套餐名称或套餐等级重复、请检查！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('套餐名称或套餐等级重复、请检查', HttpStatus.BAD_REQUEST);
     }
     const res = await this.cramiPackageEntity.update({ id }, body);
     if (res.affected > 0) {
-      return '更新套餐成功！';
+      return '更新套餐成功';
     } else {
-      throw new HttpException('更新套餐失败、请重试！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('更新套餐失败、请重试', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -103,7 +103,7 @@ export class CramiService {
     const { id } = body;
     const count = await this.cramiEntity.count({ where: { packageId: id } });
     if (count) {
-      throw new HttpException('当前套餐下存在卡密、请先删除卡密后才可删除套餐！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('当前套餐下存在卡密、请先删除卡密后才可删除套餐', HttpStatus.BAD_REQUEST);
     }
     return await this.cramiPackageEntity.delete({ id });
   }
@@ -115,7 +115,7 @@ export class CramiService {
     if (packageId) {
       const pkg = await this.cramiPackageEntity.findOne({ where: { id: packageId } });
       if (!pkg) {
-        throw new HttpException('当前套餐不存在、请确认您选择的套餐是否存在！', HttpStatus.BAD_REQUEST);
+        throw new HttpException('当前套餐不存在、请确认您选择的套餐是否存在', HttpStatus.BAD_REQUEST);
       }
       const { days = -1, model3Count = 0, model4Count = 0, drawMjCount = 0 } = pkg;
       const baseCrami = { packageId, days, model3Count, model4Count, drawMjCount };
@@ -125,7 +125,7 @@ export class CramiService {
     if (!packageId) {
       const { model3Count = 0, model4Count = 0, drawMjCount = 0 } = body;
       if ([model3Count, model4Count, drawMjCount].every((v) => !v)) {
-        throw new HttpException('自定义卡密必须至少一项余额不为0️零！', HttpStatus.BAD_REQUEST);
+        throw new HttpException('自定义卡密必须至少一项余额不为0️零', HttpStatus.BAD_REQUEST);
       }
       const baseCrami = { days: -1, model3Count, model4Count, drawMjCount };
       return await this.generateCrami(baseCrami, count);
@@ -148,11 +148,11 @@ export class CramiService {
     const { id } = req.user;
     const crami = await this.cramiEntity.findOne({ where: { code: body.code } });
     if (!crami) {
-      throw new HttpException('当前卡密不存在、请确认您输入的卡密是否正确！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('当前卡密不存在、请确认您输入的卡密是否正确', HttpStatus.BAD_REQUEST);
     }
     const { status, days = -1, model3Count = 0, model4Count = 0, drawMjCount = 0, packageId } = crami;
     if (status === 1) {
-      throw new HttpException('当前卡密已被使用、请确认您输入的卡密是否正确！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('当前卡密已被使用、请确认您输入的卡密是否正确', HttpStatus.BAD_REQUEST);
     }
     const balanceInfo = { model3Count, model4Count, drawMjCount, packageId };
     await this.userBalanceService.addBalanceToUser(id, { ...balanceInfo }, days);
@@ -198,10 +198,10 @@ export class CramiService {
   async delCrami(id) {
     const c = await this.cramiEntity.findOne({ where: { id } });
     if (!c) {
-      throw new HttpException('当前卡密不存在、请确认您要删除的卡密是否存在！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('当前卡密不存在、请确认您要删除的卡密是否存在', HttpStatus.BAD_REQUEST);
     }
     if (c.status === 1) {
-      throw new HttpException('当前卡密已被使用、已使用的卡密禁止删除！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('当前卡密已被使用、已使用的卡密禁止删除', HttpStatus.BAD_REQUEST);
     }
     return await this.cramiEntity.delete({ id });
   }
@@ -210,9 +210,9 @@ export class CramiService {
     const { ids } = body;
     const res = await this.cramiEntity.delete(ids);
     if (res.affected > 0) {
-      return '删除卡密成功！';
+      return '删除卡密成功';
     } else {
-      throw new HttpException('删除卡密失败、请重试！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('删除卡密失败、请重试', HttpStatus.BAD_REQUEST);
     }
   }
 }

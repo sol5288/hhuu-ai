@@ -10,15 +10,15 @@ import * as FormData from 'form-data';
 
 @Injectable()
 export class UploadService implements OnModuleInit {
-  constructor(private readonly globalConfigService: GlobalConfigService) { }
+  constructor(private readonly globalConfigService: GlobalConfigService) {}
   private tencentCos: any;
 
-  onModuleInit() { }
+  onModuleInit() {}
 
   async uploadFile(file) {
     const { filename: name, originalname, buffer, dir = 'ai', mimetype } = file;
     const fileTyle = mimetype ? mimetype.split('/')[1] : '';
-    const filename = originalname || name
+    const filename = originalname || name;
     Logger.debug(`准备上传文件: ${filename}, 类型: ${fileTyle}`, 'UploadService');
 
     const {
@@ -26,7 +26,6 @@ export class UploadService implements OnModuleInit {
       aliOssStatus = 0,
       cheveretoStatus = 0,
     } = await this.globalConfigService.getConfigs(['tencentCosStatus', 'aliOssStatus', 'cheveretoStatus']);
-
 
     Logger.debug(`上传配置状态 - 腾讯云: ${tencentCosStatus}, 阿里云: ${aliOssStatus}, Chevereto: ${cheveretoStatus}`, 'UploadService');
 
@@ -99,7 +98,7 @@ export class UploadService implements OnModuleInit {
     this.tencentCos = new TENCENTCOS({ SecretId, SecretKey, FileParallelLimit: 10 });
     try {
       return new Promise(async (resolve, reject) => {
-        const type = fileTyle || 'png'
+        const type = fileTyle || 'png';
         this.tencentCos.putObject(
           {
             Bucket: removeSpecialCharacters(Bucket),
@@ -138,7 +137,6 @@ export class UploadService implements OnModuleInit {
 
       const buffer = await this.getBufferFromUrl(url);
       return await this.uploadFileByTencentCos({ filename, buffer, dir, fileTyle: '' });
-
     } catch (error) {
       console.log('TODO->error:  ', error);
       throw new HttpException('上传图片失败[ten][url]', HttpStatus.BAD_REQUEST);
@@ -281,7 +279,7 @@ export class UploadService implements OnModuleInit {
     return new Promise((resolve, reject) => {
       streamToBuffer(response.data, (err, buffer) => {
         if (err) {
-          throw new HttpException('获取图片资源失败、请重新试试吧！', HttpStatus.BAD_REQUEST);
+          throw new HttpException('获取图片资源失败、请重新试试吧', HttpStatus.BAD_REQUEST);
         } else {
           resolve(buffer);
         }

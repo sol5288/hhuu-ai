@@ -11,7 +11,7 @@ import { recDrawImgDto } from './dto/recDrawImg.dto';
 import { UserEntity } from '../user/user.entity';
 import { formatDate, maskEmail, utcToShanghaiTime } from '@/common/utils';
 import { QuerMyChatLogDto } from './dto/queryMyChatLog.dto';
-import  excel from 'exceljs';
+import excel from 'exceljs';
 import { ChatListDto } from './dto/chatList.dto';
 import { ChatGroupEntity } from '../chatGroup/chatGroup.entity';
 import { DelDto } from './dto/del.dto';
@@ -39,10 +39,10 @@ export class ChatLogService {
     const { id } = req.user;
     const { model } = query;
     const where: any = { userId: id, type: DeductionKey.PAINT_TYPE };
-    if(model){
-      where.model = model
-      if(model === 'DALL-E2'){
-        where.model = In(['DALL-E2', 'dall-e-3']) 
+    if (model) {
+      where.model = model;
+      if (model === 'DALL-E2') {
+        where.model = In(['DALL-E2', 'dall-e-3']);
       }
     }
     const data = await this.chatLogEntity.find({
@@ -57,9 +57,9 @@ export class ChatLogService {
         const compress = imgType === 'tencent' ? `?imageView2/1/w/${w}/q/55` : `?x-oss-process=image/resize,w_${w}`;
         r.thumbImg = r.answer + compress;
         try {
-          r.fileInfo = r.fileInfo ? JSON.parse(r.fileInfo) : null
+          r.fileInfo = r.fileInfo ? JSON.parse(r.fileInfo) : null;
         } catch (error) {
-          r.fileInfo = {}
+          r.fileInfo = {};
         }
       }
     });
@@ -72,10 +72,10 @@ export class ChatLogService {
     const where: any = { type: DeductionKey.PAINT_TYPE, prompt: Not(''), answer: Not('') };
     rec && Object.assign(where, { rec });
     userId && Object.assign(where, { userId });
-    if(model){
-      where.model = model
-      if(model === 'DALL-E2'){
-        where.model = In(['DALL-E2', 'dall-e-3']) 
+    if (model) {
+      where.model = model;
+      if (model === 'DALL-E2') {
+        where.model = In(['DALL-E2', 'dall-e-3']);
       }
     }
     const [rows, count] = await this.chatLogEntity.findAndCount({
@@ -101,7 +101,7 @@ export class ChatLogService {
             }
           }
         } catch (error) {
-          console.log('querAllDrawLog Json parse error', error)
+          console.log('querAllDrawLog Json parse error', error);
         }
       }
     });
@@ -113,14 +113,14 @@ export class ChatLogService {
     const { id } = body;
     const l = await this.chatLogEntity.findOne({ where: { id, type: DeductionKey.PAINT_TYPE } });
     if (!l) {
-      throw new HttpException('你推荐的图片不存在、请检查！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('你推荐的图片不存在、请检查', HttpStatus.BAD_REQUEST);
     }
     const rec = l.rec === 1 ? 0 : 1;
     const res = await this.chatLogEntity.update({ id }, { rec });
     if (res.affected > 0) {
-      return `${rec ? '推荐' : '取消推荐'}图片成功！`;
+      return `${rec ? '推荐' : '取消推荐'}图片成功`;
     }
-    throw new HttpException('你操作的图片不存在、请检查！', HttpStatus.BAD_REQUEST);
+    throw new HttpException('你操作的图片不存在、请检查', HttpStatus.BAD_REQUEST);
   }
 
   /* 导出为excel对话记录 */
@@ -193,9 +193,9 @@ export class ChatLogService {
     });
     req.user.role !== 'super' && rows.forEach((t: any) => (t.email = maskEmail(t.email)));
     rows.forEach((item: any) => {
-      !item.email && (item.email = `${item?.userId}@nine.com`)
+      !item.email && (item.email = `${item?.userId}@nine.com`);
       !item.username && (item.username = `游客${item?.userId}`);
-    })
+    });
     return { rows, count };
   }
 
@@ -211,15 +211,13 @@ export class ChatLogService {
     }
     const list = await this.chatLogEntity.find({ where });
     return list.map((item) => {
-      const { prompt, role, answer, createdAt, model, conversationOptions, requestOptions, id,imageUrl} = item;
-      let parseConversationOptions: any = null
-      let parseRequestOptions: any = null
+      const { prompt, role, answer, createdAt, model, conversationOptions, requestOptions, id, imageUrl } = item;
+      let parseConversationOptions: any = null;
+      let parseRequestOptions: any = null;
       try {
-        parseConversationOptions = JSON.parse(conversationOptions)
-        parseRequestOptions = JSON.parse(requestOptions)
-      } catch (error) {
-        
-      }
+        parseConversationOptions = JSON.parse(conversationOptions);
+        parseRequestOptions = JSON.parse(requestOptions);
+      } catch (error) {}
       return {
         chatId: id,
         dateTime: formatDate(createdAt),
@@ -229,7 +227,7 @@ export class ChatLogService {
         conversationOptions: parseConversationOptions,
         requestOptions: parseRequestOptions,
         imageUrl,
-        model
+        model,
       };
     });
   }
@@ -240,13 +238,13 @@ export class ChatLogService {
     const { id } = body;
     const c = await this.chatLogEntity.findOne({ where: { id, userId } });
     if (!c) {
-      throw new HttpException('你删除的对话记录不存在、请检查！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('你删除的对话记录不存在、请检查', HttpStatus.BAD_REQUEST);
     }
     const r = await this.chatLogEntity.update({ id }, { isDelete: true });
     if (r.affected > 0) {
-      return '删除对话记录成功！';
+      return '删除对话记录成功';
     } else {
-      throw new HttpException('你删除的对话记录不存在、请检查！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('你删除的对话记录不存在、请检查', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -257,17 +255,17 @@ export class ChatLogService {
     const g = await this.chatGroupEntity.findOne({ where: { id: groupId, userId: id } });
 
     if (!g) {
-      throw new HttpException('你删除的对话记录不存在、请检查！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('你删除的对话记录不存在、请检查', HttpStatus.BAD_REQUEST);
     }
 
     const r = await this.chatLogEntity.update({ groupId }, { isDelete: true });
 
     if (r.affected > 0) {
-      return '删除对话记录成功！';
+      return '删除对话记录成功';
     }
 
     if (r.affected === 0) {
-      throw new HttpException('当前页面已经没有东西可以删除了！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('当前页面已经没有东西可以删除了', HttpStatus.BAD_REQUEST);
     }
   }
 

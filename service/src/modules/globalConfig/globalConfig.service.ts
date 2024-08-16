@@ -88,7 +88,7 @@ export class GlobalConfigService implements OnModuleInit {
   async getWechatAccessToken(isInit = false) {
     const { wechatOfficialAppId: appId, wechatOfficialAppSecret: secret } = await this.getConfigs(['wechatOfficialAppId', 'wechatOfficialAppSecret']);
     if (!appId || !secret) {
-      return Logger.error('还未配置微信的appId和secret、配置后才可进行微信扫码登录！！！', 'OfficialService');
+      return Logger.error('还未配置微信的appId和secret、配置后才可进行微信扫码登录', 'OfficialService');
     }
     this.wechatAccessToken = await this.fetchBaseAccessToken(appId, secret, isInit);
     this.wechatJsapiTicket = await this.fetchJsapiTicket(this.wechatAccessToken);
@@ -108,7 +108,7 @@ export class GlobalConfigService implements OnModuleInit {
       if (isInit) {
         Logger.error(`获取微信access_token失败、错误信息：${errmsg}`, 'OfficialService');
       } else {
-        throw new HttpException('请配置正确的秘钥、当前秘钥检测不通过！', HttpStatus.BAD_REQUEST);
+        throw new HttpException('请配置正确的秘钥、当前秘钥检测不通过', HttpStatus.BAD_REQUEST);
       }
       return '';
     }
@@ -242,7 +242,7 @@ export class GlobalConfigService implements OnModuleInit {
       }
     }
     await this.initGetAllConfig();
-    return '操作完成！';
+    return '操作完成';
   }
 
   /* 查询配置 */
@@ -311,7 +311,7 @@ export class GlobalConfigService implements OnModuleInit {
         await this.getWechatAccessToken();
       }
 
-      return '设置完成！';
+      return '设置完成';
     } catch (error) {
       console.log('error: ', error);
     }
@@ -330,7 +330,7 @@ export class GlobalConfigService implements OnModuleInit {
       }
     } catch (error) {
       console.log('error: ', error);
-      throw new HttpException('设置配置信息错误！', HttpStatus.BAD_REQUEST);
+      throw new HttpException('设置配置信息错误', HttpStatus.BAD_REQUEST);
     }
   }
 
