@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import dayjs from '@/common/utils/date';
 import { UserEntity } from '../user/user.entity';
 import { RechargeType } from '@/common/constants/balance.constant';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class SigninService {
@@ -18,6 +19,7 @@ export class SigninService {
     private readonly userEntity: Repository<UserEntity>,
     private readonly userBalanceService: UserBalanceService,
     private readonly globalConfigService: GlobalConfigService,
+    @I18n() private readonly i18n: I18nService,
   ) {}
 
   async sign(req: Request) {
@@ -30,7 +32,7 @@ export class SigninService {
     });
     /* 今日已签到 */
     if (existingSignin) {
-      throw new HttpException('今日已签到、改天再来吧!.', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.alreadySignedToday'), HttpStatus.BAD_REQUEST);
     }
     /* 查询签到赠送奖励 并优先检测是否开启了赠送状态 */
     const { model3Count, model4Count, drawMjCount } = await this.globalConfigService.getSignatureGiftConfig();
@@ -53,15 +55,15 @@ export class SigninService {
     });
     /* 昨天签到了 连续签到 增加连续签到日期 */
     if (previousSignin) {
-      Logger.debug(`用户${userId}昨天签到了、今天是连续签到`, 'SigninService');
+      Logger.debug(this.i18n.t('common.continuousSignIn', { args: { userId } }), 'SigninService');
       const userInfo = await this.userEntity.findOne({ where: { id: userId } });
       if (!userInfo) {
-        throw new HttpException('用户不存在', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.userNotExist'), HttpStatus.BAD_REQUEST);
       }
       const { consecutiveDays = 0 } = userInfo;
       await this.userEntity.update({ id: userId }, { consecutiveDays: consecutiveDays + 1 });
     } else {
-      Logger.debug(`用户${userId}昨天没签到、今天重置天数`, 'SigninService');
+      Logger.debug(this.i18n.t('common.resetSignInDays', { args: { userId } }), 'SigninService');
       await this.userEntity.update({ id: userId }, { consecutiveDays: 1 });
     }
 
@@ -103,7 +105,7 @@ export class SigninService {
       return res;
     } catch (error) {
       console.log('error: ', error);
-      throw new HttpException('获取签到数据失败', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.getSignInDataFailed'), HttpStatus.BAD_REQUEST);
     }
   }
 }

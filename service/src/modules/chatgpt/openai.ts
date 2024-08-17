@@ -3,6 +3,7 @@ import { get_encoding } from '@dqbd/tiktoken';
 import { removeSpecialCharacters } from '@/common/utils';
 import { ConsoleLogger, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import * as uuid from 'uuid';
+import { I18nService } from 'nestjs-i18n';
 
 const tokenizer = get_encoding('cl100k_base');
 
@@ -19,10 +20,10 @@ function getFullUrl(proxyUrl) {
   return `${baseUrl}/v1/chat/completions`;
 }
 
-export async function sendMessageFromOpenAi(messagesHistory, inputs, uploadService?) {
+export async function sendMessageFromOpenAi(messagesHistory, inputs, i18n: I18nService, uploadService?) {
   const { onProgress, maxToken, apiKey, model, temperature = 0.8, proxyUrl, prompt } = inputs;
   if (model.includes('dall')) {
-    let result: any = { text: '', imageUrl: '' };
+    const result: any = { text: '', imageUrl: '' };
     try {
       const options: AxiosRequestConfig = {
         method: 'POST',
@@ -43,13 +44,13 @@ export async function sendMessageFromOpenAi(messagesHistory, inputs, uploadServi
       let imgUrl = '';
       try {
         const filename = uuid.v4().slice(0, 10) + '.png';
-        Logger.debug(`------> 开始上传图片`, 'MidjourneyService');
+        Logger.debug(i18n.t('common.startUploadingImage'), 'MidjourneyService');
         const buffer = Buffer.from(b64_json, 'base64');
         // imgUrl = await uploadService.uploadFileFromUrl({ filename, url })
         imgUrl = await uploadService.uploadFile({ filename, buffer });
-        Logger.debug(`图片上传成功，URL: ${imgUrl}`, 'MidjourneyService');
+        Logger.debug(i18n.t('common.imageUploadSuccess', { args: { imgUrl } }), 'MidjourneyService');
       } catch (error) {
-        Logger.error(`上传图片过程中出现错误: ${error}`, 'MidjourneyService');
+        Logger.error(i18n.t('common.imageUploadError', { args: { error } }), 'MidjourneyService');
       }
       result.imageUrl = imgUrl;
       result.text = revised_prompt;
@@ -60,30 +61,30 @@ export async function sendMessageFromOpenAi(messagesHistory, inputs, uploadServi
       console.log('openai-draw error: ', JSON.stringify(error), status);
       const message = error?.response?.data?.error?.message;
       if (status === 429) {
-        result.text = '当前请求已过载、请稍等会儿再试试吧';
+        result.text = i18n.t('common.requestOverloaded');
         return result;
       }
       if (status === 400 && message.includes('This request has been blocked by our content filters')) {
-        result.text = '您的请求已被系统拒绝。您的提示可能存在一些非法的文本。';
+        result.text = i18n.t('common.illegalPrompt');
         return result;
       }
       if (status === 400 && message.includes('Billing hard limit has been reached')) {
-        result.text = '当前模型key已被封禁、已冻结当前调用Key、尝试重新对话试试吧';
+        result.text = i18n.t('common.modelKeyBanned');
         return result;
       }
       if (status === 500) {
-        result.text = '绘制图片失败，请检查你的提示词是否有非法描述';
+        result.text = i18n.t('common.drawingFailed1');
         return result;
       }
       if (status === 401) {
-        result.text = '绘制图片失败，此次绘画被拒绝了';
+        result.text = i18n.t('common.drawingRejected');
         return result;
       }
-      result.text = '绘制图片失败，请稍后试试吧';
+      result.text = i18n.t('common.drawingFailed2');
       return result;
     }
   } else {
-    let result: any = { text: '' };
+    const result: any = { text: '' };
     const options: AxiosRequestConfig = {
       method: 'POST',
       url: getFullUrl(proxyUrl),

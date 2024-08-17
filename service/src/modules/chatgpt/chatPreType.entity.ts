@@ -14,5 +14,5 @@ export class ChatPreTypeEntity extends BaseEntity {
   order: number;
 
   @Column({ comment: '是否打开', default: true })
-  status: boolean
+  status: boolean;
 }

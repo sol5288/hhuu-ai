@@ -12,6 +12,7 @@ import { QueryByOrderIdDto } from './dto/queryByOrder.dto';
 import { GlobalConfigService } from '../globalConfig/globalConfig.service';
 import { QuerAllOrderDto } from './dto/queryAllOrder.dto';
 import { Query } from 'cos-nodejs-sdk-v5';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class OrderService {
@@ -24,6 +25,7 @@ export class OrderService {
     private readonly userEntity: Repository<UserEntity>,
     private readonly payService: PayService,
     private readonly globalConfigService: GlobalConfigService,
+    @I18n() private readonly i18n: I18nService,
   ) {}
 
   /* 购买商品 */
@@ -32,7 +34,7 @@ export class OrderService {
       const { goodsId, count = 1, payType } = params;
       const { id: userId } = req.user;
       if (userId > 1000000) {
-        throw new HttpException('请先注册账号后购买商品', HttpStatus.UNAUTHORIZED);
+        throw new HttpException(this.i18n.t('common.registerRequired'), HttpStatus.UNAUTHORIZED);
       }
       const order = await this.create(userId, goodsId, count, payType);
       const res = await this.payService.pay(userId, order.orderId, payType);
@@ -47,7 +49,7 @@ export class OrderService {
         throw new HttpException(error.message, HttpStatus.UNAUTHORIZED);
       }
 
-      throw new HttpException(error.message || '购买失败!', HttpStatus.BAD_REQUEST);
+      throw new HttpException(error.message || this.i18n.t('common.purchaseFailed'), HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -56,7 +58,7 @@ export class OrderService {
     const { id: userId } = req.user;
     const { orderId } = params;
     const order = await this.orderEntity.findOne({ where: { userId, orderId } });
-    if (!order) throw new HttpException('订单不存在!', HttpStatus.BAD_REQUEST);
+    if (!order) throw new HttpException(this.i18n.t('common.orderNotExist'), HttpStatus.BAD_REQUEST);
     return order;
   }
 
@@ -65,7 +67,7 @@ export class OrderService {
     const payPlatform = await this.globalConfigService.queryPayType();
     // query goods
     const goods = await this.cramiPackageEntity.findOne({ where: { id: goodsId } });
-    if (!goods) throw new HttpException('套餐不存在!', HttpStatus.BAD_REQUEST);
+    if (!goods) throw new HttpException(this.i18n.t('common.packageNotExist'), HttpStatus.BAD_REQUEST);
     // assemble order
     const doc = {};
     doc['orderId'] = createOrderId();
@@ -118,7 +120,7 @@ export class OrderService {
     const { orderId } = body;
     const o = await this.orderEntity.findOne({ where: { orderId } });
     if (!o) {
-      throw new HttpException('订单不存在!', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.orderNotExist'), HttpStatus.BAD_REQUEST);
     }
     return await this.orderEntity.delete({ orderId });
   }

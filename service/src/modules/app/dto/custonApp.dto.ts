@@ -1,6 +1,7 @@
 import { IsNotEmpty, MinLength, MaxLength, IsString, IsIn, IsOptional, Max, Min, ValidateNested, IsNumber, IsDefined } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class CustomAppDto {
   @ApiProperty({ example: '前端助手', description: 'app名称', required: true })
@@ -14,7 +15,7 @@ export class CustomAppDto {
     description: 'app名称详情描述',
     required: false,
   })
-  @IsDefined({ message: 'app名称描述是必传参数' })
+  @IsDefined({ message: i18nValidationMessage('common.appDescRequired') })
   des: string;
 
   @ApiProperty({ example: '你现在是一个翻译官。接下来我说的所有话帮我翻译成中文', description: '预设的prompt', required: true })

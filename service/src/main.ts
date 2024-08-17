@@ -14,6 +14,8 @@ import { initDatabase } from '@/modules/database/initDatabase';
 import * as compression from 'compression';
 import * as xmlBodyParser from 'express-xml-bodyparser';
 import { resolve } from 'path';
+import { I18nValidationPipe } from 'nestjs-i18n';
+import { I18nValidationExceptionFilter } from 'nestjs-i18n';
 
 async function bootstrap() {
   await initDatabase();
@@ -26,13 +28,17 @@ async function bootstrap() {
   app.useGlobalInterceptors(new TransformInterceptor());
   app.useGlobalFilters(new TypeOrmQueryFailedFilter());
   app.useGlobalFilters(new AllExceptionsFilter());
-  app.useGlobalPipes(new ValidationPipe());
+
+  app.useGlobalPipes(new I18nValidationPipe());
+  app.useGlobalFilters(new I18nValidationExceptionFilter({ detailedErrors: true }));
+  Logger.debug('Global pipes and filters set up');
+
   app.getHttpAdapter().getInstance().set('views', 'templates/pages');
   app.getHttpAdapter().getInstance().set('view engine', 'hbs');
 
   createSwagger(app);
   const server = await app.listen(PORT, () => {
-    Logger.log(`서비스 구동완료: http://localhost:${PORT}/nineai/swagger/docs`, 'Main');
+    Logger.log(`서비스 구동완료: http://localhost:${PORT}/hhuu/docs`, 'Main');
   });
   server.timeout = 5 * 60 * 1000;
 }

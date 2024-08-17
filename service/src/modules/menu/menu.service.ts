@@ -4,12 +4,14 @@ import { Repository } from 'typeorm';
 import { MenuEntity } from './menu.entity';
 import { QueryMenuDto } from './dto/queryMenu.dto';
 import { SetMenuDto } from './dto/setMenu.dto';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class MenuService {
   constructor(
     @InjectRepository(MenuEntity)
     private readonly menuEntity: Repository<MenuEntity>,
+    @I18n() private readonly i18n: I18nService,
   ) {}
 
   async onModuleInit() {
@@ -21,9 +23,17 @@ export class MenuService {
     const menuCount = await this.menuEntity.count();
     if (menuCount > 0) return;
     const pcMenuData = [
-      { menuTipText: '对话聊天', menuIcon: 'eos-icons:typing', menuName: 'Chat', menuPath: '/chat', menuType: 0, menuPlatform: 1, order: 100 },
       {
-        menuTipText: '应用广场',
+        menuTipText: this.i18n.t('common.chatConversation'),
+        menuIcon: 'eos-icons:typing',
+        menuName: 'Chat',
+        menuPath: '/chat',
+        menuType: 0,
+        menuPlatform: 1,
+        order: 100,
+      },
+      {
+        menuTipText: this.i18n.t('common.appSquare'),
         menuIcon: 'ant-design:appstore-outlined',
         menuName: 'AppStore',
         menuPath: '/app-store',
@@ -32,7 +42,7 @@ export class MenuService {
         order: 200,
       },
       {
-        menuTipText: '专业绘画',
+        menuTipText: this.i18n.t('common.professionalDrawing'),
         menuIcon: 'ri:landscape-line',
         menuName: 'Midjourney',
         menuPath: '/midjourney',
@@ -41,7 +51,7 @@ export class MenuService {
         order: 300,
       },
       {
-        menuTipText: '绘画广场',
+        menuTipText: this.i18n.t('common.drawingSquare'),
         menuIcon: 'solar:album-line-duotone',
         menuName: 'Market',
         menuPath: '/market',
@@ -50,7 +60,7 @@ export class MenuService {
         order: 400,
       },
       {
-        menuTipText: '基础绘画',
+        menuTipText: this.i18n.t('common.basicDrawing'),
         menuIcon: 'fluent:draw-image-24-regular',
         menuName: 'Draw',
         menuPath: '/draw',
@@ -59,7 +69,7 @@ export class MenuService {
         order: 500,
       },
       {
-        menuTipText: '思维导图',
+        menuTipText: this.i18n.t('common.mindMap'),
         menuIcon: 'icon-park-outline:mindmap-map',
         menuName: 'Mind',
         menuPath: '/mind',
@@ -68,7 +78,7 @@ export class MenuService {
         order: 600,
       },
       {
-        menuTipText: '会员中心',
+        menuTipText: this.i18n.t('common.memberCenter'),
         menuIcon: 'icon-park-outline:shopping',
         menuName: 'Pay',
         menuPath: '/pay',
@@ -76,12 +86,28 @@ export class MenuService {
         menuPlatform: 1,
         order: 700,
       },
-      { menuTipText: '推广计划', menuIcon: 'uiw:share', menuName: 'Share', menuPath: '/share', menuType: 0, menuPlatform: 1, order: 800 },
+      {
+        menuTipText: this.i18n.t('common.promotionPlan'),
+        menuIcon: 'uiw:share',
+        menuName: 'Share',
+        menuPath: '/share',
+        menuType: 0,
+        menuPlatform: 1,
+        order: 800,
+      },
     ];
     const mobileMenuData = [
-      { menuTipText: '对话聊天', menuIcon: 'eos-icons:typing', menuName: 'Chat', menuPath: '/chat', menuType: 0, menuPlatform: 0, order: 100 },
       {
-        menuTipText: '应用广场',
+        menuTipText: this.i18n.t('common.chatConversation'),
+        menuIcon: 'eos-icons:typing',
+        menuName: 'Chat',
+        menuPath: '/chat',
+        menuType: 0,
+        menuPlatform: 0,
+        order: 100,
+      },
+      {
+        menuTipText: this.i18n.t('common.appSquare'),
         menuIcon: 'ant-design:appstore-outlined',
         menuName: 'AppStore',
         menuPath: '/app-store',
@@ -90,7 +116,7 @@ export class MenuService {
         order: 200,
       },
       {
-        menuTipText: '专业绘画',
+        menuTipText: this.i18n.t('common.professionalDrawing'),
         menuIcon: 'ri:landscape-line',
         menuName: 'Midjourney',
         menuPath: '/midjourney',
@@ -99,7 +125,7 @@ export class MenuService {
         order: 300,
       },
       {
-        menuTipText: '思维导图',
+        menuTipText: this.i18n.t('common.mindMap'),
         menuIcon: 'icon-park-outline:mindmap-map',
         menuName: 'Mind',
         menuPath: '/mind',
@@ -108,7 +134,7 @@ export class MenuService {
         order: 400,
       },
       {
-        menuTipText: '个人中心',
+        menuTipText: this.i18n.t('common.personalCenter'),
         menuIcon: 'ri:account-pin-box-line',
         menuName: 'UserCenter',
         menuPath: '/user-center',
@@ -166,14 +192,14 @@ export class MenuService {
         return res;
       }
     } catch (error) {
-      throw new HttpException('操作菜单失败!', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.menuOperationFailed'), HttpStatus.BAD_REQUEST);
     }
   }
 
   async delMenu(params) {
     const { id } = params;
     if (!id) {
-      throw new HttpException('缺失必要参数!', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.missingRequiredParams1'), HttpStatus.BAD_REQUEST);
     }
     const res = await this.menuEntity.delete({ id });
     return res;
@@ -182,7 +208,7 @@ export class MenuService {
   async updateIcon(params) {
     const { id, menuIcon, menuTipText, order } = params;
     if (!id || !menuIcon || !menuTipText || !order) {
-      throw new HttpException('缺失必要参数!', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.missingRequiredParams1'), HttpStatus.BAD_REQUEST);
     }
     const res = await this.menuEntity.update({ id }, { menuIcon, menuTipText, order });
     return res.affected > 0;

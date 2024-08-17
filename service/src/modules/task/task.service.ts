@@ -5,6 +5,7 @@ import { UserBalanceEntity } from '../userBalance/userBalance.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, LessThanOrEqual, MoreThan, Repository } from 'typeorm';
 import { ModelsService } from '../models/models.service';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class TaskService {
@@ -13,6 +14,7 @@ export class TaskService {
     private readonly userBalanceEntity: Repository<UserBalanceEntity>,
     private readonly globalConfigService: GlobalConfigService,
     private readonly modelsService: ModelsService,
+    @I18n() private readonly i18n: I18nService,
   ) {}
 
   /* 每小时刷新一次微信的token */
@@ -34,7 +36,8 @@ export class TaskService {
       this.userBalanceEntity
         .update({ id: user.id }, { expirationTime: null, packageId: 0, memberModel3Count: 0, memberModel4Count: 0, memberDrawMjCount: 0 })
         .then((res) => {
-          Logger.debug(`${user.id}会员已到期、清空所有余额并移除会员身份`, 'TaskService');
+          const userId = user.id;
+          Logger.debug(this.i18n.t('common.membershipExpired', { args: { userId } }), 'TaskService');
         });
     });
   }

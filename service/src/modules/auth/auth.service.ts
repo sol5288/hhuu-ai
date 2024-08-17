@@ -31,6 +31,7 @@ import { SendPhoneCodeDto } from './dto/sendPhoneCode.dto';
 import { UserRegisterByPhoneDto } from './dto/userRegisterByPhone.dto';
 import * as bcrypt from 'bcryptjs';
 import { AdminLoginDto } from './dto/adminLogin.dto';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class AuthService {
@@ -46,6 +47,7 @@ export class AuthService {
     private readonly userBalanceService: UserBalanceService,
     private readonly redisCacheService: RedisCacheService,
     private readonly globalConfigService: GlobalConfigService,
+    @I18n() private readonly i18n: I18nService,
   ) {}
 
   async onModuleInit() {
@@ -72,14 +74,14 @@ export class AuthService {
     const key = `${nameSpace}:PHONECODE:${phone}`;
     const redisPhoneCode = await this.redisCacheService.get({ key });
     if (!redisPhoneCode) {
-      throw new HttpException('验证码已过期、请重新发送', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.verificationCodeExpired1'), HttpStatus.BAD_REQUEST);
     }
     if (phoneCode !== redisPhoneCode) {
-      throw new HttpException('验证码填写错误、请重新输入', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.verificationCodeIncorrect'), HttpStatus.BAD_REQUEST);
     }
 
     /* 创建用户 */
-    const email = `${createRandomUid()}@nine.com`;
+    const email = `${createRandomUid()}@hhuu.io`;
     const newUser: any = { username, password, phone, invitedBy, email, status: UserStatusEnum.ACTIVE };
     const userDefautlAvatar = await this.globalConfigService.getConfigs(['userDefautlAvatar']);
     newUser.avatar = userDefautlAvatar;
@@ -154,11 +156,11 @@ export class AuthService {
       const v: VerifycationEntity = await this.verificationService.verifyCode(params, VerificationEnum.Registration);
       const { type, userId } = v;
       if (type !== VerificationEnum.Registration) {
-        throw new HttpException('验证码类型错误', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.verificationCodeTypeError'), HttpStatus.BAD_REQUEST);
       }
       const status: number = await this.userService.getUserStatus(userId);
       if (status === UserStatusEnum.ACTIVE) {
-        throw new HttpException('账户已被激活过', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.accountAlreadyActivated'), HttpStatus.BAD_REQUEST);
       }
       await this.userService.updateUserStatus(v.userId, UserStatusEnum.ACTIVE);
       const u: UserEntity = await this.userService.queryUserInfoById(v.userId);
@@ -188,26 +190,26 @@ export class AuthService {
   async updatePassword(req: Request, body: UpdatePasswordDto) {
     const { id, client, role } = req.user;
     if (client && Number(client) > 0) {
-      throw new HttpException('无权此操作、请联系管理员', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.noPermission'), HttpStatus.BAD_REQUEST);
     }
     if (role === 'admin') {
-      throw new HttpException('非法操作、请联系管理员', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.illegalOperation1'), HttpStatus.BAD_REQUEST);
     }
     const bool = await this.userService.verifyUserPassword(id, body.oldPassword);
     if (!bool) {
-      throw new HttpException('旧密码错误、请检查提交', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.oldPasswordIncorrect'), HttpStatus.BAD_REQUEST);
     }
     this.userService.updateUserPassword(id, body.password);
-    return '密码修改成功';
+    return this.i18n.t('common.passwordChangeSuccess');
   }
 
   async updatePassByOther(req: Request, body: UpdatePassByOtherDto) {
     const { id, client } = req.user;
     if (!client) {
-      throw new HttpException('无权此操作', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.noPermissionForOperation'), HttpStatus.BAD_REQUEST);
     }
     this.userService.updateUserPassword(id, body.password);
-    return '密码修改成功';
+    return this.i18n.t('common.passwordChangeSuccess');
   }
 
   getIp() {
@@ -249,20 +251,20 @@ export class AuthService {
 
     const ttl = await this.redisCacheService.ttl(key);
     if (ttl && ttl > 0) {
-      throw new HttpException(`${ttl}秒内不得重复发送短信`, HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.smsResendLimit', { args: { ttl } }), HttpStatus.BAD_REQUEST);
     }
     const code = createRandomCode();
     const messageInfo = { phone, code };
     await this.verificationService.sendPhoneCode(messageInfo);
     /* 记录发送的验证码是什么 */
     await this.redisCacheService.set({ key, val: code }, 1 * 60);
-    return '验证码发送成功、请填写验证码完成注册';
+    return this.i18n.t('common.verificationCodeSent');
   }
 
   /* create token */
   createTokenFromFingerprint(fingerprint) {
     const token = this.jwtService.sign({
-      username: `游客${fingerprint}`,
+      username: this.i18n.t('common.guestUser1', { args: { fingerprint } }),
       id: fingerprint,
       email: `${fingerprint}@nine.com`,
       role: 'visitor',

@@ -10,6 +10,7 @@ import { UserBalanceService } from '../userBalance/userBalance.service';
 import { GlobalConfigService } from '../globalConfig/globalConfig.service';
 import { createRandomNonceStr, importDynamic } from '@/common/utils';
 import { UserService } from '../user/user.service';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class PayService {
@@ -21,6 +22,7 @@ export class PayService {
     private readonly userBalanceService: UserBalanceService,
     private readonly globalConfigService: GlobalConfigService,
     private readonly userService: UserService,
+    @I18n() private readonly i18n: I18nService,
   ) {}
 
   private WxPay;
@@ -48,11 +50,11 @@ export class PayService {
   async pay(userId: number, orderId: string, payType = 'wxpay') {
     // query order
     const order = await this.orderEntity.findOne({ where: { userId, orderId } });
-    if (!order) throw new HttpException('订单不存在!', HttpStatus.BAD_REQUEST);
+    if (!order) throw new HttpException(this.i18n.t('common.orderNotExist'), HttpStatus.BAD_REQUEST);
     // query goods
     const goods = await this.cramiPackageEntity.findOne({ where: { id: order.goodsId } });
-    if (!goods) throw new HttpException('套餐不存在!', HttpStatus.BAD_REQUEST);
-    console.log('本次支付类型: ', order.payPlatform);
+    if (!goods) throw new HttpException(this.i18n.t('common.packageNotExist'), HttpStatus.BAD_REQUEST);
+    console.log(this.i18n.t('common.paymentType'), order.payPlatform);
     try {
       if (order.payPlatform == 'wechat') {
         return this.payWeChat(userId, orderId, payType);
@@ -67,15 +69,15 @@ export class PayService {
         return this.payHupi(userId, orderId, payType);
       }
     } catch (error) {
-      console.log('支付请求失败: ', error);
-      throw new HttpException('支付请求失败!', HttpStatus.BAD_REQUEST);
+      console.log(this.i18n.t('common.paymentRequestFailed'), error);
+      throw new HttpException(this.i18n.t('common.paymentRequestFailedSimple'), HttpStatus.BAD_REQUEST);
     }
   }
 
   /* 支付订单状态查询 */
   async query(orderId: string) {
     const order = await this.orderEntity.findOne({ where: { orderId } });
-    if (!order) throw new HttpException('订单不存在!', HttpStatus.BAD_REQUEST);
+    if (!order) throw new HttpException(this.i18n.t('common.orderNotExist'), HttpStatus.BAD_REQUEST);
     return order;
   }
 
@@ -97,9 +99,9 @@ export class PayService {
   /* 虎皮椒支付 */
   async payHupi(userId: number, orderId: string, payType = 'wxpay') {
     const order = await this.orderEntity.findOne({ where: { userId, orderId } });
-    if (!order) throw new HttpException('订单不存在!', HttpStatus.BAD_REQUEST);
+    if (!order) throw new HttpException(this.i18n.t('common.orderNotExist'), HttpStatus.BAD_REQUEST);
     const goods = await this.cramiPackageEntity.findOne({ where: { id: order.goodsId } });
-    if (!goods) throw new HttpException('套餐不存在!', HttpStatus.BAD_REQUEST);
+    if (!goods) throw new HttpException(this.i18n.t('common.packageNotExist'), HttpStatus.BAD_REQUEST);
     const { payHupiAppId, payHupiSecret, payHupiNotifyUrl, payHupiReturnUrl, payHupiGatewayUrl } = await this.globalConfigService.getConfigs([
       'payHupiAppId',
       'payHupiSecret',
@@ -150,7 +152,7 @@ export class PayService {
     delete params['sign_type'];
     const payEpaySecret = await this.globalConfigService.getConfigs(['payEpaySecret']);
     if (this.sign(params, payEpaySecret) != sign) return 'failed';
-    console.log('校验签名通过');
+    console.log(this.i18n.t('common.signatureVerificationPassed'));
     const order = await this.orderEntity.findOne({ where: { orderId: params['out_trade_no'], status: 0 } });
     if (!order) return 'failed';
     // update order status
@@ -167,10 +169,10 @@ export class PayService {
   async payEpay(userId: number, orderId: string, payType = 'alipay') {
     // query order
     const order = await this.orderEntity.findOne({ where: { userId, orderId } });
-    if (!order) throw new HttpException('订单不存在!', HttpStatus.BAD_REQUEST);
+    if (!order) throw new HttpException(this.i18n.t('common.orderNotExist'), HttpStatus.BAD_REQUEST);
     // query goods
     const goods = await this.cramiPackageEntity.findOne({ where: { id: order.goodsId } });
-    if (!goods) throw new HttpException('套餐不存在!', HttpStatus.BAD_REQUEST);
+    if (!goods) throw new HttpException(this.i18n.t('common.packageNotExist'), HttpStatus.BAD_REQUEST);
     // assemble params
     const { payEpayPid, payEpaySecret, payEpayNotifyUrl, payEpayReturnUrl, payEpayApiPayUrl } = await this.globalConfigService.getConfigs([
       'payEpayPid',
@@ -240,9 +242,9 @@ export class PayService {
     delete params['sign'];
     delete params['sign_type'];
     const payMpaySecret = await this.globalConfigService.getConfigs(['payMpaySecret']);
-    console.log('校验签名');
+    console.log(this.i18n.t('common.signatureVerification'));
     if (this.sign(params, payMpaySecret) != sign) return 'failed';
-    console.log('校验签名通过');
+    console.log(this.i18n.t('common.signatureVerificationPassed'));
     const order = await this.orderEntity.findOne({ where: { orderId: params['out_trade_no'], status: 0 } });
     if (!order) return 'failed';
     // update order status
@@ -260,10 +262,10 @@ export class PayService {
   async payMpay(userId: number, orderId: string, payType = 'wxpay') {
     // query order
     const order = await this.orderEntity.findOne({ where: { userId, orderId } });
-    if (!order) throw new HttpException('订单不存在!', HttpStatus.BAD_REQUEST);
+    if (!order) throw new HttpException(this.i18n.t('common.orderNotExist'), HttpStatus.BAD_REQUEST);
     // query goods
     const goods = await this.cramiPackageEntity.findOne({ where: { id: order.goodsId } });
-    if (!goods) throw new HttpException('套餐不存在!', HttpStatus.BAD_REQUEST);
+    if (!goods) throw new HttpException(this.i18n.t('common.packageNotExist'), HttpStatus.BAD_REQUEST);
     // assemble params
     const { payMpayPid, payMpaySecret, payMpayNotifyUrl, payMpayReturnUrl, payMpayApiPayUrl } = await this.globalConfigService.getConfigs([
       'payMpayPid',
@@ -286,7 +288,6 @@ export class PayService {
     const queryParams = new URLSearchParams(params).toString();
     const apiUrl = `${payMpayApiPayUrl}?${queryParams}`;
     return { url_qrcode: null, redirectUrl: apiUrl, channel: payType, isRedirect: true };
-    const res = await axios.get(payMpayApiPayUrl, { params });
   }
 
   /* 码支付商户信息查询 */
@@ -304,7 +305,7 @@ export class PayService {
 
   /* 微信支付结果通知 */
   async notifyWeChat(params: object) {
-    console.log('微信支付通知params: ', params);
+    console.log(this.i18n.t('common.wechatPayParams'), params);
     // assemble params
     const { payWeChatAppId, payWeChatMchId, payWeChatSecret, payWeChatPublicKey, payWeChatPrivateKey } = await this.globalConfigService.getConfigs([
       'payWeChatAppId',
@@ -336,7 +337,7 @@ export class PayService {
       return 'success';
     } catch (error) {
       console.log('error: ', error);
-      console.log('支付通知验证失败: ', error);
+      console.log(this.i18n.t('common.paymentNotificationVerificationFailed'), error);
       return 'failed';
     }
   }
@@ -345,9 +346,9 @@ export class PayService {
   async payWeChat(userId: number, orderId: string, payType = 'native') {
     console.log('payType: ', payType);
     const order = await this.orderEntity.findOne({ where: { userId, orderId } });
-    if (!order) throw new HttpException('订单不存在!', HttpStatus.BAD_REQUEST);
+    if (!order) throw new HttpException(this.i18n.t('common.orderNotExist'), HttpStatus.BAD_REQUEST);
     const goods = await this.cramiPackageEntity.findOne({ where: { id: order.goodsId } });
-    if (!goods) throw new HttpException('套餐不存在!', HttpStatus.BAD_REQUEST);
+    if (!goods) throw new HttpException(this.i18n.t('common.packageNotExist'), HttpStatus.BAD_REQUEST);
     const { payWeChatAppId, payWeChatMchId, payWeChatPublicKey, payWeChatPrivateKey, payWeChatNotifyUrl, payWeChatH5Name, payWeChatH5Url } =
       await this.globalConfigService.getConfigs([
         'payWeChatAppId',
@@ -394,7 +395,7 @@ export class PayService {
       const res = await pay.transactions_h5(params);
       if (res.status === 403) {
         const errmsg = res?.errRaw?.response?.text?.message;
-        throw new HttpException(res?.message || '微信H5支付失败', HttpStatus.BAD_REQUEST);
+        throw new HttpException(res?.message || this.i18n.t('common.wechatH5PaymentFailed'), HttpStatus.BAD_REQUEST);
       }
       const { h5_url } = res;
       return { url: h5_url };
@@ -402,12 +403,12 @@ export class PayService {
     if (payType == 'jsapi') {
       // query openid
       const openid = await this.userService.getOpenIdByUserId(userId);
-      console.log('用户openId: ', openid);
+      console.log(this.i18n.t('common.userOpenId'), openid);
       params['payer'] = {
         openid: openid,
       };
       const result = await pay.transactions_jsapi(params);
-      console.log('jsapi支付结果返回值: ', result);
+      console.log(this.i18n.t('common.jsapiPaymentResult'), result);
       /*
       #   {
       #     appId: 'appid',

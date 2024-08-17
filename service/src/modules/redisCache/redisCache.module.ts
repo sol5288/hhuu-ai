@@ -19,7 +19,7 @@ import { createClient } from 'redis';
         const username = process.env.REDIS_USER;
 
         if (!host || !port) {
-          Logger.error(`Please config Redis config | 未配置 Redis 配置信息 请确认配置redis服务以获得更好的体验`, 'RedistCacheModule');
+          Logger.error(`Please config Redis config`, 'RedistCacheModule');
           return;
         }
 
@@ -35,7 +35,7 @@ import { createClient } from 'redis';
           Logger.debug(`Your Redis connection successful`, 'RedistCacheModule');
         });
         client.on('error', () => {
-          Logger.error(`Your Redis connection failed | 您的 Redist 连接失败`, 'RedistCacheModule');
+          Logger.error(`Your Redis connection failed`, 'RedistCacheModule');
         });
         return client;
       },

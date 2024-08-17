@@ -3,10 +3,11 @@ import axios from 'axios';
 import * as uuid from 'uuid';
 import { UploadService } from '../upload/upload.service';
 import { StableDrawDto } from './dto/chatDraw.dto';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class DrawService implements OnModuleInit {
-  constructor(private readonly uploadService: UploadService) {}
+  constructor(private readonly uploadService: UploadService, @I18n() private readonly i18n: I18nService) {}
   private apiHost;
   private apiKey;
   private Authorization;
@@ -33,7 +34,7 @@ export class DrawService implements OnModuleInit {
     }
     if (res.status !== 200) {
       console.log(`${res.status} ${res?.data?.message}}`);
-      throw new HttpException('获取列表失败', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.getListFailed'), HttpStatus.BAD_REQUEST);
     }
     return res.data;
   }
@@ -50,7 +51,7 @@ export class DrawService implements OnModuleInit {
     try {
       const response = await axios.post(url, body, { headers });
       if (response.status !== 200) {
-        throw new HttpException('绘制失败', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.drawingFailed3'), HttpStatus.BAD_REQUEST);
       }
       const resImageBasetask = [];
       for (const item of response.data.artifacts) {
@@ -62,7 +63,7 @@ export class DrawService implements OnModuleInit {
       return urls;
     } catch (error) {
       if (!error?.response) {
-        throw new HttpException('绘制失败', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.drawingFailed3'), HttpStatus.BAD_REQUEST);
       }
       const { status, data } = error.response;
       throw new HttpException(data.message, status);

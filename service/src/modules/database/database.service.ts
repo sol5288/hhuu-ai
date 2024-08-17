@@ -1,6 +1,7 @@
 import { Injectable, OnModuleInit, Logger, HttpException, HttpStatus } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 interface UserInfo {
   username: string;
@@ -13,7 +14,7 @@ interface UserInfo {
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
-  constructor(private connection: Connection) {}
+  constructor(private connection: Connection, @I18n() private readonly i18n: I18nService) {}
   async onModuleInit() {
     await this.checkSuperAdmin();
     await this.checkSiteBaseConfig();
@@ -49,7 +50,7 @@ export class DatabaseService implements OnModuleInit {
       );
     } catch (error) {
       console.log('error: ', error);
-      throw new HttpException('创建默认超级管理员失败', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(this.i18n.t('common.createDefaultAdminFailed'), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -100,25 +101,25 @@ export class DatabaseService implements OnModuleInit {
         { configKey: 'openaiBaseUrl', configVal: 'https://api.openai.com', public: 0, encry: 0 },
         { configKey: 'noticeInfo', configVal: noticeInfo, public: 1, encry: 0 },
 
-        { configKey: 'registerVerifyEmailTitle', configVal: 'Yi Ai团队账号验证', public: 0, encry: 0 },
+        { configKey: 'registerVerifyEmailTitle', configVal: this.i18n.t('common.yiAiTeamAccountVerification'), public: 0, encry: 0 },
         {
           configKey: 'registerVerifyEmailDesc',
-          configVal: '欢迎使用Yi Ai团队的产品服务,请在五分钟内完成你的账号激活,点击以下按钮激活您的账号，',
+          configVal: this.i18n.t('common.activateAccountPrompt'),
           public: 0,
           encry: 0,
         },
-        { configKey: 'registerVerifyEmailFrom', configVal: 'Yi Ai团队', public: 0, encry: 0 },
+        { configKey: 'registerVerifyEmailFrom', configVal: this.i18n.t('common.yiAiTeam'), public: 0, encry: 0 },
         { configKey: 'registerVerifyExpir', configVal: '1800', public: 0, encry: 0 },
-        { configKey: 'registerSuccessEmailTitle', configVal: 'Yi Ai账号激活成功', public: 0, encry: 0 },
-        { configKey: 'registerSuccessEmailTeamName', configVal: 'Yi Ai', public: 0, encry: 0 },
+        { configKey: 'registerSuccessEmailTitle', configVal: this.i18n.t('common.accountActivationSuccess'), public: 0, encry: 0 },
+        { configKey: 'registerSuccessEmailTeamName', configVal: 'hhuu.io', public: 0, encry: 0 },
         {
           configKey: 'registerSuccessEmaileAppend',
-          configVal: ',请妥善保管您的账号，祝您使用愉快',
+          configVal: this.i18n.t('common.accountManagementReminder'),
           public: 0,
           encry: 0,
         },
-        { configKey: 'registerFailEmailTitle', configVal: 'Yi Ai账号激活失败', public: 0, encry: 0 },
-        { configKey: 'registerFailEmailTeamName', configVal: 'Yi Ai团队', public: 0, encry: 0 },
+        { configKey: 'registerFailEmailTitle', configVal: this.i18n.t('common.accountActivationFailed'), public: 0, encry: 0 },
+        { configKey: 'registerFailEmailTeamName', configVal: this.i18n.t('common.yiAiTeam'), public: 0, encry: 0 },
         /* 注册默认设置 */
         { configKey: 'registerSendStatus', configVal: '1', public: 1, encry: 0 },
         { configKey: 'registerSendModel3Count', configVal: '30', public: 1, encry: 0 },
@@ -147,7 +148,7 @@ export class DatabaseService implements OnModuleInit {
       Logger.log(`初始化网站配置信息成功、如您需要修改网站配置信息，请前往管理系统系统配置设置 ==============> 请注意查阅`, 'DatabaseService');
     } catch (error) {
       console.log('error: ', error);
-      throw new HttpException('创建默认网站配置失败', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(this.i18n.t('common.createDefaultWebConfigFailed'), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

@@ -2,15 +2,16 @@ import { IsIn, IsOptional, Max, Min, ValidateNested, IsNumber, IsDefined, isNumb
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { BaseEntity } from 'typeorm';
+import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class AppForMoneyDto {
   @ApiProperty({ example: 10, description: '提现金额', required: true })
-  @IsNumber({}, { message: '提现金额必须为数字' })
-  @Min(0, { message: '提现金额必须大于0' })
+  @IsNumber({}, { message: i18nValidationMessage('common.withdrawalAmountMustBeNumber') })
+  @Min(0, { message: i18nValidationMessage('common.withdrawalAmountMustBePositive') })
   withdrawalAmount: number;
 
   @ApiProperty({ example: 1, description: '提现渠道', required: true })
-  @IsIn([1, 2], { message: '提现渠道非法' })
+  @IsIn([1, 2], { message: i18nValidationMessage('common.illegalWithdrawalChannel') })
   withdrawalChannels: number;
 
   @ApiProperty({ example: 10, description: '提款联系方式', required: true })

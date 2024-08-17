@@ -15,6 +15,7 @@ import { CollectAppDto } from './dto/collectApp.dto';
 import { UserAppsEntity } from './userApps.entity';
 import { Request } from 'express';
 import { CustomAppDto } from './dto/custonApp.dto';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class AppService {
@@ -25,13 +26,14 @@ export class AppService {
     private readonly appEntity: Repository<AppEntity>,
     @InjectRepository(UserAppsEntity)
     private readonly userAppsEntity: Repository<UserAppsEntity>,
+    @I18n() private readonly i18n: I18nService,
   ) {}
 
   async createAppCat(body: CreateCatsDto) {
     const { name } = body;
     const c = await this.appCatsEntity.findOne({ where: { name } });
     if (c) {
-      throw new HttpException('该分类名称已存在！', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.categoryNameExists'), HttpStatus.BAD_REQUEST);
     }
     return await this.appCatsEntity.save(body);
   }
@@ -40,32 +42,32 @@ export class AppService {
     const { id } = body;
     const c = await this.appCatsEntity.findOne({ where: { id } });
     if (!c) {
-      throw new HttpException('该分类不存在！', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.categoryNotExist'), HttpStatus.BAD_REQUEST);
     }
     const count = await this.appEntity.count({ where: { catId: id } });
     if (count > 0) {
-      throw new HttpException('该分类下存在App，不可删除！', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.categoryHasApps'), HttpStatus.BAD_REQUEST);
     }
     const res = await this.appCatsEntity.delete(id);
-    if (res.affected > 0) return '删除成功';
-    throw new HttpException('删除失败！', HttpStatus.BAD_REQUEST);
+    if (res.affected > 0) return this.i18n.t('common.deleteSuccess');
+    throw new HttpException(this.i18n.t('common.deleteFail'), HttpStatus.BAD_REQUEST);
   }
 
   async updateAppCats(body: UpdateCatsDto) {
     const { id, name } = body;
     const c = await this.appCatsEntity.findOne({ where: { name, id: Not(id) } });
     if (c) {
-      throw new HttpException('该分类名称已存在！', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.categoryNameExists'), HttpStatus.BAD_REQUEST);
     }
     const res = await this.appCatsEntity.update({ id }, body);
-    if (res.affected > 0) return '修改成功';
-    throw new HttpException('修改失败！', HttpStatus.BAD_REQUEST);
+    if (res.affected > 0) return this.i18n.t('common.modifySuccess');
+    throw new HttpException(this.i18n.t('common.modifyFail'), HttpStatus.BAD_REQUEST);
   }
 
   async queryOneCat(params) {
     const { id } = params;
     if (!id) {
-      throw new HttpException('缺失必要参数！', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.missingParams'), HttpStatus.BAD_REQUEST);
     }
     const app = await this.appEntity.findOne({ where: { id } });
     const { demoData: demo, coverImg, des, name } = app;
@@ -161,11 +163,11 @@ export class AppService {
     body.role = 'system';
     const a = await this.appEntity.findOne({ where: { name } });
     if (a) {
-      throw new HttpException('该应用名称已存在！', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.appNameExists'), HttpStatus.BAD_REQUEST);
     }
     const c = await this.appCatsEntity.findOne({ where: { id: catId } });
     if (!c) {
-      throw new HttpException('该分类不存在！', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.categoryNotExist'), HttpStatus.BAD_REQUEST);
     }
     return await this.appEntity.save(body);
   }
@@ -176,24 +178,24 @@ export class AppService {
     if (appId) {
       const a = await this.appEntity.findOne({ where: { id: appId, userId: id } });
       if (!a) {
-        throw new HttpException('您正在编辑一个不存在的应用！', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.editingNonexistentApp'), HttpStatus.BAD_REQUEST);
       }
       const data = { name, catId, des, preset, coverImg, demoData, public: isPublic, status: isPublic ? 3 : 1 };
       const res = await this.appEntity.update({ id: appId, userId: id }, data);
       if (res.affected) {
-        return '修改成功';
+        return this.i18n.t('common.modifySuccess');
       } else {
-        throw new HttpException('修改失败！', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.modifyFail'), HttpStatus.BAD_REQUEST);
       }
     }
     if (!appId) {
       const c = await this.appCatsEntity.findOne({ where: { id: catId } });
       if (!c) {
-        throw new HttpException('该分类不存在！', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.categoryNotExist'), HttpStatus.BAD_REQUEST);
       }
       const a = await this.appEntity.findOne({ where: { name } });
       if (a) {
-        throw new HttpException('该应用名称已存在！', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.appNameExists'), HttpStatus.BAD_REQUEST);
       }
       const data = { name, catId, des, preset, coverImg, status: isPublic ? 3 : 1, demoData, public: isPublic, role: 'user', userId: id };
       const res = await this.appEntity.save(data);
@@ -206,71 +208,71 @@ export class AppService {
     const { id, name, catId, status } = body;
     const a = await this.appEntity.findOne({ where: { name, id: Not(id) } });
     if (a) {
-      throw new HttpException('该应用名称已存在！', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.appNameExists'), HttpStatus.BAD_REQUEST);
     }
     const c = await this.appCatsEntity.findOne({ where: { id: catId } });
     if (!c) {
-      throw new HttpException('该分类不存在！', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.categoryNotExist'), HttpStatus.BAD_REQUEST);
     }
     const curApp = await this.appEntity.findOne({ where: { id } });
     if (curApp.status !== body.status) {
       await this.userAppsEntity.update({ appId: id }, { status });
     }
     const res = await this.appEntity.update({ id }, body);
-    if (res.affected > 0) return '修改App信息成功';
-    throw new HttpException('修改App信息失败！', HttpStatus.BAD_REQUEST);
+    if (res.affected > 0) return this.i18n.t('common.modifyAppInfoSuccess');
+    throw new HttpException(this.i18n.t('common.modifyAppInfoFail'), HttpStatus.BAD_REQUEST);
   }
 
   async delApp(body: OperateAppDto) {
     const { id } = body;
     const a = await this.appEntity.findOne({ where: { id } });
     if (!a) {
-      throw new HttpException('该应用不存在！', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.appNotExist'), HttpStatus.BAD_REQUEST);
     }
     const useApp = await this.userAppsEntity.count({ where: { appId: id } });
     if (useApp > 0) {
-      throw new HttpException('该应用已被用户关联使用中，不可删除！', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.appInUse'), HttpStatus.BAD_REQUEST);
     }
     const res = await this.appEntity.delete(id);
-    if (res.affected > 0) return '删除App成功';
-    throw new HttpException('删除App失败！', HttpStatus.BAD_REQUEST);
+    if (res.affected > 0) return this.i18n.t('common.deleteAppSuccess');
+    throw new HttpException(this.i18n.t('common.deleteAppFail'), HttpStatus.BAD_REQUEST);
   }
 
   async auditPass(body: OperateAppDto) {
     const { id } = body;
     const a = await this.appEntity.findOne({ where: { id, status: 3 } });
     if (!a) {
-      throw new HttpException('该应用不存在！', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.appNotExist'), HttpStatus.BAD_REQUEST);
     }
     await this.appEntity.update({ id }, { status: 4 });
     /* 同步变更useApp status  */
     await this.userAppsEntity.update({ appId: id }, { status: 4 });
-    return '应用审核通过';
+    return this.i18n.t('common.appApproved');
   }
 
   async auditFail(body: OperateAppDto) {
     const { id } = body;
     const a = await this.appEntity.findOne({ where: { id, status: 3 } });
     if (!a) {
-      throw new HttpException('该应用不存在！', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.appNotExist'), HttpStatus.BAD_REQUEST);
     }
     await this.appEntity.update({ id }, { status: 5 });
     /* 同步变更useApp status  */
     await this.userAppsEntity.update({ appId: id }, { status: 5 });
-    return '应用审核拒绝完成';
+    return this.i18n.t('common.appRejected');
   }
 
   async delMineApp(body: OperateAppDto, req: Request) {
     const { id } = body;
     const a = await this.appEntity.findOne({ where: { id, userId: req.user.id } });
     if (!a) {
-      throw new HttpException('您正在操作一个不存在的资源！', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.operatingNonexistentResource'), HttpStatus.BAD_REQUEST);
     }
     /* 删除app */
     await this.appEntity.delete(id);
     /* 删除关联的useApp */
     await this.userAppsEntity.delete({ appId: id, userId: req.user.id });
-    return '删除应用成功！';
+    return this.i18n.t('common.deleteAppSuccess2');
   }
 
   async collect(body: CollectAppDto, req: Request) {
@@ -280,16 +282,16 @@ export class AppService {
     if (historyApp) {
       const r = await this.userAppsEntity.delete({ appId, userId });
       if (r.affected > 0) {
-        return '取消收藏成功!';
+        return this.i18n.t('common.unfavoriteSuccess');
       } else {
-        throw new HttpException('取消收藏失败！', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.unfavoriteFail'), HttpStatus.BAD_REQUEST);
       }
     }
     const app = await this.appEntity.findOne({ where: { id: appId } });
     const { id, role: appRole, catId } = app;
     const collectInfo = { userId, appId: id, catId, appRole, public: true, status: 1 };
     await this.userAppsEntity.save(collectInfo);
-    return '已将应用加入到我的个人工作台！';
+    return this.i18n.t('common.addedToWorkspace');
   }
 
   async mineApps(req: Request, query = { page: 1, size: 30 }) {

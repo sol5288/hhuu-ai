@@ -1,17 +1,18 @@
 import { IsNotEmpty, MinLength, MaxLength, IsEmail, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class UpdateUserDto {
   @ApiProperty({ example: 'cooper', nullable: true, description: '用户名称', required: false })
-  @MinLength(2, { message: '用户名最低需要大于2位数' })
-  @MaxLength(12, { message: '用户名不得超过12位' })
-  @IsNotEmpty({ message: '用户名不能为空' })
+  @MinLength(2, { message: i18nValidationMessage('common.usernameMinLength') })
+  @MaxLength(12, { message: i18nValidationMessage('common.usernameMaxLength') })
+  @IsNotEmpty({ message: i18nValidationMessage('common.usernameEmpty') })
   @IsOptional()
   username?: string;
 
   @ApiProperty({ example: 'https://file.jiangly.com/images/93971628.jpeg', description: '用户头像', required: false })
-  @IsNotEmpty({ message: '用户头像不能为空' })
+  @IsNotEmpty({ message: i18nValidationMessage('common.userAvatarRequired') })
   @IsOptional()
   avatar?: string;
 
@@ -20,7 +21,7 @@ export class UpdateUserDto {
     description: '用户签名',
     required: false,
   })
-  @IsNotEmpty({ message: '用户签名不能为空' })
+  @IsNotEmpty({ message: i18nValidationMessage('common.userSignatureRequired') })
   @IsOptional()
   sign?: string;
 }

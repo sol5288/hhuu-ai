@@ -16,6 +16,7 @@ import { AuditOrderDto } from './dto/auditOrder.dto';
 import { salesOrderDto } from './dto/salesOrder.dto';
 import { SalesUserListDto } from './dto/salesUserList.dto';
 import { UpdateUserSalesDto } from './dto/updateUserSales.dto';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class SalesService {
@@ -29,6 +30,7 @@ export class SalesService {
     @InjectRepository(SalesOrderEntity)
     private readonly salesOrderEntity: Repository<SalesOrderEntity>,
     private readonly globalConfigService: GlobalConfigService,
+    @I18n() private readonly i18n: I18nService,
   ) {}
 
   /* 获取个人账户信息 */
@@ -37,7 +39,7 @@ export class SalesService {
       const { id: userId } = req.user;
       let u = await this.salesUsersEntity.findOne({ where: { userId } });
       if (!u) {
-        const { salesBaseRatio = 10, salesBaseTitle = '新秀分销商' } = await this.globalConfigService.getConfigs([
+        const { salesBaseRatio = 10, salesBaseTitle = this.i18n.t('common.newDistributor') } = await this.globalConfigService.getConfigs([
           'salesBaseRatio',
           'salesBaseTitle',
         ]);
@@ -161,16 +163,16 @@ export class SalesService {
     const { withdrawalAmount, withdrawalChannels, contactInformation, remark } = body;
     const salesAllowDrawMoney = (await this.globalConfigService.getConfigs(['salesAllowDrawMoney'])) || 10;
     if (typeof withdrawalAmount !== 'number' || withdrawalAmount <= 0) {
-      throw new HttpException('提现金额必须为数字且大于0', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.withdrawalAmountMustBeNumberAndPositive'), HttpStatus.BAD_REQUEST);
     }
     if (Number(withdrawalAmount) < Number(salesAllowDrawMoney)) {
-      throw new HttpException(`提现金额最低必须为${salesAllowDrawMoney}元`, HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.minimumWithdrawalAmount', { args: { salesAllowDrawMoney } }), HttpStatus.BAD_REQUEST);
     }
 
     const salesBalanceInfo = await this.salesUsersEntity.findOne({ where: { userId } });
     const { distributionBalance, drawMoneyIn } = salesBalanceInfo;
     if (Number(distributionBalance) < Number(withdrawalAmount)) {
-      throw new HttpException('提现金额不足', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.insufficientWithdrawalAmount'), HttpStatus.BAD_REQUEST);
     }
 
     /* 扣完之后还剩多少 */
@@ -243,7 +245,7 @@ export class SalesService {
       return await this.salesOrderEntity.save(orderInfo);
     } catch (error) {
       console.log('error: ', error);
-      throw new HttpException('创建提现工单失败', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.createWithdrawalTicketFailed'), HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -253,11 +255,11 @@ export class SalesService {
       const { id: userId } = req.user;
       const { id, status } = body;
       if (![1, -1].includes(status)) {
-        throw new HttpException('审核状态错误', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.incorrectReviewStatus'), HttpStatus.BAD_REQUEST);
       }
       const orderInfo = await this.salesOrderEntity.findOne({ where: { id } });
       if (orderInfo.orderStatus !== 0) {
-        throw new HttpException('该工单已审核过', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.ticketAlreadyReviewed'), HttpStatus.BAD_REQUEST);
       }
       const userBalanceInfo = await this.salesUsersEntity.findOne({ where: { userId: orderInfo.userId } });
       const { withdrawalAmount, drawMoneyIn } = userBalanceInfo;
@@ -267,10 +269,10 @@ export class SalesService {
       await this.salesUsersEntity.update({ userId: orderInfo.userId }, { withdrawalAmount: newWithdrawalAmount, drawMoneyIn: newDrawMoneyIn });
       /* 修改工单信息 */
       await this.salesOrderEntity.update({ id }, { orderStatus: status, auditStatus: status, auditUserId: userId, paymentStatus: status });
-      return '审核完成';
+      return this.i18n.t('common.reviewCompleted');
     } catch (error) {
       console.log('error: ', error);
-      throw new HttpException('审核失败', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.reviewFailed'), HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -305,13 +307,13 @@ export class SalesService {
     const { performanceRatio, salesOutletName, userId } = body;
     const salesU = await this.salesUsersEntity.findOne({ where: { userId } });
     if (!salesU) {
-      throw new HttpException('用户不存在', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.userNotExist'), HttpStatus.BAD_REQUEST);
     }
     const res = await this.salesUsersEntity.update({ userId }, { performanceRatio, salesOutletName });
     if (res.affected > 0) {
-      return '修改成功';
+      return this.i18n.t('common.modifySuccess');
     } else {
-      throw new HttpException('修改失败', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.modifyFail'), HttpStatus.BAD_REQUEST);
     }
   }
 }

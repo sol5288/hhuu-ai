@@ -1,9 +1,10 @@
 import { IsDefined } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class QueryOneUserDto {
   @ApiProperty({ example: 1, nullable: true, description: '查询用户的id', required: false })
-  @IsDefined({ message: '用户id是必传参数' })
+  @IsDefined({ message: i18nValidationMessage('common.userIdRequired') })
   id: number;
 }

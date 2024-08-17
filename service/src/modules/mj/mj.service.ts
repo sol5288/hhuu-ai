@@ -16,6 +16,7 @@ import { BalanceEntity } from '../userBalance/balance.entity';
 import { MjTransformImgDto } from './dto/mjTransform.dto';
 import { FanyiService } from '../fanyi/fanyi.service';
 import { BadwordsService } from '../badwords/badwords.service';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class MjService {
@@ -29,6 +30,7 @@ export class MjService {
     private readonly globalConfigService: GlobalConfigService,
     private readonly fanyiService: FanyiService,
     private readonly badwordsService: BadwordsService,
+    @I18n() private readonly i18n: I18nService,
   ) {}
 
   private rateLimits = {};
@@ -73,17 +75,18 @@ export class MjService {
 
     const isWorking = this.drawWorking.find((item) => item.includes(body.prompt));
     if (isWorking) {
-      throw new HttpException('当前提示词已经在任务队列中了、请勿重复提交。。。', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.promptAlreadyInQueue'), HttpStatus.BAD_REQUEST);
     }
 
     if (this.queueCount >= 3) {
-      throw new HttpException('当前绘图任务满载、请排队等候、队列任务完成后即可开始您的任务...', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.drawingTaskQueueFull'), HttpStatus.BAD_REQUEST);
     }
 
     await this.checkRateLimit(req);
 
     this.queueCount++;
-    console.log(`开始请求用户${req.user.id} 队列+1: `, this.queueCount);
+    const userID = req.user.id;
+    console.log(this.i18n.t('common.userQueueIncrease', { args: { userID } }), this.queueCount);
 
     try {
       /* 查询历史是否已经使用过prompt，如果绘制过这个prompt 拿到绘制过的id 比对的时候排除掉 防止相同prompt拿到相同结果 */
@@ -95,28 +98,28 @@ export class MjService {
       /* 发送绘画指令 sendRes 如果有结果表示历史有存在的 本次不发新的绘图指令了 false表示正常发送了指令 */
       const sendRes = await this.sendDrawInteractions(prompt, histroyMessageIds, randomId);
       if (sendRes) {
-        console.log(`历史中存在当前图片、直接获取`);
+        console.log(this.i18n.t('common.imageExistsInHistory'));
         drawDetail = sendRes;
       } else {
         drawDetail = await this.pollForResult(prompt, histroyMessageIds, randomId);
       }
       this.queueCount--;
       this.queueCount < 0 && (this.queueCount = 0);
-      console.log('绘制图片任务结束 队列-1: ', this.queueCount);
+      console.log(this.i18n.t('common.drawingTaskEndQueueDecrease'), this.queueCount);
       const { id, content, channel_id, attachments = [], timestamp } = drawDetail;
       /* 拿到结果 存入腾讯云换新的url */
       if (!attachments.length || !attachments[0].url) {
-        throw new HttpException('绘画失败', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.drawingFailed4'), HttpStatus.BAD_REQUEST);
       }
       const { filename, url, width, height, size } = attachments[0];
-      console.log('拿到了远程地址: ', url);
+      console.log(this.i18n.t('common.gotRemoteAddress'), url);
 
       const mjNotSaveImg = this.globalConfigService.getConfigs(['mjNotSaveImg']);
       let cosUrl = '';
       if (!Number(mjNotSaveImg) || Number(mjNotSaveImg) === 0) {
         /* 将图片存入cos */
         cosUrl = await this.uploadService.uploadFileFromUrl({ filename, url });
-        console.log('存入图片完成: ', cosUrl);
+        console.log(this.i18n.t('common.imageSaveComplete'), cosUrl);
       }
 
       /* 记录图片信息 */
@@ -143,7 +146,7 @@ export class MjService {
       this.queueCount--;
       this.queueCount < 0 && (this.queueCount = 0);
 
-      console.log('绘制图片任务异常中断 队列-1: ', this.queueCount);
+      console.log(this.i18n.t('common.drawingTaskInterruptedQueueDecrease'), this.queueCount);
       this.drawWorking = this.drawWorking.filter((item) => item !== body.prompt);
       throw new HttpException(error.response, HttpStatus.BAD_REQUEST);
     }
@@ -152,20 +155,21 @@ export class MjService {
   /* 对单张图放大 U  upscale: 放大像素提升细节 */
   async upscaleSingleImg(body: MjEnlargeImgDto, req: Request) {
     if (this.queueCount >= 3) {
-      throw new HttpException('当前绘图任务满载、请排队等候、队列任务完成后即可开始您的任务...', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.drawingTaskQueueFull'), HttpStatus.BAD_REQUEST);
     }
     this.queueCount++;
-    console.log(`用户${req.user.id}开始请求放大图片 队列+1: `, this.queueCount);
+    const userID = req.user.id;
+    console.log(this.i18n.t('common.userStartEnlargeImageQueueIncrease', { args: { userID } }), this.queueCount);
     const { message_id, orderId } = body;
     try {
       const historyLog = await this.chatLogEntity.findOne({ where: { message_id } });
       if (!historyLog) {
-        throw new HttpException('历史记录中不存在当前图片、请确认您放大的图片是否存在', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.imageNotExistInHistory'), HttpStatus.BAD_REQUEST);
       }
       // upscaleId 后续以这个为准
       const isAreadlyEnlarge = await this.chatLogEntity.findOne({ where: { upscaleId: message_id, action: 'enlarge', orderId } });
       if (isAreadlyEnlarge) {
-        throw new HttpException('当前图片已经放大过了、请勿重复放大!', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.imageAlreadyEnlarged'), HttpStatus.BAD_REQUEST);
       }
       const { prompt, extend } = historyLog;
       let historyDetailDrawInfo: any = null;
@@ -176,7 +180,7 @@ export class MjService {
       }
       const { components = [] } = historyDetailDrawInfo;
       if (!components.length) {
-        throw new HttpException('当前图片没有绘画信息、无法放大!', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.noDrawingInfoForImage'), HttpStatus.BAD_REQUEST);
       }
       /* components数组 第一项 有五个数据 分别对应1-4的图片所需参数和重新绘制参数  第二项则是对应变换的四张图  */
       const currentImgComponent = components[0]['components'][orderId - 1];
@@ -185,20 +189,20 @@ export class MjService {
       /* 拿到所需参数 */
       const params = { message_id, custom_id, prompt, orderId };
       await this.sendSmInteractions(params);
-      console.log('发送放大指令成功');
+      console.log(this.i18n.t('common.enlargeInstructionSentSuccessfully'));
       /* 查询历史是否已经使用过prompt，如果绘制过这个prompt 拿到绘制过的id 比对的时候排除掉 防止相同prompt拿到相同结果 */
       const historyDraw = await this.chatLogEntity.find({ where: { prompt: Like(`%${prompt}%`) } });
       const histroyMessageIds = historyDraw.map((item) => item.message_id);
-      console.log('历史这些id已经被获取过了 不能拿了: ', histroyMessageIds);
+      console.log(this.i18n.t('common.historicalIdsAlreadyRetrieved'), histroyMessageIds);
       const enlargeImgInfo = await this.pollForUpscaleResult(params, histroyMessageIds);
       this.queueCount--;
       this.queueCount < 0 && (this.queueCount = 0);
 
-      console.log('放大图片任务结束 队列-1: ', this.queueCount);
+      console.log(this.i18n.t('common.enlargeImageTaskEndQueueDecrease'), this.queueCount);
       const { id, content, channel_id, attachments = [], timestamp } = enlargeImgInfo;
       /* 拿到结果 存入腾讯云换新的url */
       if (!attachments.length || !attachments[0].url) {
-        throw new HttpException('放大当前图片失败', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.failedToEnlargeCurrentImage'), HttpStatus.BAD_REQUEST);
       }
       const { filename, url, width, height, size } = attachments[0];
       const mjNotSaveImg = this.globalConfigService.getConfigs(['mjNotSaveImg']);
@@ -206,7 +210,7 @@ export class MjService {
       if (!Number(mjNotSaveImg) || Number(mjNotSaveImg) === 0) {
         /* 将图片存入cos */
         cosUrl = await this.uploadService.uploadFileFromUrl({ filename, url });
-        console.log('存入图片完成: ', cosUrl);
+        console.log(this.i18n.t('common.imageSaveComplete'), cosUrl);
       }
       /* 记录图片信息 */
       const logInfo = {
@@ -232,7 +236,7 @@ export class MjService {
       this.queueCount--;
       this.queueCount < 0 && (this.queueCount = 0);
 
-      console.log('放大图片任务异常中断 队列-1: ', this.queueCount);
+      console.log(this.i18n.t('common.enlargeImageTaskInterruptedQueueDecrease'), this.queueCount);
       throw new HttpException(error.response, HttpStatus.BAD_REQUEST);
     }
   }
@@ -240,17 +244,18 @@ export class MjService {
   /* 对单张图片变换 v: variation: 在基础上进行延伸变化 */
   async variationSingleImg(body: MjTransformImgDto, req: Request) {
     if (this.queueCount >= 3) {
-      throw new HttpException('当前绘图任务满载、请排队等候、队列任务完成后即可开始您的任务...', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.drawingTaskQueueFull'), HttpStatus.BAD_REQUEST);
     }
     await this.checkAuth(req);
     await this.checkRateLimit(req);
     this.queueCount++;
-    console.log(`用户${req.user.id}开始请求变换图片 队列+1: `, this.queueCount);
+    const userId = req.user.id;
+    console.log(this.i18n.t('common.userStartTransformImageQueueIncrease', { args: { userId } }), this.queueCount);
     const { message_id, orderId } = body;
     try {
       const historyLog = await this.chatLogEntity.findOne({ where: { message_id } });
       if (!historyLog) {
-        throw new HttpException('历史记录中不存在当前图片、请确认您需要变换的图片是否存在', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.imageNotExistInHistoryForTransform'), HttpStatus.BAD_REQUEST);
       }
       const { prompt, extend } = historyLog;
       let historyDetailDrawInfo: any = null;
@@ -261,7 +266,7 @@ export class MjService {
       }
       const { components = [] } = historyDetailDrawInfo;
       if (!components.length) {
-        throw new HttpException('当前图片没有绘画信息、无法变体!', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.noDrawingInfoForImageTransform'), HttpStatus.BAD_REQUEST);
       }
       /* components数组 第一项 有五个数据 分别对应1-4的图片所需参数和重新绘制参数  第二项则是对应变换的四张图  */
       const currentImgComponent = components[1]['components'][orderId - 1];
@@ -276,11 +281,11 @@ export class MjService {
       this.queueCount--;
       this.queueCount < 0 && (this.queueCount = 0);
 
-      console.log('变换图片任务结束 队列-1: ', this.queueCount);
+      console.log(this.i18n.t('common.transformImageTaskEndQueueDecrease'), this.queueCount);
       const { id, content, channel_id, attachments = [], timestamp } = variationImgInfo;
       /* 拿到结果 存入腾讯云换新的url */
       if (!attachments.length || !attachments[0].url) {
-        throw new HttpException('变换当前图片失败', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.failedToTransformCurrentImage'), HttpStatus.BAD_REQUEST);
       }
       const { filename, url, width, height, size } = attachments[0];
       /* 将图片存入cos */
@@ -288,7 +293,7 @@ export class MjService {
       let cosUrl = '';
       if (!Number(mjNotSaveImg) || Number(mjNotSaveImg) === 0) {
         cosUrl = await this.uploadService.uploadFileFromUrl({ filename, url });
-        console.log('存入图片完成: ', cosUrl);
+        console.log(this.i18n.t('common.imageSaveComplete'), cosUrl);
       }
       /* 记录图片信息 */
       const logInfo = {
@@ -315,7 +320,7 @@ export class MjService {
       this.queueCount--;
       this.queueCount < 0 && (this.queueCount = 0);
 
-      console.log('变化图片任务异常中断 队列-1: ', this.queueCount);
+      console.log(this.i18n.t('common.transformImageTaskInterruptedQueueDecrease'), this.queueCount);
       throw new HttpException(error.response, HttpStatus.BAD_REQUEST);
     }
   }
@@ -342,10 +347,10 @@ export class MjService {
     };
     try {
       await axios.post(url, body, { headers });
-      console.log('绘图指令完成');
+      console.log(this.i18n.t('common.drawingInstructionComplete'));
     } catch (error) {
       console.log('error: ', error);
-      throw new HttpException('放大单张图片请求失败...', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.failedToEnlargeSingleImage'), HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -359,7 +364,9 @@ export class MjService {
       try {
         const startTime = Date.now();
         const messageList = await this.queryMessageList();
-        console.log(`第 ${pollingCount + 1} 次开始查询 => 当前查询结果：${messageList.length}`);
+        const pollingCountPlus = pollingCount + 1;
+        const messageLength = messageList.length;
+        console.log(this.i18n.t('common.pollingQueryStart', { args: { pollingCountPlus, messageLength } }));
         if (messageList && messageList.length) {
           enlargeImgDetail = await this.findCurrentEnlargeImgResult(messageList, params, histroyMessageIds);
         }
@@ -368,7 +375,8 @@ export class MjService {
         await this.sleep(Math.max(nextPollingDelay - elapsedTime, 0));
         pollingCount++;
       } catch (error) {
-        console.error(`查询期间出现错误：${error.message}`);
+        const errorMessage = error.message;
+        console.error(this.i18n.t('common.errorDuringQuery', { args: { errorMessage } }));
       }
     }
     return enlargeImgDetail;
@@ -377,12 +385,13 @@ export class MjService {
   /* 轮询查看变换图片结果 */
   async pollForVariationResult(params, historyVariationIds) {
     const { message_id, custom_id, prompt, orderId } = params;
-    console.log('开始轮询单张变换图片结果');
+    console.log(this.i18n.t('common.startPollingTransformImageResult'));
     let variationImgDetail = null;
     let pollingCount = 0;
     while (!variationImgDetail && pollingCount < 10) {
       try {
-        console.log(`第 ${pollingCount + 1} 次开始查询[变换图片]`);
+        const pollingCountPlus = pollingCount + 1;
+        console.log(this.i18n.t('common.pollingQueryTransformImageStart', { args: { pollingCountPlus } }));
         const startTime = Date.now();
         const messageList = await this.queryMessageList();
         if (messageList && messageList.length) {
@@ -393,12 +402,13 @@ export class MjService {
         await this.sleep(Math.max(nextPollingDelay - elapsedTime, 0));
         pollingCount++;
       } catch (error) {
-        console.error(`查询期间出现错误：${error.message}`);
+        const errorMessage = error.message;
+        console.error(this.i18n.t('common.errorDuringQuery', { args: { errorMessage } }));
       }
     }
 
     if (!variationImgDetail) {
-      throw new HttpException('变换当前图片超时', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.transformImageTimeout'), HttpStatus.BAD_REQUEST);
     }
     return variationImgDetail;
   }
@@ -407,7 +417,7 @@ export class MjService {
   async findCurrentEnlargeImgResult(messageList, params, histroyMessageIds) {
     const { message_id, custom_id, prompt, orderId } = params;
     const randomId = prompt.substring(0, 12);
-    console.log('本次放大图片的id: ', randomId);
+    console.log(this.i18n.t('common.enlargeImageId'), randomId);
     const enlargeImgDetail = messageList.find((item) => {
       const { content } = item;
       if (!this.extractContent(content)) return false;
@@ -437,7 +447,7 @@ export class MjService {
     const messageList = await this.queryMessageList(); // 获取最新的已有内容
     const drawDetail = await this.findCurrentPromptResult(messageList, randomId, histroyMessageIds);
     if (drawDetail) {
-      console.log('有历史信息之间返回: ', drawDetail);
+      console.log(this.i18n.t('common.returnHistoryInfo'), drawDetail);
       return drawDetail;
     }
     const { application_id, guild_id, channel_id, session_id, version, id, authorization, mjProxy } = await this.getMjDefaultParams();
@@ -455,17 +465,17 @@ export class MjService {
       const url = mjProxy == 1 ? `http://172.247.48.137:8000/mj/draw` : 'https://discord.com/api/v9/interactions';
       const headers = { authorization };
       const res = await axios.post(url, payloadJson, { headers });
-      console.log('发送绘画指令结果: ', res.data);
+      console.log(this.i18n.t('common.sendDrawingInstructionResult'), res.data);
       return false;
     } catch (error) {
       console.log('axios: ', error);
-      throw new HttpException('绘画请求失败、当前使用人数过多、请稍后试试吧、排队中...', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.drawingRequestFailedQueueing'), HttpStatus.BAD_REQUEST);
     }
   }
 
   /* 传入prompt定时轮询返回结果 */
   async pollForResult(prompt, histroyMessageIds, randomId) {
-    console.log('开始查询绘画结果轮询');
+    console.log(this.i18n.t('common.startQueryDrawingResultPolling'));
     const startTime = Date.now();
     try {
       /* 最多轮询13次 前六十秒12秒一次共五次 后面五秒一次  最多100s  超过就是超时  */
@@ -477,7 +487,8 @@ export class MjService {
       let isLongInterval = false;
       let drawDetail = null;
       while (!drawDetail && pollingCount < MAX_POLLING_COUNT) {
-        console.log(`第 ${pollingCount + 1} 次开始查询`);
+        const pollingCountPlus = pollingCount + 1;
+        console.log(this.i18n.t('common.startQuery', { args: { pollingCountPlus } }));
         if (Date.now() - startTime >= TIME_THRESHOLD) {
           isLongInterval = true;
         }
@@ -487,21 +498,22 @@ export class MjService {
         pollingCount++;
       }
       if (!drawDetail) {
-        throw new HttpException('绘画超时，请稍后再试', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.drawingTimeout'), HttpStatus.BAD_REQUEST);
       }
       const endTime = Date.now();
-      console.log(`本次绘图耗时: ${Math.floor((endTime - startTime) / 1000)} S`);
+      const calcTime = Math.floor((endTime - startTime) / 1000);
+      console.log(this.i18n.t('common.drawingTime', { args: { calcTime } }));
       return drawDetail;
     } catch (err) {
       console.error(err.message);
-      throw new HttpException('网络连接失败，请稍后再试', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(this.i18n.t('common.networkError'), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   /* 比对当前列表中是否存在我们正在绘制的图片prompt是否已经绘制完成 histroyMessageIds是历史相同prompt生成的  有的话排除这些 */
   async findCurrentPromptResult(data, randomId, histroyMessageIds) {
     if (!data || !data.length) return;
-    console.log('本次比对的随机ID: ', randomId);
+    console.log(this.i18n.t('common.randomId'), randomId);
     const matchingItem = data.find((item) => {
       const { attachments = [], content, edited_timestamp } = item;
       return content.includes(randomId) && attachments.length > 0 && !edited_timestamp && !histroyMessageIds.includes(item.id);
@@ -522,7 +534,7 @@ export class MjService {
       return response.data;
     } catch (error) {
       console.log('axios get: ', error);
-      throw new HttpException('查询绘制结果失败...', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.queryFailed2'), HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -578,7 +590,7 @@ export class MjService {
     const m = await this.balanceEntity.findOne({ where: { userId: req.user.id } });
     const { id, balance } = m;
     if (!balance || m?.balance < 1) {
-      throw new HttpException('您当前暂无MJ绘画余额', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.noBalance'), HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -589,7 +601,7 @@ export class MjService {
     } else {
       this.freeQueueUsers[id] = this.freeQueueUsers[id] + 1;
     }
-    console.log(`当前用户${id}使用的次数：`, this.freeQueueUsers[id]);
+    console.log(this.i18n.t('common.userUsageCount', { args: { id } }), this.freeQueueUsers[id]);
   }
 
   async checkRateLimit(req: Request) {
@@ -599,8 +611,8 @@ export class MjService {
     if (this.rateLimits[id]) {
       const val = this.rateLimits[id];
       if (val > Date.now()) {
-        console.log(`当前用户 ${id} 请求过于频繁`);
-        throw new HttpException(`由于速率限制、当前普通用户限制为${mjRateLimit}秒请求一次、请合理使用`, HttpStatus.BAD_REQUEST);
+        console.log(this.i18n.t('common.userRequestTooFrequent', { args: { id } }));
+        throw new HttpException(this.i18n.t('common.rateLimit', { args: { mjRateLimit } }), HttpStatus.BAD_REQUEST);
       } else {
         this.rateLimits[id] = Date.now() + Number(mjRateLimit) * 1000;
       }

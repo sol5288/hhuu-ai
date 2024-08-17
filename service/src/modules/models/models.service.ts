@@ -10,6 +10,7 @@ import { getRandomItemFromArray, hideString } from '@/common/utils';
 import { ModelsTypeEntity } from './modelType.entity';
 import { SetModelTypeDto } from './dto/setModelType.dto';
 import { QueryModelTypeDto } from './dto/queryModelType.dto';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class ModelsService {
@@ -18,6 +19,7 @@ export class ModelsService {
     private readonly modelsEntity: Repository<ModelsEntity>,
     @InjectRepository(ModelsTypeEntity)
     private readonly modelsTypeEntity: Repository<ModelsTypeEntity>,
+    @I18n() private readonly i18n: I18nService,
   ) {}
 
   private modelTypes = [];
@@ -69,14 +71,14 @@ export class ModelsService {
   /* lock key 自动锁定key */
   async lockKey(keyId, remark, keyStatus = -1) {
     const res = await this.modelsEntity.update({ id: keyId }, { status: false, keyStatus, remark });
-    Logger.error(`key: ${keyId} 欠费或被官方封禁导致不可用，已被系统自动锁定`);
+    Logger.error(this.i18n.t('common.keyLocked', { args: { keyId } }));
     this.initCalcKey();
   }
 
   /* 获取本次调用key的详细信息 */
   async getCurrentModelKeyInfo(model) {
     if (!this.keyPoolMap[model]) {
-      throw new HttpException('当前调用模型已经被移除、请重新选择模型', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.modelRemoved'), HttpStatus.BAD_REQUEST);
     }
     /* 调用下标+1 */
     this.keyPoolIndexMap[model]++;
@@ -149,11 +151,11 @@ export class ModelsService {
 
   async delModel({ id }) {
     if (!id) {
-      throw new HttpException('缺失必要参数', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.missingParams'), HttpStatus.BAD_REQUEST);
     }
     const m = await this.modelsEntity.findOne({ where: { id } });
     if (!m) {
-      throw new HttpException('当前账号不存在', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.accountNotExist1'), HttpStatus.BAD_REQUEST);
     }
     const res = await this.modelsEntity.delete({ id });
     await this.initCalcKey();
@@ -223,7 +225,7 @@ export class ModelsService {
   async getRandomDrawKey() {
     const drawkeys = await this.modelsEntity.find({ where: { isDraw: true, status: true } });
     if (!drawkeys.length) {
-      throw new HttpException('当前未指定特殊模型KEY、前往后台模型池设置吧', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.noSpecialModelKey'), HttpStatus.BAD_REQUEST);
     }
     return getRandomItemFromArray(drawkeys);
   }

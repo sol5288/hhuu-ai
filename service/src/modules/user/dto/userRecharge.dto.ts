@@ -1,10 +1,11 @@
 import { IsNotEmpty, MinLength, MaxLength, IsEmail, IsOptional, IsNumber, IsDefined } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class UserRechargeDto {
   @ApiProperty({ example: 1, description: '用户id', required: true })
-  @IsDefined({ message: '用户id是必传参数' })
+  @IsDefined({ message: i18nValidationMessage('common.userIdRequired') })
   userId: number;
 
   @ApiProperty({ example: 100, description: '用户对话模型3次数', required: false })

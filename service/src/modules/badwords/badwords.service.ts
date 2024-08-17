@@ -11,6 +11,7 @@ import axios from 'axios';
 import { ViolationLogEntity } from './violationLog.entity';
 import { UserEntity } from '../user/user.entity';
 import { hideString } from '@/common/utils';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class BadwordsService implements OnModuleInit {
@@ -23,6 +24,7 @@ export class BadwordsService implements OnModuleInit {
     @InjectRepository(UserEntity)
     private readonly userEntity: Repository<UserEntity>,
     private readonly globalConfigService: GlobalConfigService,
+    @I18n() private readonly i18n: I18nService,
   ) {
     this.badWords = [];
   }
@@ -41,8 +43,8 @@ export class BadwordsService implements OnModuleInit {
       }
     }
     if (triggeredWords.length) {
-      await this.recordUserBadWords(userId, content, triggeredWords, ['自定义'], '自定义检测');
-      const tips = `您提交的信息中包含违规的内容、我们已对您的账户进行标记、请合规使用`;
+      await this.recordUserBadWords(userId, content, triggeredWords, [this.i18n.t('common.custom')], this.i18n.t('common.customDetection'));
+      const tips = this.i18n.t('common.contentViolation');
       throw new HttpException(tips, HttpStatus.BAD_REQUEST);
     }
   }
@@ -67,7 +69,7 @@ export class BadwordsService implements OnModuleInit {
 
   /* 提取百度云敏感词违规类型 */
   extractContent(str) {
-    const pattern = /存在(.*?)不合规/;
+    const pattern = /this.i18n.t('common.contentViolationType')/;
     const match = str.match(pattern);
     return match ? match[1] : '';
   }
@@ -83,14 +85,15 @@ export class BadwordsService implements OnModuleInit {
     const response = await axios.post(url, { text: content }, { headers });
     const { conclusion, error_code, error_msg, conclusionType, data } = response.data;
     if (error_code) {
-      console.log('百度文本检测出现错误、请查看配置信息: ', error_msg);
+      console.log(this.i18n.t('common.baiduDetectionError'), error_msg);
     }
     // conclusion 审核结果，可取值：合规、不合规、疑似、审核失败
     // conclusionType 1.合规，2.不合规，3.疑似，4.审核失败
     if (conclusionType !== 1) {
       const types = [...new Set(data.map((item) => this.extractContent(item.msg)))];
-      await this.recordUserBadWords(userId, content, ['***'], types, '百度云检测');
-      const tips = `您提交的信息中包含${types.join(',')}的内容、我们已对您的账户进行标记、请合规使用`;
+      const typesJoined = types.join(',');
+      await this.recordUserBadWords(userId, content, ['***'], types, this.i18n.t('common.baiduCloudDetection'));
+      const tips = this.i18n.t('common.contentViolationTypes', { args: { typesJoined } });
       throw new HttpException(tips, HttpStatus.BAD_REQUEST);
     }
   }
@@ -106,13 +109,13 @@ export class BadwordsService implements OnModuleInit {
     );
     if (!res.data) return;
     if (res.data.code !== '0') {
-      const { msg = '检测失败' } = res.data;
-      throw new HttpException(`敏感词检测 | ${msg}`, HttpStatus.BAD_REQUEST);
+      const { msg = this.i18n.t('common.detectionFail') } = res.data;
+      throw new HttpException(this.i18n.t('common.sensitiveWordDetection', { args: { msg } }), HttpStatus.BAD_REQUEST);
     }
     if (res.data.word_list && res.data.word_list?.length) {
       const words = [...new Set(res.data.word_list.map((t) => t.keyword))];
       const types = [...new Set(res.data.word_list.map((t) => t.category))];
-      await this.recordUserBadWords(userId, content, words, types, 'NineAi检测');
+      await this.recordUserBadWords(userId, content, words, types, this.i18n.t('common.nineAiDetection'));
       const tips = this.formarTips(res.data.word_list);
       throw new HttpException(tips, HttpStatus.BAD_REQUEST);
     }
@@ -122,7 +125,8 @@ export class BadwordsService implements OnModuleInit {
   formarTips(wordList) {
     const categorys = wordList.map((t) => t.category);
     const unSet = [...new Set(categorys)];
-    return `您提交的内容中包含${unSet.join(',')}的信息、我们已对您账号进行标记、请合规使用`;
+    const unSetJoined = unSet.join(',');
+    return this.i18n.t('common.contentContainsSensitiveInfo', { args: { unSetJoined } });
   }
 
   /* 加载自定义的敏感词 */
@@ -150,14 +154,14 @@ export class BadwordsService implements OnModuleInit {
   async delBadWords(body: DelBadWordsDto) {
     const b = await this.badWordsEntity.findOne({ where: { id: body.id } });
     if (!b) {
-      throw new HttpException('敏感词不存在,请检查您的提交信息', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.sensitiveWordNotExist'), HttpStatus.BAD_REQUEST);
     }
     const res = await this.badWordsEntity.delete({ id: body.id });
     if (res.affected > 0) {
       await this.loadBadWords();
-      return '删除敏感词成功';
+      return this.i18n.t('common.deleteSensitiveWordSuccess');
     } else {
-      throw new HttpException('删除敏感词失败', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.deleteSensitiveWordFail'), HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -166,14 +170,14 @@ export class BadwordsService implements OnModuleInit {
     const { id, word, status } = body;
     const b = await this.badWordsEntity.findOne({ where: { word } });
     if (b) {
-      throw new HttpException('敏感词已经存在了、请勿重复添加', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.sensitiveWordAlreadyExists'), HttpStatus.BAD_REQUEST);
     }
     const res = await this.badWordsEntity.update({ id }, { word, status });
     if (res.affected > 0) {
       await this.loadBadWords();
-      return '更新敏感词成功';
+      return this.i18n.t('common.updateSensitiveWordSuccess');
     } else {
-      throw new HttpException('更新敏感词失败', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.updateSensitiveWordFail'), HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -181,11 +185,11 @@ export class BadwordsService implements OnModuleInit {
     const { word } = body;
     const b = await this.badWordsEntity.findOne({ where: { word } });
     if (b) {
-      throw new HttpException('敏感词已存在,请检查您的提交信息', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.sensitiveWordExists'), HttpStatus.BAD_REQUEST);
     }
     await this.badWordsEntity.save({ word });
     await this.loadBadWords();
-    return '添加敏感词成功';
+    return this.i18n.t('common.addSensitiveWordSuccess');
   }
 
   /* 记录用户违规次数内容 */

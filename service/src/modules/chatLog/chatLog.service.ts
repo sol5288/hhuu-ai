@@ -17,6 +17,7 @@ import { ChatGroupEntity } from '../chatGroup/chatGroup.entity';
 import { DelDto } from './dto/del.dto';
 import { DelByGroupDto } from './dto/delByGroup.dto';
 import { QueryByAppIdDto } from './dto/queryByAppId.dto';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class ChatLogService {
@@ -27,6 +28,7 @@ export class ChatLogService {
     private readonly userEntity: Repository<UserEntity>,
     @InjectRepository(ChatGroupEntity)
     private readonly chatGroupEntity: Repository<ChatGroupEntity>,
+    @I18n() private readonly i18n: I18nService,
   ) {}
 
   /* 记录问答日志 */
@@ -113,14 +115,14 @@ export class ChatLogService {
     const { id } = body;
     const l = await this.chatLogEntity.findOne({ where: { id, type: DeductionKey.PAINT_TYPE } });
     if (!l) {
-      throw new HttpException('你推荐的图片不存在、请检查', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.recommendedImageNotExist'), HttpStatus.BAD_REQUEST);
     }
     const rec = l.rec === 1 ? 0 : 1;
     const res = await this.chatLogEntity.update({ id }, { rec });
     if (res.affected > 0) {
-      return `${rec ? '推荐' : '取消推荐'}图片成功`;
+      return `${rec ? this.i18n.t('common.recommend') : this.i18n.t('common.cancelRecommendation')} this.i18n.t('common.imageSuccess')`;
     }
-    throw new HttpException('你操作的图片不存在、请检查', HttpStatus.BAD_REQUEST);
+    throw new HttpException(this.i18n.t('common.operatedImageNotExist'), HttpStatus.BAD_REQUEST);
   }
 
   /* 导出为excel对话记录 */
@@ -157,11 +159,11 @@ export class ChatLogService {
     const worksheet = workbook.addWorksheet('chatlog');
 
     worksheet.columns = [
-      { header: '用户名', key: 'username', width: 20 },
-      { header: '用户邮箱', key: 'email', width: 20 },
-      { header: '提问时间', key: 'createdAt', width: 20 },
-      { header: '提问问题', key: 'prompt', width: 80 },
-      { header: '回答答案', key: 'answer', width: 150 },
+      { header: this.i18n.t('common.username'), key: 'username', width: 20 },
+      { header: this.i18n.t('common.userEmail'), key: 'email', width: 20 },
+      { header: this.i18n.t('common.questionTime'), key: 'createdAt', width: 20 },
+      { header: this.i18n.t('common.questionContent'), key: 'prompt', width: 80 },
+      { header: this.i18n.t('common.answerContent'), key: 'answer', width: 150 },
     ];
 
     data.forEach((row) => worksheet.addRow(row));
@@ -193,8 +195,8 @@ export class ChatLogService {
     });
     req.user.role !== 'super' && rows.forEach((t: any) => (t.email = maskEmail(t.email)));
     rows.forEach((item: any) => {
-      !item.email && (item.email = `${item?.userId}@nine.com`);
-      !item.username && (item.username = `游客${item?.userId}`);
+      !item.email && (item.email = `${item?.userId}@hhuu.io`);
+      !item.username && (item.username = this.i18n.t('common.guestUser2', { args: { userIds } }));
     });
     return { rows, count };
   }
@@ -238,13 +240,13 @@ export class ChatLogService {
     const { id } = body;
     const c = await this.chatLogEntity.findOne({ where: { id, userId } });
     if (!c) {
-      throw new HttpException('你删除的对话记录不存在、请检查', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.conversationRecordNotExist'), HttpStatus.BAD_REQUEST);
     }
     const r = await this.chatLogEntity.update({ id }, { isDelete: true });
     if (r.affected > 0) {
-      return '删除对话记录成功';
+      return this.i18n.t('common.deleteConversationSuccess');
     } else {
-      throw new HttpException('你删除的对话记录不存在、请检查', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.conversationRecordNotExist'), HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -255,17 +257,17 @@ export class ChatLogService {
     const g = await this.chatGroupEntity.findOne({ where: { id: groupId, userId: id } });
 
     if (!g) {
-      throw new HttpException('你删除的对话记录不存在、请检查', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.conversationRecordNotExist'), HttpStatus.BAD_REQUEST);
     }
 
     const r = await this.chatLogEntity.update({ groupId }, { isDelete: true });
 
     if (r.affected > 0) {
-      return '删除对话记录成功';
+      return this.i18n.t('common.deleteConversationSuccess');
     }
 
     if (r.affected === 0) {
-      throw new HttpException('当前页面已经没有东西可以删除了', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.nothingToDelete'), HttpStatus.BAD_REQUEST);
     }
   }
 

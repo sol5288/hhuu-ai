@@ -10,6 +10,7 @@ import { ConfigEntity } from '../globalConfig/config.entity';
 import { OrderEntity } from '../order/order.entity';
 import { MidjourneyEntity } from '../midjourney/midjourney.entity';
 import { MidjourneyActionEnum, MidjourneyStatusEnum } from '@/common/constants/midjourney.constant';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class StatisticService {
@@ -24,6 +25,7 @@ export class StatisticService {
     private readonly orderEntity: Repository<OrderEntity>,
     @InjectRepository(MidjourneyEntity)
     private readonly midjourneyEntity: Repository<MidjourneyEntity>,
+    @I18n() private readonly i18n: I18nService,
   ) {}
 
   /* 基础数据统计 */
@@ -235,21 +237,21 @@ export class StatisticService {
       return [];
     }
     if (!siteId) {
-      throw new HttpException('请先配置百度统计siteId', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.baiduSiteIdNotConfigured'), HttpStatus.BAD_REQUEST);
     }
     if (!accessToken) {
-      throw new HttpException('请先配置百度统计accessToken', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.baiduAccessTokenNotConfigured'), HttpStatus.BAD_REQUEST);
     }
     const url = `https://openapi.baidu.com/rest/2.0/tongji/report/getData?access_token=${accessToken}&site_id=${siteId}&method=${method}&start_date=${start_date}&end_date=${end_date}&metrics=${metrics}`;
     const res = await axios.get(url);
     const { error_code, message } = res.data;
     if (error_code === 111) {
       /* 自动刷新 */
-      throw new HttpException(message || '百度授权码过期', HttpStatus.BAD_REQUEST);
+      throw new HttpException(message || this.i18n.t('common.baiduAuthCodeExpired'), HttpStatus.BAD_REQUEST);
     }
     /* 其他错误 */
     if (error_code && error_code !== 200) {
-      throw new HttpException(message || '获取百度统计数据失败', HttpStatus.BAD_REQUEST);
+      throw new HttpException(message || this.i18n.t('common.getBaiduStatsFailed'), HttpStatus.BAD_REQUEST);
     }
     /* 格式化数据 */
     return res.data.result;

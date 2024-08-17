@@ -16,6 +16,7 @@ import { RedisClientType } from 'redis';
 import { RedisCacheService } from '../redisCache/redisCache.service';
 import { mjPromptEntity } from './prompt.entity';
 import sizeOf from 'image-size';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class MidjourneyService {
@@ -31,6 +32,7 @@ export class MidjourneyService {
     // private readonly badwordsService: BadwordsService,
     private readonly userBalanceService: UserBalanceService,
     private redisCacheService: RedisCacheService,
+    @I18n() private readonly i18n: I18nService,
   ) {}
 
   private lockPrompt = [];
@@ -118,7 +120,7 @@ export class MidjourneyService {
       const durationSpent = finishTime - submitTime; // 注意单位可能需要调整，根据实际时间单位
 
       // 组合时间戳和id生成文件名
-      let filename = `${Date.now()}-${id}.png`; // 替换 '.ext' 为实际的文件扩展名
+      const filename = `${Date.now()}-${id}.png`; // 替换 '.ext' 为实际的文件扩展名
 
       const mjNotSaveImg = await this.globalConfigService.getConfigs(['mjNotSaveImg']);
       let cosUrl = '';
@@ -156,7 +158,7 @@ export class MidjourneyService {
 
       await this.midjourneyEntity.update({ id: jobData.id }, drawInfo);
     } catch (error) {
-      throw new HttpException('更新绘画数据失败', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.updateDrawingDataFailed'), HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -193,13 +195,13 @@ export class MidjourneyService {
           Logger.log(`绘画ID: ${result}`, 'MidjourneyService');
           return result;
         } else {
-          throw new Error('未能获取结果数据');
+          throw new Error(this.i18n.t('common.failedToGetResultData'));
         }
       } catch (error) {
         retryCount++;
         if (retryCount >= MAX_RETRIES) {
           await this.updateDrawStatus(id, MidjourneyStatusEnum.DRAWFAIL);
-          throw new HttpException('发送绘图指令失败、请联系管理员检测绘画配置', HttpStatus.BAD_REQUEST);
+          throw new HttpException(this.i18n.t('common.sendDrawingInstructionFailed'), HttpStatus.BAD_REQUEST);
         }
       }
     }
@@ -247,14 +249,14 @@ export class MidjourneyService {
 
       if (retryCount >= MAX_RETRIES) {
         await this.updateDrawStatus(id, MidjourneyStatusEnum.DRAWFAIL);
-        throw new HttpException('轮询失败次数过多，请稍后再试', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.tooManyPollingFailures'), HttpStatus.BAD_REQUEST);
       }
 
       Logger.error('绘画超时，请稍后再试', 'MidjourneyService');
       await this.updateDrawStatus(id, MidjourneyStatusEnum.DRAWFAIL);
-      throw new HttpException('绘画超时，请稍后再试', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.drawingTimeout'), HttpStatus.BAD_REQUEST);
     } catch (error) {
-      Logger.error('获取图片结果失败: ', error, 'MidjourneyService');
+      Logger.error(this.i18n.t('common.failedToGetImageResult'), error, 'MidjourneyService');
       await this.updateDrawStatus(id, MidjourneyStatusEnum.DRAWFAIL);
       throw error;
     }
@@ -327,7 +329,7 @@ export class MidjourneyService {
       const data: any = { rows: formatCreateOrUpdateDate(rows), count, countQueue };
       return data;
     } catch (error) {
-      throw new HttpException('获取我得绘制列表失败', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.failedToGetDrawingList'), HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -412,7 +414,7 @@ export class MidjourneyService {
       );
     }
     if (!currentButton) {
-      throw new HttpException('所需绘画操作信息不存在!', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.drawingOperationInfoMissing'), HttpStatus.BAD_REQUEST);
     }
 
     const { customId } = currentButton;
@@ -424,16 +426,16 @@ export class MidjourneyService {
   async deleteDraw(id: number, req: Request) {
     const d = await this.midjourneyEntity.findOne({ where: { id, userId: req.user.id, isDelete: 0 } });
     if (!d) {
-      throw new HttpException('当前图片不存在', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.currentImageNotExist'), HttpStatus.BAD_REQUEST);
     }
     if (d.status === 2) {
-      throw new HttpException('绘制中的图片任务、禁止删除', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.cannotDeleteDrawingInProgress'), HttpStatus.BAD_REQUEST);
     }
     const res = await this.midjourneyEntity.update({ id }, { isDelete: 1 });
     if (res.affected > 0) {
-      return '删除成功';
+      return this.i18n.t('common.deleteSuccess');
     } else {
-      throw new HttpException('删除失败', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.deleteFail'), HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -447,7 +449,7 @@ export class MidjourneyService {
     const mjLimitCount = await this.globalConfigService.getConfigs(['mjLimitCount']);
     const max = mjLimitCount ? Number(mjLimitCount) : 2;
     if (count >= max) {
-      throw new HttpException(`当前管理员限制单用户同时最多能执行${max}个任务`, HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.maxSimultaneousTasksLimitReached', { args: { max } }), HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -465,7 +467,7 @@ export class MidjourneyService {
     const { id, userId, action } = jobData;
     /* 扣除余额 放大图片（类型2）是1 其他都是4 */
     const amount = action === 'UPSCALE' ? 1 : 4;
-    Logger.debug(`绘画完成，执行扣费，扣除费用:${amount}积分。`);
+    Logger.debug(this.i18n.t('common.drawingCompleteAndCharged', { args: { amount } }));
     await this.userBalanceService.refundMjBalance(userId, -amount);
     await this.midjourneyEntity.update({ id }, { status: 3 });
   }
@@ -557,7 +559,7 @@ export class MidjourneyService {
       }
       return { rows, count };
     } catch (error) {
-      throw new HttpException('查询失败', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.queryFailed1'), HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -566,12 +568,12 @@ export class MidjourneyService {
     const { id } = params;
     const draw = await this.midjourneyEntity.findOne({ where: { id, status: 3, isDelete: 0 } });
     if (!draw) {
-      throw new HttpException('当前图片不存在', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.currentImageNotExist'), HttpStatus.BAD_REQUEST);
     }
     const { rec } = draw;
     const res = await this.midjourneyEntity.update({ id }, { rec: rec === 1 ? 0 : 1 });
     if (res.affected > 0) {
-      return '操作成功';
+      return this.i18n.t('common.operationSuccessful');
     }
   }
 
@@ -588,13 +590,13 @@ export class MidjourneyService {
   async delLog(req: Request, body) {
     const { id } = body;
     if (!id) {
-      throw new HttpException('非法操作', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.illegalOperation2'), HttpStatus.BAD_REQUEST);
     }
     const res = await this.midjourneyEntity.delete({ id });
     if (res.affected > 0) {
-      return '删除记录成功';
+      return this.i18n.t('common.deleteRecordSuccessful');
     } else {
-      throw new HttpException('删除记录失败', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.deleteRecordFailed'), HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -614,7 +616,7 @@ export class MidjourneyService {
   async delPrompt(req: Request, body) {
     const { id } = body;
     if (!id) {
-      throw new HttpException('非法操作', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.illegalOperation2'), HttpStatus.BAD_REQUEST);
     }
     return await this.mjPromptsEntity.delete({ id });
   }

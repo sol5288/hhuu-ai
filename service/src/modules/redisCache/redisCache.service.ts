@@ -1,9 +1,10 @@
 import { Inject, Injectable, CACHE_MANAGER, OnModuleInit, Scope, HttpException, HttpStatus } from '@nestjs/common';
 import { RedisClientType } from 'redis';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class RedisCacheService implements OnModuleInit {
-  constructor(@Inject('REDIS_CLIENT') private redisClient: RedisClientType) {}
+  constructor(@Inject('REDIS_CLIENT') private redisClient: RedisClientType, @I18n() private readonly i18n: I18nService) {}
 
   async onModuleInit() {
     //  设置配置参数
@@ -72,7 +73,7 @@ export class RedisCacheService implements OnModuleInit {
       /* 管理员属于白名单 */
       if (['super', 'admin'].includes(role)) return true;
       // 如果 Token 不存在或者不匹配，则认为验证失败
-      throw new HttpException('您已在其他设备覆盖登录、请您重新登录', HttpStatus.UNAUTHORIZED);
+      throw new HttpException(this.i18n.t('common.loginOverride'), HttpStatus.UNAUTHORIZED);
       // return true;
     }
   }

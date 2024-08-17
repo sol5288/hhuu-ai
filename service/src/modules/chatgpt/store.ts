@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { get_encoding } from '@dqbd/tiktoken';
 import { Logger } from '@nestjs/common';
 import { includes } from 'lodash';
+import { I18nService } from 'nestjs-i18n';
 
 const tokenizer = get_encoding('cl100k_base');
 
@@ -53,7 +54,7 @@ export interface NineStoreInterface {
   getData(id: string): Promise<string>;
   setData(message: MessageInfo, expires?: number): Promise<void>;
   getUuid(): string;
-  buildMessageFromParentMessageId(string, opt?: BuildMessageOptions): Promise<any>;
+  buildMessageFromParentMessageId(string, i18n: I18nService, opt?: BuildMessageOptions): Promise<any>;
 }
 
 export class NineStore implements NineStoreInterface {
@@ -90,18 +91,18 @@ export class NineStore implements NineStoreInterface {
    * @desc 通过传入prompt和parentMessageId 递归往上拿到历史记录组装为模型需要的上下文、
    *       可以传入maxRounds限制最大轮次的对话 传入maxModelToken, maxResponseTokens 则通过计算上下文占用的token计算出最大容量
    */
-  public async buildMessageFromParentMessageId(text: string, options: BuildMessageOptions) {
-    let { maxRounds, maxModelToken, maxResponseTokens, systemMessage = '', name, imageUrl, model, activeModel } = options;
+  public async buildMessageFromParentMessageId(text: string, i18n: I18nService, options: BuildMessageOptions) {
+    const { maxRounds, maxModelToken, maxResponseTokens, systemMessage = '', name, imageUrl, model, activeModel } = options;
     let { parentMessageId } = options;
-    let messages = [];
+    const messages = [];
     let nextNumTokensEstimate = 0;
     // messages.push({ role: 'system', content: systemMessage, name })
     if (systemMessage) {
-      const specialModels = ['gemini-pro', 'ERNIE','hunyuan'];
+      const specialModels = ['gemini-pro', 'ERNIE', 'hunyuan'];
       const isSpecialModel = activeModel && specialModels.some((specialModel) => activeModel.includes(specialModel));
       if (isSpecialModel) {
         messages.push({ role: 'user', content: systemMessage, name });
-        messages.push({ role: 'assistant', content: '好的', name });
+        messages.push({ role: 'assistant', content: i18n.t('common.okay'), name });
       } else {
         messages.push({ role: 'system', content: systemMessage, name });
       }

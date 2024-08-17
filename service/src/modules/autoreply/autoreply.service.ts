@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { AddAutoReplyDto } from './dto/addAutoReply.dto';
 import { UpdateAutpReplyDto } from './dto/updateAutoReply.dto';
 import { DelAutoReplyDto } from './dto/delBadWords.dto';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class AutoreplyService implements OnModuleInit {
@@ -15,6 +16,7 @@ export class AutoreplyService implements OnModuleInit {
   constructor(
     @InjectRepository(AutoReplyEntity)
     private readonly autoReplyEntity: Repository<AutoReplyEntity>,
+    @I18n() private readonly i18n: I18nService,
   ) {}
 
   async onModuleInit() {
@@ -54,11 +56,11 @@ export class AutoreplyService implements OnModuleInit {
     const { prompt } = body;
     const a = await this.autoReplyEntity.findOne({ where: { prompt } });
     if (a) {
-      throw new HttpException('该问题已存在,请检查您的提交信息', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.questionExists'), HttpStatus.BAD_REQUEST);
     }
     await this.autoReplyEntity.save(body);
     await this.loadAutoReplyList();
-    return '添加问题成功';
+    return this.i18n.t('common.addQuestionSuccess');
   }
 
   async updateAutoreply(body: UpdateAutpReplyDto) {
@@ -66,22 +68,22 @@ export class AutoreplyService implements OnModuleInit {
     const res = await this.autoReplyEntity.update({ id }, body);
     if (res.affected > 0) {
       await this.loadAutoReplyList();
-      return '更新问题成功';
+      return this.i18n.t('common.updateQuestionSuccess');
     }
-    throw new HttpException('更新失败', HttpStatus.BAD_REQUEST);
+    throw new HttpException(this.i18n.t('common.updateFail'), HttpStatus.BAD_REQUEST);
   }
 
   async delAutoreply(body: DelAutoReplyDto) {
     const { id } = body;
     const z = await this.autoReplyEntity.findOne({ where: { id } });
     if (!z) {
-      throw new HttpException('该问题不存在,请检查您的提交信息', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.questionNotExist'), HttpStatus.BAD_REQUEST);
     }
     const res = await this.autoReplyEntity.delete({ id });
     if (res.affected > 0) {
       await this.loadAutoReplyList();
-      return '删除问题成功';
+      return this.i18n.t('common.deleteQuestionSuccess');
     }
-    throw new HttpException('删除失败', HttpStatus.BAD_REQUEST);
+    throw new HttpException(this.i18n.t('common.deleteFail'), HttpStatus.BAD_REQUEST);
   }
 }

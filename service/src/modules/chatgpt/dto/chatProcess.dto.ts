@@ -1,6 +1,7 @@
 import { IsNotEmpty, MinLength, MaxLength, IsString, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class Options {
   @IsString()
@@ -13,7 +14,7 @@ export class Options {
 
 export class ChatProcessDto {
   @ApiProperty({ example: 'hello, Who are you', description: '对话信息' })
-  @IsNotEmpty({ message: '提问信息不能为空' })
+  @IsNotEmpty({ message: i18nValidationMessage('common.emptyQuestionInfo') })
   prompt: string;
 
   @ApiProperty({ example: '{ parentMessageId: 0 }', description: '上次对话信息', required: false })

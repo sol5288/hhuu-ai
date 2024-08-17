@@ -6,16 +6,17 @@ import { Request } from 'express';
 import axios from 'axios';
 import { GetQrCodeDto } from './dto/getQrCode.dto';
 import { GetQrSceneStrDto } from './dto/getQrSceneStr.dto';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 @ApiTags('official')
 @Controller('official')
 export class OfficialController {
-  constructor(private readonly officialService: OfficialService) {}
+  constructor(private readonly officialService: OfficialService, @I18n() private readonly i18n: I18nService) {}
 
   @Get('notify')
   @ApiOperation({ summary: '公众号通知接口GET' })
   async notify(@Req() req, @Query() query, @Body() body) {
-    console.log('get 通知>>>', query, body);
+    console.log(this.i18n.t('common.notification'), query, body);
     const result = await this.officialService.verify(query.signature, query.nonce, query.timestamp);
     return result ? query.echostr : '';
   }
@@ -32,7 +33,7 @@ export class OfficialController {
       }
       /* 扫码 */
       if (xml.event[0] == 'SCAN') {
-        console.log('扫码');
+        console.log(this.i18n.t('common.scanCode'));
         const sceneStr = xml.eventkey[0];
         /* 绑定微信以/区分 */
         if (sceneStr.includes('/')) {
@@ -47,7 +48,7 @@ export class OfficialController {
 
       /* 订阅 */
       if (xml.event[0] == 'subscribe') {
-        console.log('订阅', xml.eventkey[0]);
+        console.log(this.i18n.t('common.subscribe'), xml.eventkey[0]);
         const sceneStr = xml.eventkey[0].split('qrscene_')[1];
         console.log('sceneStr: ', sceneStr);
         /* 没有场景str则是单纯关注了直接返回 */

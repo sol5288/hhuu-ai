@@ -8,6 +8,7 @@ import { MidjourneyActionEnum } from '@/common/constants/midjourney.constant';
 import { Request } from 'express';
 import { UserBalanceService } from '../userBalance/userBalance.service';
 import { GlobalConfigService } from '../globalConfig/globalConfig.service';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 export class QueueService implements OnApplicationBootstrap {
   constructor(
@@ -15,6 +16,7 @@ export class QueueService implements OnApplicationBootstrap {
     private readonly midjourneyService: MidjourneyService,
     private readonly userBalanceService: UserBalanceService,
     private readonly globalConfigService: GlobalConfigService,
+    @I18n() private readonly i18n: I18nService,
   ) {}
   private readonly jobIds: any[] = [];
 
@@ -56,9 +58,9 @@ export class QueueService implements OnApplicationBootstrap {
       return;
     }
 
-    if (!drawId || !orderId) {
-      throw new HttpException('缺少必要参数', HttpStatus.BAD_REQUEST);
-    }
+    // if (!drawId || !orderId) {
+    //   throw new HttpException(this.i18n.t('common.missingRequiredParams2'), HttpStatus.BAD_REQUEST);
+    // }
     /* 图片操作 */
   }
 

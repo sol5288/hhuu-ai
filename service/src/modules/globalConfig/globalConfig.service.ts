@@ -11,6 +11,8 @@ import { getDiffArray, hideString } from '@/common/utils';
 import { Request } from 'express';
 import axios from 'axios';
 import * as fs from 'fs';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
+
 const packageJsonContent = fs.readFileSync('package.json', 'utf-8');
 const packageJson = JSON.parse(packageJsonContent);
 const version = packageJson.version;
@@ -24,6 +26,7 @@ export class GlobalConfigService implements OnModuleInit {
     @InjectRepository(ChatLogEntity)
     private readonly chatLogEntity: Repository<ChatLogEntity>,
     private readonly modelsService: ModelsService,
+    @I18n() private readonly i18n: I18nService,
   ) {}
   private globalConfigs: any = {};
   private wechatAccessToken: string;
@@ -67,7 +70,7 @@ export class GlobalConfigService implements OnModuleInit {
   async initBaiduSensitive(isInit = true) {
     const { baiduTextApiKey, baiduTextSecretKey } = await this.getConfigs(['baiduTextApiKey', 'baiduTextSecretKey']);
     if (!baiduTextApiKey || !baiduTextSecretKey) {
-      Logger.error('百度敏感词初始化失败，如果需要敏感检测、请前往后台系统配置!', 'GlobalConfigService');
+      Logger.error(this.i18n.t('common.baiduSensitiveWordsInitFailed'), 'GlobalConfigService');
       return;
     }
     const headers = { 'Content-Type': 'application/json', Accept: 'application/json' };
@@ -77,7 +80,7 @@ export class GlobalConfigService implements OnModuleInit {
       this.globalConfigs.baiduTextAccessToken = response.data.access_token;
     } catch (error) {
       if (isInit) {
-        Logger.error('百度敏感词配置检测失败，您的参数可能配置的不正确!', 'GlobalConfigService');
+        Logger.error(this.i18n.t('common.baiduSensitiveWordsConfigFailed'), 'GlobalConfigService');
       } else {
         throw new HttpException(error.response.data.error_description, HttpStatus.BAD_REQUEST);
       }
@@ -88,7 +91,7 @@ export class GlobalConfigService implements OnModuleInit {
   async getWechatAccessToken(isInit = false) {
     const { wechatOfficialAppId: appId, wechatOfficialAppSecret: secret } = await this.getConfigs(['wechatOfficialAppId', 'wechatOfficialAppSecret']);
     if (!appId || !secret) {
-      return Logger.error('还未配置微信的appId和secret、配置后才可进行微信扫码登录', 'OfficialService');
+      return Logger.error(this.i18n.t('common.wechatConfigMissing'), 'OfficialService');
     }
     this.wechatAccessToken = await this.fetchBaseAccessToken(appId, secret, isInit);
     this.wechatJsapiTicket = await this.fetchJsapiTicket(this.wechatAccessToken);
@@ -106,9 +109,9 @@ export class GlobalConfigService implements OnModuleInit {
     } = await axios.get(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appId}&secret=${secret}`);
     if (errmsg) {
       if (isInit) {
-        Logger.error(`获取微信access_token失败、错误信息：${errmsg}`, 'OfficialService');
+        Logger.error(this.i18n.t('common.wechatAccessTokenFailed', { args: { errmsg } }), 'OfficialService');
       } else {
-        throw new HttpException('请配置正确的秘钥、当前秘钥检测不通过', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.incorrectSecretKey'), HttpStatus.BAD_REQUEST);
       }
       return '';
     }
@@ -242,7 +245,7 @@ export class GlobalConfigService implements OnModuleInit {
       }
     }
     await this.initGetAllConfig();
-    return '操作完成';
+    return this.i18n.t('common.operationComplete');
   }
 
   /* 查询配置 */
@@ -270,7 +273,7 @@ export class GlobalConfigService implements OnModuleInit {
           /* 比较长的隐藏内容自定义 */
           const longKeys = ['payWeChatPublicKey', 'payWeChatPrivateKey'];
           if (longKeys.includes(item.configKey)) {
-            return (item.configVal = hideString(item.configVal, '隐私内容、非超级管理员无权查看'));
+            return (item.configVal = hideString(item.configVal, this.i18n.t('common.privateContent')));
           }
           const whiteListKey = ['payEpayStatus', 'payHupiStatus', 'mjProxy'];
           if (!whiteListKey.includes(item.configKey) && !item.configKey.includes('Status')) {
@@ -311,7 +314,7 @@ export class GlobalConfigService implements OnModuleInit {
         await this.getWechatAccessToken();
       }
 
-      return '设置完成';
+      return this.i18n.t('common.settingComplete');
     } catch (error) {
       console.log('error: ', error);
     }
@@ -330,7 +333,7 @@ export class GlobalConfigService implements OnModuleInit {
       }
     } catch (error) {
       console.log('error: ', error);
-      throw new HttpException('设置配置信息错误', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.settingConfigError'), HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -353,7 +356,7 @@ export class GlobalConfigService implements OnModuleInit {
       payMpayStatus = 0,
     } = await this.getConfigs(['payHupiStatus', 'payEpayStatus', 'payMpayStatus', 'payWechatStatus']);
     if ([payHupiStatus, payEpayStatus, payWechatStatus, payMpayStatus].every((status) => status === 0)) {
-      throw new HttpException('支付功能暂未开放!', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.paymentUnavailable'), HttpStatus.BAD_REQUEST);
     }
     if (Number(payWechatStatus) === 1) {
       return 'wechat';
@@ -391,7 +394,7 @@ export class GlobalConfigService implements OnModuleInit {
       'aliPhoneTemplateCode',
     ]);
     if (Number(phoneRegisterStatus) !== 1) {
-      throw new HttpException('手机验证码功能暂未开放!', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.smsVerificationUnavailable'), HttpStatus.BAD_REQUEST);
     }
     return {
       accessKeyId: aliPhoneAccessKeyId,
@@ -415,7 +418,7 @@ export class GlobalConfigService implements OnModuleInit {
       signInMjDrawToken = 0,
     } = await this.getConfigs(['signInStatus', 'signInModel3Count', 'signInModel4Count', 'signInMjDrawToken']);
     if (Number(signInStatus) !== 1) {
-      throw new HttpException('签到功能暂未开放!', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.signInUnavailable'), HttpStatus.BAD_REQUEST);
     }
     return {
       model3Count: Number(signInModel3Count),
@@ -429,11 +432,11 @@ export class GlobalConfigService implements OnModuleInit {
     const response = await fetch(api, {});
     const responseData: any = await response.json();
     const { success = true, message } = responseData;
-    Logger.error('请按要求填写正确的授权信息');
-    Logger.error('请填写您的授权码');
-    Logger.error('缺失ip信息');
-    Logger.error('缺失ip信息');
-    Logger.debug('感谢您使用NineAi、祝您使用愉快~');
+    Logger.error(this.i18n.t('common.fillCorrectAuthInfo'));
+    Logger.error(this.i18n.t('common.fillAuthCode'));
+    Logger.error(this.i18n.t('common.missingIpInfo'));
+    Logger.error(this.i18n.t('common.missingIpInfo'));
+    Logger.debug(this.i18n.t('common.thankYouMessage'));
   }
 
   /* 拿到敏感次配置 都开启优先使用百度云 */

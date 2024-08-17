@@ -20,6 +20,7 @@ import { FingerprintLogEntity } from './fingerprint.entity';
 import { ChatLogEntity } from '../chatLog/chatLog.entity';
 import { ChatGroupEntity } from '../chatGroup/chatGroup.entity';
 import { MidjourneyEntity } from '../midjourney/midjourney.entity';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 interface LogInfo {
   userId: number;
@@ -67,6 +68,7 @@ export class UserBalanceService {
     private readonly midjourneyEntity: Repository<MidjourneyEntity>,
     private readonly salesService: SalesService,
     private readonly globalConfigService: GlobalConfigService,
+    @I18n() private readonly i18n: I18nService,
   ) {}
 
   /* 新注册用户赠送消费 */
@@ -158,7 +160,7 @@ export class UserBalanceService {
       await this.userBalanceEntity.save({ userId, model3Count, model4Count, drawMjCount, useTokens: 0 });
     } catch (error) {
       console.log('error: ', error);
-      throw new HttpException('注册赠送失败,请联系管理员', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.registrationGiftFailed'), HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -182,12 +184,12 @@ export class UserBalanceService {
     /* 如果是会员 */
     if (b.packageId && b[memberKey] < amount) {
       if (b[baseKey] < amount) {
-        throw new HttpException(`您的账户余额不足,如果想继续体验服务,请联系管理员 <VX: ${vxNumber}> 或购买专属套餐 `, HttpStatus.PAYMENT_REQUIRED);
+        throw new HttpException(this.i18n.t('common.insufficientBalanceSimple', { args: { vxNumber } }), HttpStatus.PAYMENT_REQUIRED);
       }
     }
     /* 如果不是会员 */
     if (!b.packageId && b[baseKey] < amount) {
-      throw new HttpException(`您的账户余额不足,如果想继续体验服务,请联系管理员 <VX: ${vxNumber}> 或购买专属套餐 `, HttpStatus.PAYMENT_REQUIRED);
+      throw new HttpException(this.i18n.t('common.insufficientBalance2', { args: { vxNumber } }), HttpStatus.PAYMENT_REQUIRED);
     }
     return b;
   }
@@ -220,7 +222,7 @@ export class UserBalanceService {
       data[baseKey] = data[baseKey] + amount;
       /* 判断余额 */
       if (data[baseKey] > settings[baseKey]) {
-        throw new HttpException(`今日当前类型免费额度已经使用完毕、建议您注册账户体验更加完整的服务内容`, HttpStatus.PAYMENT_REQUIRED);
+        throw new HttpException(this.i18n.t('common.freeLimitReached'), HttpStatus.PAYMENT_REQUIRED);
       } else {
         await this.fingerprintLogEntity.save(data);
         return true;
@@ -248,7 +250,7 @@ export class UserBalanceService {
         data[baseKey] = data[baseKey] + amount;
       }
       if (data[baseKey] > settings[baseKey]) {
-        throw new HttpException(`今日当前类型免费额度已经使用完毕、建议您注册账户体验更加完整的服务内容`, HttpStatus.PAYMENT_REQUIRED);
+        throw new HttpException(this.i18n.t('common.freeLimitReached'), HttpStatus.PAYMENT_REQUIRED);
       } else {
         await this.fingerprintLogEntity.update({ fingerprint: id }, data);
         return true;
@@ -267,7 +269,7 @@ export class UserBalanceService {
   async deductFromBalance(userId, deductionType, amount, UseAmount = 0) {
     const b = await this.userBalanceEntity.findOne({ where: { userId } });
     if (!b) {
-      throw new HttpException('缺失当前用户账户记录', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.missingUserAccount'), HttpStatus.BAD_REQUEST);
     }
 
     /* 如果是会员 */
@@ -334,7 +336,7 @@ export class UserBalanceService {
         if (user) {
           return await this.queryUserBalance(userId);
         } else {
-          throw new HttpException('查询当前用户余额失败', HttpStatus.BAD_REQUEST);
+          throw new HttpException(this.i18n.t('common.queryUserBalanceFailed'), HttpStatus.BAD_REQUEST);
         }
       }
       res.sumModel3Count = res.packageId ? res.model3Count + res.memberModel3Count : res.model3Count;
@@ -351,7 +353,7 @@ export class UserBalanceService {
   async saveRecordRechargeLog(logInfo: LogInfo) {
     const { userId, rechargeType, model3Count, model4Count, drawMjCount, days = -1, pkgName = '', extent = '' } = logInfo;
     if (!userId) {
-      throw new HttpException('当前用户不存在,记录充值日志异常', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.userNotExistForRecharge'), HttpStatus.BAD_REQUEST);
     }
     const uid = createRandomUid();
     return await this.accountLogEntity.save({ userId, rechargeType, model3Count, model4Count, drawMjCount, days, extent, uid, pkgName });
@@ -362,7 +364,7 @@ export class UserBalanceService {
     const { model3Count = 0, model4Count = 0, drawMjCount = 0 } = userBalanceInfo;
     const balance = await this.userBalanceEntity.findOne({ where: { userId } });
     if (balance) {
-      throw new HttpException('当前用户无需创建账户信息', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.noNeedToCreateUserAccount'), HttpStatus.BAD_REQUEST);
     }
     return await this.userBalanceEntity.save({ userId, model3Count, model4Count, drawMjCount });
   }
@@ -372,7 +374,7 @@ export class UserBalanceService {
     try {
       const userBalanceInfo = (await this.userBalanceEntity.findOne({ where: { userId } })) || (await this.createBaseUserBalance(userId));
       if (!userBalanceInfo) {
-        throw new HttpException('查询用户账户信息失败', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.queryUserAccountFailed'), HttpStatus.BAD_REQUEST);
       }
       const { model3Count, model4Count, drawMjCount, memberModel3Count, memberModel4Count, memberDrawMjCount } = userBalanceInfo;
       let params = {};
@@ -380,11 +382,11 @@ export class UserBalanceService {
       if (days > 0) {
         const { packageId } = balance;
         if (!packageId) {
-          throw new HttpException('缺失当前套餐ID、充值失败', HttpStatus.BAD_REQUEST);
+          throw new HttpException(this.i18n.t('common.missingPackageId'), HttpStatus.BAD_REQUEST);
         }
         const pkgInfo = await this.cramiPackageEntity.findOne({ where: { id: packageId } });
         if (!pkgInfo) {
-          throw new HttpException('当前套餐不存在', HttpStatus.BAD_REQUEST);
+          throw new HttpException(this.i18n.t('common.packageNotExistCurrent'), HttpStatus.BAD_REQUEST);
         }
         const { weight } = pkgInfo; // 套餐的权重 = 会员等级
         /* 如果不是会员那么则直接充值进入并修改会员信息为会员身份 */
@@ -434,22 +436,22 @@ export class UserBalanceService {
       }
       const result = await this.userBalanceEntity.update({ userId }, params);
       if (result.affected === 0) {
-        throw new HttpException(`${userId}充值失败`, HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.userRechargeFailed', { args: { userId } }), HttpStatus.BAD_REQUEST);
       }
     } catch (error) {
       console.log('error: ', error);
-      throw new HttpException('用户充值失败', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.userRechargeFailedSimple'), HttpStatus.BAD_REQUEST);
     }
   }
 
   /* 支付成功给用户充值套餐 */
   async addBalanceToOrder(order) {
-    console.log('充值的工单信息:', order);
+    console.log(this.i18n.t('common.rechargeTicketInfo'), order);
     try {
       const { userId, goodsId } = order;
       const pkg = await this.cramiPackageEntity.findOne({ where: { id: order.goodsId, status: 1 } });
       if (!pkg) {
-        throw new HttpException('非法操作、当前充值套餐暂不存在', HttpStatus.BAD_REQUEST);
+        throw new HttpException(this.i18n.t('common.illegalOperationPackageNotExist'), HttpStatus.BAD_REQUEST);
       }
       const { model3Count, model4Count, drawMjCount, days, name: pkgName } = pkg;
       const money = {
@@ -488,7 +490,7 @@ export class UserBalanceService {
       }
     } catch (error) {
       console.log('error: ', error);
-      throw new HttpException('充值失败', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.rechargeFailed'), HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -503,7 +505,8 @@ export class UserBalanceService {
       take: size,
     });
     rows.forEach((item: any) => {
-      item.expireDateCn = item.days > 0 ? `${item.days}天` : '永久';
+      const expireDay = item.days;
+      item.expireDateCn = item.days > 0 ? this.i18n.t('common.daysValidity', { args: { expireDay } }) : this.i18n.t('common.permanent');
     });
     return { rows: formatCreateOrUpdateDate(rows), count };
   }
@@ -542,7 +545,7 @@ export class UserBalanceService {
       return { rows, count };
     } catch (error) {
       console.log('error: ', error);
-      throw new HttpException('查询用户账户失败', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.queryUserAccountFailedSimple'), HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -564,7 +567,7 @@ export class UserBalanceService {
     if (!upgradeStatus) {
       await this.globalConfigService.setConfig({ settings: [{ configKey: 'upgradeStatus', configVal: '1' }] });
     } else {
-      throw new HttpException('您已经升级过了、请勿重复操作', HttpStatus.BAD_REQUEST);
+      throw new HttpException(this.i18n.t('common.alreadyUpgraded'), HttpStatus.BAD_REQUEST);
     }
     users.forEach((user: any) => {
       const { id } = user;
@@ -594,16 +597,16 @@ export class UserBalanceService {
     };
     const userBalanceInfo = await this.userBalanceEntity.findOne({ where: { userId } });
     if (userBalanceInfo) {
-      Logger.debug(`用户${userId}账户信息已经存在、迁移无效`, 'BalanceService');
+      Logger.debug(this.i18n.t('common.userAccountExists', { args: { userId } }), 'BalanceService');
     } else {
       this.userBalanceEntity
         .save(newBalanceInfo)
         .then((res) => {
-          Logger.debug(`用户${userId}旧账户信息迁移成功`, 'BalanceService');
+          Logger.debug(this.i18n.t('common.userAccountMigrationSuccess', { args: { userId } }), 'BalanceService');
         })
         .catch((error) => {
           console.log('error: ', error);
-          Logger.debug(`用户${userId}旧账户信息迁移失败`, 'BalanceService');
+          Logger.debug(this.i18n.t('common.userAccountMigrationFailed', { args: { userId } }), 'BalanceService');
         });
     }
   }

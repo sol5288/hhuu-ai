@@ -37,7 +37,7 @@ import { SalesModule } from './modules/sales/sales.module';
 import { SigninModule } from './modules/signin/signin.module';
 import { MenuModule } from './modules/menu/menu.module';
 import { ModelsModule } from './modules/models/models.module';
-import { AcceptLanguageResolver, I18nJsonLoader, I18nModule, QueryResolver } from 'nestjs-i18n';
+import { AcceptLanguageResolver, I18nJsonLoader, I18nModule, QueryResolver, HeaderResolver } from 'nestjs-i18n';
 import * as path from 'path';
 
 @Global()
@@ -84,7 +84,8 @@ import * as path from 'path';
         path: path.join(__dirname, '/i18n/'),
         watch: true,
       },
-      resolvers: [{ use: QueryResolver, options: ['lang'] }, AcceptLanguageResolver],
+      resolvers: [{ use: QueryResolver, options: ['lang', 'locale', 'l'] }, new HeaderResolver(['x-custom-lang']), AcceptLanguageResolver],
+      typesOutputPath: path.join(__dirname, '../src/generated/i18n.generated.ts'),
     }),
   ],
   providers: [

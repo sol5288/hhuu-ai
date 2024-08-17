@@ -14,10 +14,11 @@ import {
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
+import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class CreatePackageDto {
   @ApiProperty({ example: '基础套餐100次卡', description: '套餐名称', required: true })
-  @IsDefined({ message: '套餐名称是必传参数' })
+  @IsDefined({ message: i18nValidationMessage('common.planNameRequired') })
   name: string;
 
   @ApiProperty({
@@ -25,11 +26,11 @@ export class CreatePackageDto {
     description: '套餐详情描述',
     required: true,
   })
-  @IsDefined({ message: '套餐描述是必传参数' })
+  @IsDefined({ message: i18nValidationMessage('common.planDescriptionRequired') })
   des: string;
 
   @ApiProperty({ example: 7, default: 0, description: '套餐等级设置' })
-  @IsNumber({}, { message: '套餐等级权重必须为数字' })
+  @IsNumber({}, { message: i18nValidationMessage('common.planLevelMustBeNumber') })
   weight: number;
 
   @ApiProperty({ example: 1, description: '套餐扣费类型 1：按次数 2：按Token', required: true })
@@ -47,24 +48,24 @@ export class CreatePackageDto {
   order?: number;
 
   @ApiProperty({ example: 1, description: '套餐状态 0：禁用 1：启用', required: true })
-  @IsNumber({}, { message: '套餐状态必须是Number' })
-  @IsIn([0, 1], { message: '套餐状态错误' })
+  @IsNumber({}, { message: i18nValidationMessage('common.planStatusMustBeNumber') })
+  @IsIn([0, 1], { message: i18nValidationMessage('common.planStatusError') })
   status: number;
 
   @ApiProperty({ example: 7, default: 0, description: '套餐有效期 -1为永久不过期' })
-  @IsNumber({}, { message: '套餐有效期天数类型必须是number' })
+  @IsNumber({}, { message: i18nValidationMessage('common.planValidDaysMustBeNumber') })
   days: number;
 
   @ApiProperty({ example: 1000, default: 0, description: '模型3对话次数' })
-  @IsNumber({}, { message: '模型3对话次数必须是number类型' })
+  @IsNumber({}, { message: i18nValidationMessage('common.model3ChatCountMustBeNumber') })
   model3Count: number;
 
   @ApiProperty({ example: 10, default: 0, description: '模型4对话次数' })
-  @IsNumber({}, { message: '模型4对话次数必须是number类型' })
+  @IsNumber({}, { message: i18nValidationMessage('common.model4ChatCountMustBeNumber') })
   model4Count: number;
 
   @ApiProperty({ example: 10, default: 0, description: 'MJ绘画次数' })
-  @IsNumber({}, { message: 'MJ绘画次数必须是number类型' })
+  @IsNumber({}, { message: i18nValidationMessage('common.mjDrawCountMustBeNumber') })
   drawMjCount: number;
 
   // @ApiProperty({ example: 0, description: '卡密携带的用户余额金额' })

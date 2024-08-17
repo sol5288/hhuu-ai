@@ -8,11 +8,16 @@ import { ChatDrawDto } from './dto/chatDraw.dto';
 import { AdminAuthGuard } from '@/common/auth/adminAuth.guard';
 import { SuperAuthGuard } from '@/common/auth/superAuth.guard';
 import { GlobalConfigService } from '../globalConfig/globalConfig.service';
+import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 
 @ApiTags('chatgpt')
 @Controller('chatgpt')
 export class ChatgptController {
-  constructor(private readonly chatgptService: ChatgptService, private readonly globalConfigService: GlobalConfigService) {}
+  constructor(
+    private readonly chatgptService: ChatgptService,
+    private readonly globalConfigService: GlobalConfigService,
+    @I18n() private readonly i18n: I18nService,
+  ) {}
 
   @Post('chat-process')
   @ApiOperation({ summary: 'gpt聊天对话' })
@@ -37,9 +42,7 @@ export class ChatgptController {
   async mjAssociate(@Body() body: ChatProcessDto, @Req() req: Request) {
     const mjCustomLianxiangPrompt = await this.globalConfigService.getConfigs(['mjCustomLianxiangPrompt']);
     /* 临时方案 指定其系统预设词 */
-    body.systemMessage =
-      mjCustomLianxiangPrompt ||
-      `midjourney是一款AI绘画工具，只要你输入你想到的文字，就能通过人工智能产出相对应的图片、我希望你作为MidJourney程序的提示词(prompt)生成器。你的工作是根据我给你的一段提示内容扩展为更详细和更有创意的描述，以激发人工智能的独特和有趣的图像。请记住，人工智能能够理解广泛的语言，并能解释抽象的概念，所以请自由发挥想象力和描述力，尽可能地发挥。例如，你可以描述一个未来城市的场景，或一个充满奇怪生物的超现实景观。你的描述越详细、越有想象力，产生的图像就越有趣、Midjourney prompt的标准公式为:(image we're prompting).(5 descriptivekeywords). (camera type). (camera lens type). (time of day)(style of photograph).(type offilm)、请记住这个公式，后续统一使用该公式进行prompt生成、最终把我给你的提示变成一整段连续不分开的完整内容，并且只需要用英文回复您的联想、一定不要回复别内容、包括解释、我只需要纯粹的内容。`;
+    body.systemMessage = mjCustomLianxiangPrompt || this.i18n.t('common.midjourneyDescription');
     return this.chatgptService.chatProcess({ ...body, cusromPrompt: true }, req);
   }
 
@@ -50,9 +53,7 @@ export class ChatgptController {
   async mjFanyi(@Body() body: ChatProcessDto, @Req() req: Request) {
     /* 临时方案 指定其系统预设词 */
     const mjCustomFanyiPrompt = await this.globalConfigService.getConfigs(['mjCustomFanyiPrompt']);
-    body.systemMessage =
-      mjCustomFanyiPrompt ||
-      `接下来我会给你一些内容、我希望你帮我翻译成英文、不管我给你任何语言、你都回复我英文、如果给你了英文、依然回复我更加优化的英文、并且期望你不需要做任何多余的解释、给我英文即可、不要加任何东西、我只需要英文`;
+    body.systemMessage = mjCustomFanyiPrompt || this.i18n.t('common.translateToEnglish');
     return this.chatgptService.chatProcess({ ...body, cusromPrompt: true }, req);
   }
 
@@ -63,9 +64,7 @@ export class ChatgptController {
   async chatmind(@Body() body: ChatProcessDto, @Req() req: Request, @Res() res: Response) {
     const mindCustomPrompt = await this.globalConfigService.getConfigs(['mindCustomPrompt']);
     /* 临时方案 指定其系统预设词 */
-    body.systemMessage =
-      mindCustomPrompt ||
-      `我希望你使用markdown格式回答我得问题、我的需求是得到一份markdown格式的大纲、尽量做的精细、层级多一点、不管我问你什么、都需要您回复我一个大纲出来、我想使用大纲做思维导图、除了大纲之外、不要无关内容和总结。`;
+    body.systemMessage = mindCustomPrompt || this.i18n.t('common.outlineRequest');
     return this.chatgptService.chatProcess({ ...body, cusromPrompt: true }, req, res);
   }
 
