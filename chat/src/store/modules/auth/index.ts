@@ -77,7 +77,7 @@ export const useAuthStore = defineStore('auth-store', {
 			removeToken();
 			this.userInfo = {};
 			this.userBalance = {};
-			window.$message.success('登出账户成功！');
+			window.$message.success('Log-Out Success');
 			const chatStore = useChatStore();
 			chatStore.clearChat();
 		},

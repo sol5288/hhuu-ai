@@ -230,7 +230,7 @@ function handlerSubmit() {
 					<NInput
 						v-model="keywords"
 						type="text"
-						:placeholder="t('common.collectedAppsCount')"
+						:placeholder="t('common.collectedAppsCount', { mineAppsLength: mineApps.length })"
 						@input="handleInput"
 					/>
 				</div>

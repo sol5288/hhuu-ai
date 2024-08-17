@@ -106,6 +106,7 @@ export default {
 		charcoalDrawing: '목탄화',
 		cuteRabbit: '토끼, 귀여운, 고품질',
 		logout: '로그아웃',
+		logoutSuccess: '정상 로그아웃',
 		checkIfSelected: '선택 여부 확인',
 		downloadImage: '이미지 다운로드',
 		chaos: '혼돈',
@@ -183,7 +184,7 @@ export default {
 		modifierReference2:
 			'다음 수식어를 참조하거나 선택하여 입력 텍스트를 풍부하게 하고 더 다양한 이미지를 생성해 보세요. 더 많은 수식어는 프롬프트 가이드를 참조하거나 자유롭게 입력하여 대규모 모델의 그리기 능력을 탐색해 보세요.',
 		whatImageGenerate: '어떤 이미지를 생성하고 싶으신가요?',
-		collectedAppsCount: '총 ${mineApps.length}개의 앱을 수집했습니다(키워드 필터링)',
+		collectedAppsCount: '총 {mineAppsLength}개의 앱을 수집했습니다(키워드 필터링)',
 		imageEnlargementFailed2: '이미지 확대에 실패했습니다. 잠시 후 다시 시도해 주세요!',
 		imageEnlargementCompleted2: "이미지 확대가 완료되었습니다. '내 생성물'에서 확인해 보세요!",
 		imageVariationFailed2: '이미지 변형에 실패했습니다. 잠시 후 다시 시도해 주세요!',

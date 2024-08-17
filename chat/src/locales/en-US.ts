@@ -107,6 +107,7 @@ export default {
 		charcoalDrawing: 'Charcoal drawing',
 		cuteRabbit: 'Rabbit, cute, high quality',
 		logout: 'Logout',
+		logoutSuccess: 'Logout Success',
 		checkIfSelected: 'Check if selected',
 		downloadImage: 'Download image',
 		chaos: 'Chaos',

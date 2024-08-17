@@ -105,6 +105,7 @@ export default {
 		charcoalDrawing: '炭笔画',
 		cuteRabbit: '兔子，可爱，高质量，高品质',
 		logout: '退出登录',
+		logoutSuccess: '登出账户成功',
 		checkIfSelected: '判断是不是当前选中',
 		downloadImage: '下载图片',
 		chaos: '混乱',
