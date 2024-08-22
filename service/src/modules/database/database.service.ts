@@ -45,7 +45,7 @@ export class DatabaseService implements OnModuleInit {
       const userId = user.insertId;
       const balance = await this.connection.query(`INSERT INTO balance (userId, balance, usesLeft, paintCount) VALUES ('${userId}', 0, 1000, 100)`);
       Logger.log(
-        `初始化创建${role}用户成功、用户名为[${username}]、初始密码为[${username === 'super' ? 'nine-super' : '123456'}] ==============> 请注意查阅`,
+        `初始化创建${role}用户成功、用户名为[${username}]、初始密码为[${username === 'super' ? 'hhuu-super' : '123456'}] ==============> 请注意查阅`,
         'DatabaseService',
       );
     } catch (error) {
@@ -79,7 +79,7 @@ export class DatabaseService implements OnModuleInit {
 `;
 
       const defaultConfig = [
-        { configKey: 'siteName', configVal: 'Yi Ai', public: 1, encry: 0 },
+        { configKey: 'siteName', configVal: 'hhuu', public: 1, encry: 0 },
         { configKey: 'qqNumber', configVal: '805239273', public: 1, encry: 0 },
         { configKey: 'vxNumber', configVal: 'HelloWordYi819', public: 1, encry: 0 },
         { configKey: 'robotAvatar', configVal: '', public: 1, encry: 0 },

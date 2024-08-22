@@ -29,3 +29,4 @@ hhuuDeploy/
 
 # test
 utils/
+*.tgz

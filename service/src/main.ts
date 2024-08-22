@@ -14,8 +14,7 @@ import { initDatabase } from '@/modules/database/initDatabase';
 import * as compression from 'compression';
 import * as xmlBodyParser from 'express-xml-bodyparser';
 import { resolve } from 'path';
-import { I18nValidationPipe } from 'nestjs-i18n';
-import { I18nValidationExceptionFilter } from 'nestjs-i18n';
+import { I18nValidationExceptionFilter, I18nValidationPipe } from 'nestjs-i18n';
 
 async function bootstrap() {
   await initDatabase();
@@ -29,9 +28,9 @@ async function bootstrap() {
   app.useGlobalFilters(new TypeOrmQueryFailedFilter());
   app.useGlobalFilters(new AllExceptionsFilter());
 
-  app.useGlobalPipes(new I18nValidationPipe());
-  app.useGlobalFilters(new I18nValidationExceptionFilter({ detailedErrors: true }));
-  Logger.debug('Global pipes and filters set up');
+  app.useGlobalPipes(new ValidationPipe());
+  // app.useGlobalPipes(new I18nValidationPipe());
+  app.useGlobalFilters(new I18nValidationExceptionFilter());
 
   app.getHttpAdapter().getInstance().set('views', 'templates/pages');
   app.getHttpAdapter().getInstance().set('view engine', 'hbs');

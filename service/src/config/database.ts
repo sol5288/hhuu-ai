@@ -13,6 +13,6 @@ const config: ConnectionOptions = {
   synchronize: true,
   charset: 'utf8mb4',
   // timezone: 'Z',
-  timezone: '+08:00',
+  timezone: '+09:00',
 };
 export default config;
