@@ -55,6 +55,14 @@ declare namespace Settings {
      * @默认值 `false`
      */
     enableAppSetting?: boolean
+
+    /**
+     * 08.24 i18n-다국어처리 : 언어
+     * @default `'ko-KR'` 한국어
+     * @可选值 `'en-US'` 영어
+     * @可选值 `'zh-CN'` 중국어
+     */
+    language: 'ko-KR' | 'en-US' |'zh-CN'
   }
   interface home {
     /**
@@ -266,3 +274,6 @@ declare namespace Menu {
     children: recordRaw[]
   }
 }
+
+// Language 타입을 별도로 export
+// export type Language = Settings.app['language'];

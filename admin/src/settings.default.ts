@@ -12,6 +12,7 @@ const globalSettingsDefault: RecursiveRequired<Settings.all> = {
     enableDynamicTitle: false,
     routeBaseOn: 'frontend',
     enableAppSetting: false,
+    language : 'ko-KR', // 08.24 i18n-다국어처리
   },
   home: {
     enable: true,

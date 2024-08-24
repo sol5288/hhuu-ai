@@ -10,7 +10,7 @@ const routes: RouteRecordRaw = {
   redirect: '/ai/chat-key-list',
   name: 'AiMenu',
   meta: {
-    title: '模型管理',
+    title: 'common.modelManagement',
     icon: 'sidebar-ai',
   },
   children: [
@@ -24,14 +24,14 @@ const routes: RouteRecordRaw = {
       path: 'keys',
       name: 'AiMenuKeys',
       component: () => import('@/views/models/key.vue'),
-      meta: { title: '卡池设置', icon: 'menu-key', },
+      meta: { title: 'common.poolSettings', icon: 'menu-key', },
     },
     {
       path: 'model',
       name: 'AiMenuInterface',
       component: () => import('@/views/system/interface.vue'),
       meta: {
-        title: '模型全局配置',
+        title: 'common.globalModelConfig',
         icon: 'menu-model',
       },
     },
@@ -48,7 +48,7 @@ const routes: RouteRecordRaw = {
       path: 'model-pre',
       name: 'AiMenuModelPre',
       component: () => import('@/views/ai/globalPre.vue'),
-      meta: { title: '头部预设', icon: 'menu-header', },
+      meta: { title: 'common.headerPreset', icon: 'menu-header', },
     },
   ],
 }

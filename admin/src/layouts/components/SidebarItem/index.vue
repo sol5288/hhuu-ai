@@ -3,6 +3,8 @@
 import { resolveRoutePath } from '@/utils'
 import useSettingsStore from '@/store/modules/settings'
 import type { Menu } from '#/global'
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 const props = defineProps({
   item: {
@@ -33,25 +35,30 @@ const hasChildren = computed(() => {
 
 <template>
   <div class="sidebar-item">
-    <router-link v-if="!hasChildren" v-slot="{ href, navigate, isActive, isExactActive }" custom :to="resolveRoutePath(basePath, item.path)">
-      <a :href="item.meta?.link ? item.meta.link : href" :class="[isActive && 'router-link-active', isExactActive && 'router-link-exact-active']" :target="item.meta?.link ? '_blank' : '_self'" @click="navigate">
-        <el-menu-item :title="item.meta?.title ?? '[ 无标题 ]'" :index="resolveRoutePath(basePath, item.path || '')">
+    <router-link v-if="!hasChildren" v-slot="{ href, navigate, isActive, isExactActive }" custom
+      :to="resolveRoutePath(basePath, item.path)">
+      <a :href="item.meta?.link ? item.meta.link : href"
+        :class="[isActive && 'router-link-active', isExactActive && 'router-link-exact-active']"
+        :target="item.meta?.link ? '_blank' : '_self'" @click="navigate">
+        <el-menu-item :title="t(item.meta?.title ?? '[ 无标题 ]')" :index="resolveRoutePath(basePath, item.path || '')">
           <el-icon v-if="item.meta?.icon" class="title-icon">
             <svg-icon :name="item.meta.icon" />
           </el-icon>
-          <span class="title">{{ item.meta?.title ?? '[ 无标题 ]' }}</span>
+          <span class="title">{{ t(item.meta?.title ?? '[ 无标题 ]') }}</span>
         </el-menu-item>
       </a>
     </router-link>
-    <el-sub-menu v-else :title="item.meta?.title ?? '[ 无标题 ]'" :index="settingsStore.settings.app.routeBaseOn !== 'filesystem' ? resolveRoutePath(basePath, item.path) : JSON.stringify(item)">
+    <el-sub-menu v-else :title="t(item.meta?.title ?? '[ 无标题 ]')"
+      :index="settingsStore.settings.app.routeBaseOn !== 'filesystem' ? resolveRoutePath(basePath, item.path) : JSON.stringify(item)">
       <template #title>
         <el-icon v-if="item.meta?.icon" class="title-icon">
           <svg-icon :name="item.meta.icon" />
         </el-icon>
-        <span class="title">{{ item.meta?.title ?? '[ 无标题 ]' }}</span>
+        <span class="title">{{ t(item.meta?.title ?? '[ 无标题 ]') }}</span>
       </template>
       <template v-for="route in item.children">
-        <SidebarItem v-if="route.meta?.sidebar !== false" :key="route.path" :item="route" :base-path="resolveRoutePath(basePath, item.path)" />
+        <SidebarItem v-if="route.meta?.sidebar !== false" :key="route.path" :item="route"
+          :base-path="resolveRoutePath(basePath, item.path)" />
       </template>
     </el-sub-menu>
   </div>
@@ -84,12 +91,12 @@ const hasChildren = computed(() => {
     color: unset;
   }
 
-  .title-icon + .title {
+  .title-icon+.title {
     margin-left: 10px;
   }
 
-  &:hover > .title-icon,
-  .el-sub-menu__title:hover > .title-icon {
+  &:hover>.title-icon,
+  .el-sub-menu__title:hover>.title-icon {
     transform: scale(1.2);
   }
 }
@@ -101,7 +108,7 @@ a {
 }
 
 .el-sub-menu__title {
-  > .badge {
+  >.badge {
     &-dot {
       right: 40px;
     }
@@ -118,7 +125,7 @@ a {
   background-color: var(--g-sub-sidebar-menu-bg) !important;
 
   .el-menu-item,
-  .el-sub-menu > .el-sub-menu__title {
+  .el-sub-menu>.el-sub-menu__title {
     color: var(--g-sub-sidebar-menu-color);
     background-color: var(--g-sub-sidebar-menu-bg) !important;
 
@@ -141,7 +148,7 @@ a {
 }
 
 .el-menu-item.is-active,
-.el-menu--collapse .el-sub-menu.is-active > .el-sub-menu__title,
+.el-menu--collapse .el-sub-menu.is-active>.el-sub-menu__title,
 .el-sub-menu .el-menu--inline .el-menu-item.is-active {
   color: var(--g-sub-sidebar-menu-active-color) !important;
   background-color: var(--g-sub-sidebar-menu-active-bg) !important;

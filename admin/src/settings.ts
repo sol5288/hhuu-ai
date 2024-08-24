@@ -1,7 +1,7 @@
 import type { Settings } from '#/global'
 import { atob, copyRight } from '@/constants/copyright'
 
-// 这是基础版演示源码里的自定义配置示例
+// 이것은 기본 버전 데모 소스 코드의 사용자 지정 구성 예입니다.
 const globalSettings: Settings.all = {
   app: {
     enablePermission: false,
@@ -13,6 +13,7 @@ const globalSettings: Settings.all = {
     iconifyOfflineUse: false,
     enableProgress: true,
     routeBaseOn: 'frontend',
+    language : 'ko-KR', // 08.24 i18n-다국어처리
   },
   layout: {
     enableMobileAdaptation: true,

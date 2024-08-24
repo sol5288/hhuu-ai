@@ -3,6 +3,8 @@ import type { RouteMeta } from 'vue-router'
 import type { RecursiveRequired, Settings } from '#/global'
 import settingsCustom from '@/settings'
 import settingsDefault from '@/settings.default'
+import type { Language } from '@/locales'
+import { setLocale } from '@/locales'
 
 const useSettingsStore = defineStore(
   // 唯一ID
@@ -30,6 +32,26 @@ const useSettingsStore = defineStore(
     }, {
       immediate: true,
     })
+
+    // Language watch
+    watch(() => settings.value.app.language, (val) => {
+      setLocale(val as Language)
+    }, {
+      immediate: true,
+    })
+
+    const language = ref<Language>(settings.value.app.language as Language)
+
+    // 언어 가져오기
+    function getLanguage() {
+      return language.value
+    }
+
+    // 언어 설정하기
+    function setLanguage(lang: Language) {
+      language.value = lang
+      settings.value.app.language = lang
+    }
 
     // 操作系统
     const os = ref<'mac' | 'windows' | 'linux' | 'other'>('other')
@@ -116,6 +138,8 @@ const useSettingsStore = defineStore(
       toggleSidebarCollapse,
       setColorScheme,
       updateSettings,
+      getLanguage,
+      setLanguage,
     }
   },
 )
