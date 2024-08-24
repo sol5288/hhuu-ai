@@ -1,9 +1,10 @@
+// typescript:admin/src/router/index.ts
 import { createRouter, createWebHashHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import { useNProgress } from '@vueuse/integrations/useNProgress'
 import '@/assets/styles/nprogress.scss'
 
-// 路由相关数据
+// 라우팅 관련 데이터
 import { asyncRoutes, asyncRoutesByFilesystem, constantRoutes, constantRoutesByFilesystem } from './routes'
 import pinia from '@/store'
 import useSettingsStore from '@/store/modules/settings'
@@ -12,33 +13,40 @@ import useUserStore from '@/store/modules/user'
 import useMenuStore from '@/store/modules/menu'
 import useRouteStore from '@/store/modules/route'
 
+// NProgress 로딩 상태를 가져옵니다.
 const { isLoading } = useNProgress()
 
+// 라우터를 생성합니다.
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.VITE_BASE_PATH),
+  // 라우팅 기반 설정에 따라 기본 라우팅 목록을 설정합니다.
   routes: useSettingsStore(pinia).settings.app.routeBaseOn === 'filesystem' ? constantRoutesByFilesystem : constantRoutes as RouteRecordRaw[],
 })
 
+// 라우터 전환 전에 실행되는 콜백 함수입니다.
 router.beforeEach(async (to, from, next) => {
+  // 설정, 사용자, 메뉴, 라우팅 스토어를 가져옵니다.
   const settingsStore = useSettingsStore()
   const userStore = useUserStore()
   const menuStore = useMenuStore()
   const routeStore = useRouteStore()
+
+  // 진행 표시 여부에 따라 로딩 상태를 설정합니다.
   settingsStore.settings.app.enableProgress && (isLoading.value = true)
-  // 是否已登录
+  // 사용자가 로그인 했는지 확인합니다.
   if (userStore.isLogin) {
-    // 是否已根据权限动态生成并注册路由
+    // 권한에 따라 동적으로 라우팅이 생성되었는지 확인합니다.
     if (routeStore.isGenerate) {
-      // 导航栏如果不是 single 模式，则需要根据 path 定位主导航的选中状态
+      // 탐색 모드가 single이 아니면 현재 경로에 따라 메뉴를 활성화합니다.
       settingsStore.settings.menu.menuMode !== 'single' && menuStore.setActived(to.path)
-      // 如果已登录状态下，进入登录页会强制跳转到主页
+      // 로그인 상태에서 로그인 페이지로 이동하면 홈 페이지로 리디렉션합니다.
       if (to.name === 'login') {
         next({
           name: 'home',
           replace: true,
         })
       }
-      // 如果未开启主页，但进入的是主页，则会进入侧边栏导航第一个模块
+      // 홈 페이지가 비활성화되어 있고 홈 페이지로 이동하면 측면 메뉴의 첫 번째 모듈로 이동합니다.
       else if (!settingsStore.settings.home.enable && to.name === 'home') {
         if (menuStore.sidebarMenus.length > 0) {
           next({
@@ -46,18 +54,18 @@ router.beforeEach(async (to, from, next) => {
             replace: true,
           })
         }
-        // 如果侧边栏导航第一个模块无法命中，则还是进入主页
+        // 측면 메뉴의 첫 번째 모듈을 찾을 수 없으면 홈 페이지로 이동합니다.
         else {
           next()
         }
       }
-      // 正常访问页面
+      // 일반적인 페이지 액세스입니다.
       else {
         next()
       }
     }
     else {
-      // 生成动态路由
+      // 동적 라우팅을 생성합니다.
       switch (settingsStore.settings.app.routeBaseOn) {
         case 'frontend':
           await routeStore.generateRoutesAtFront(asyncRoutes)
@@ -67,7 +75,7 @@ router.beforeEach(async (to, from, next) => {
           break
         case 'filesystem':
           await routeStore.generateRoutesAtFilesystem(asyncRoutesByFilesystem)
-          // 文件系统生成的路由，需要手动生成导航数据
+          // 파일 시스템에서 생성된 라우팅은 수동으로 탐색 데이터를 생성해야 합니다.
           switch (settingsStore.settings.menu.baseOn) {
             case 'frontend':
               await menuStore.generateMenusAtFront()
@@ -78,8 +86,10 @@ router.beforeEach(async (to, from, next) => {
           }
           break
       }
-      // 注册并记录路由数据
-      // 记录的数据会在登出时会使用到，不使用 router.removeRoute 是考虑配置的路由可能不一定有设置 name ，则通过调用 router.addRoute() 返回的回调进行删除
+      // 라우팅을 등록하고 데이터를 기록합니다.
+      // 기록된 데이터는 로그아웃 시 사용됩니다.
+      // router.removeRoute를 사용하지 않는 이유는 구성된 라우팅에 name이 설정되지 않을 수 있기 때문입니다.
+      // router.addRoute()를 호출하여 반환된 콜백을 통해 삭제합니다.
       const removeRoutes: Function[] = []
       routeStore.flatRoutes.forEach((route) => {
         if (!/^(https?:|mailto:|tel:)/.test(route.path)) {
@@ -92,7 +102,7 @@ router.beforeEach(async (to, from, next) => {
         })
       }
       routeStore.setCurrentRemoveRoutes(removeRoutes)
-      // 动态路由生成并注册后，重新进入当前路由
+      // 동적 라우팅이 생성되고 등록된 후 현재 라우팅으로 다시 이동합니다.
       next({
         path: to.path,
         query: to.query,
@@ -101,6 +111,7 @@ router.beforeEach(async (to, from, next) => {
     }
   }
   else {
+    // 로그인하지 않은 경우 로그인 페이지로 리디렉션합니다.
     if (to.name !== 'login') {
       next({
         name: 'login',
@@ -115,18 +126,21 @@ router.beforeEach(async (to, from, next) => {
   }
 })
 
+// 라우터 전환 후에 실행되는 콜백 함수입니다.
 router.afterEach((to, from) => {
+  // 설정, keep-alive 스토어를 가져옵니다.
   const settingsStore = useSettingsStore()
   const keepAliveStore = useKeepAliveStore()
+  // 진행 표시 여부에 따라 로딩 상태를 설정합니다.
   settingsStore.settings.app.enableProgress && (isLoading.value = false)
-  // 设置页面 title
+  // 페이지 제목을 설정합니다.
   if (settingsStore.settings.app.routeBaseOn !== 'filesystem') {
     settingsStore.setTitle(to.meta.breadcrumbNeste?.at(-1)?.title ?? to.meta.title)
   }
   else {
     settingsStore.setTitle(to.meta.title)
   }
-  // 判断当前页面是否开启缓存，如果开启，则将当前页面的 name 信息存入 keep-alive 全局状态
+  // 현재 페이지가 캐시 여부를 확인하고 캐시가 활성화되면 현재 페이지의 이름을 keep-alive 전역 상태에 저장합니다.
   if (to.meta.cache) {
     const componentName = to.matched.at(-1)?.components?.default.name
     if (componentName) {
@@ -136,11 +150,11 @@ router.afterEach((to, from) => {
 
     }
   }
-  // 判断离开页面是否开启缓存，如果开启，则根据缓存规则判断是否需要清空 keep-alive 全局状态里离开页面的 name 信息
+  // 이전 페이지가 캐시 여부를 확인하고 캐시가 활성화되면 캐시 규칙에 따라 keep-alive 전역 상태에서 이전 페이지의 이름을 삭제할지 여부를 판단합니다.
   if (from.meta.cache) {
     const componentName = from.matched.at(-1)?.components?.default.name
     if (componentName) {
-    // 通过 meta.cache 判断针对哪些页面进行缓存
+    // meta.cache를 통해 어떤 페이지를 캐시할지 판단합니다.
       switch (typeof from.meta.cache) {
         case 'string':
           if (from.meta.cache !== to.name) {
@@ -153,7 +167,7 @@ router.afterEach((to, from) => {
           }
           break
       }
-      // 如果进入的是 reload 页面，则也将离开页面的缓存清空
+      // reload 페이지로 이동하면 이전 페이지의 캐시도 삭제합니다.
       if (to.name === 'reload') {
         keepAliveStore.remove(componentName)
       }
