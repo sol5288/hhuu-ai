@@ -40,7 +40,7 @@ const rules = ref<FormRules>({
 const formRef = ref<FormInstance>()
 
 async function queryAllconfig() {
-  const res = await apiConfig.queryConfig({ keys: ['siteName', 'qqNumber', 'vxNumber', 'robotAvatar', 'userDefautlAvatar', 'buyCramiAddress', 'filingNumber', 'companyName', 'siteRobotName', 'isShowAppCatIcon', 'clientLogoPath','clientFavoIconPath','clientHomePath'] })
+  const res = await apiConfig.queryConfig({ keys: ['siteName', 'qqNumber', 'vxNumber', 'robotAvatar', 'userDefautlAvatar', 'buyCramiAddress', 'filingNumber', 'companyName', 'siteRobotName', 'isShowAppCatIcon', 'clientLogoPath', 'clientFavoIconPath', 'clientHomePath'] })
   Object.assign(formInline, res.data)
 }
 
@@ -51,7 +51,7 @@ function handlerUpdateConfig() {
         await apiConfig.setConfig({ settings: fotmatSetting(formInline) })
         ElMessage.success('变更配置信息成功')
       }
-      catch (error) {}
+      catch (error) { }
       queryAllconfig()
     }
     else {
@@ -77,7 +77,8 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="用户端基础配置说明" description="网站类型设置是实时生效的、这里可以配置网站的logo名称等、购卡地址对应卡密购买、思维导图默认展示属于、机器人名称为对话页的默认AI Robot位置！" type="success" />
+      <el-alert :closable="false" show-icon title="用户端基础配置说明"
+        description="网站类型设置是实时生效的、这里可以配置网站的logo名称等、购卡地址对应卡密购买、思维导图默认展示属于、机器人名称为对话页的默认AI Robot位置" type="success" />
     </page-main>
     <el-card style="margin: 20px;">
       <template #header>
@@ -142,7 +143,7 @@ onMounted(() => {
         <!-- <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="网站购卡地址" prop="buyCramiAddress">
-              <el-input v-model="formInline.buyCramiAddress" placeholder="您的网站发卡地址、用于配合卡密使用，用户点击购买卡密的跳转地址、不填写不展示购卡按钮！" clearable />
+              <el-input v-model="formInline.buyCramiAddress" placeholder="您的网站发卡地址、用于配合卡密使用，用户点击购买卡密的跳转地址、不填写不展示购卡按钮" clearable />
             </el-form-item>
           </el-col>
         </el-row> -->
@@ -156,7 +157,7 @@ onMounted(() => {
         <!-- <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="应用分类侧边栏图标" prop="isShowAppCatIcon">
-              <el-tooltip content="是否展示应用中心的分类侧边栏图标、配置仅在pc端有效！" placement="top" :show-after="500">
+              <el-tooltip content="是否展示应用中心的分类侧边栏图标、配置仅在pc端有效" placement="top" :show-after="500">
                 <el-switch
                   v-model="formInline.isShowAppCatIcon"
                   active-value="1"

@@ -35,7 +35,7 @@ function handlerUpdateConfig() {
         await apiConfig.setConfig({ settings: fotmatSetting(formInline) })
         ElMessage.success('变更配置信息成功')
       }
-      catch (error) {}
+      catch (error) { }
       queryAllconfig()
     }
     else {
@@ -61,7 +61,8 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="NineAi敏感词说明" description="官方提供的敏感词检测Api、价格相对实惠、如需使用请联系管理员购买、后续开通专有的通道！" type="success" />
+      <el-alert :closable="false" show-icon title="NineAi敏感词说明"
+        description="官方提供的敏感词检测Api、价格相对实惠、如需使用请联系管理员购买、后续开通专有的通道" type="success" />
     </page-main>
     <el-card style="margin: 20px;">
       <template #header>
@@ -76,12 +77,8 @@ onMounted(() => {
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="开启此敏感词设置" prop="nineaiBuiltInSensitiveStatus">
-              <el-tooltip content="开启将打开敏感词检测、如果同时开启其他敏感词将会通过菜单顺序仅同时开启一个！" placement="top" :show-after="500">
-                <el-switch
-                  v-model="formInline.nineaiBuiltInSensitiveStatus"
-                  active-value="1"
-                  inactive-value="0"
-                />
+              <el-tooltip content="开启将打开敏感词检测、如果同时开启其他敏感词将会通过菜单顺序仅同时开启一个" placement="top" :show-after="500">
+                <el-switch v-model="formInline.nineaiBuiltInSensitiveStatus" active-value="1" inactive-value="0" />
               </el-tooltip>
             </el-form-item>
           </el-col>

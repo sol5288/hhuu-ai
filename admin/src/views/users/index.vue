@@ -103,7 +103,7 @@ function handleSendCrami(row: UserItem) {
 
 async function handlerUpateUserStatus() {
   const res: any = await ApiUsre.updateUserStatus(form)
-  res.success && ElMessage({ type: 'success', message: '变更用户状态成功！' })
+  res.success && ElMessage({ type: 'success', message: '变更用户状态成功' })
   visible.value = false
   queryAllUserList()
 }
@@ -116,7 +116,7 @@ function handlerReset(formEl: FormInstance | undefined) {
 async function handlerResetUserPass(row: any) {
   const { id, email } = row
   const res: any = await ApiUsre.resetUserPassword({ id })
-  res.success && ElMessage({ type: 'success', message: `重置用户[${email}密码为初始密码为[123456]完成！` })
+  res.success && ElMessage({ type: 'success', message: `重置用户[${email}密码为初始密码为[123456]完成` })
 }
 
 function handlerCloseDialog(formEl: FormInstance | undefined) {
@@ -130,7 +130,7 @@ async function handlerSubmitSend(formEl: FormInstance | undefined) {
       return
     }
     await ApiUsre.sendUserCrami({ ...formCrami, userId: activeUserId.value })
-    ElMessage.success('赠送用户成功！')
+    ElMessage.success('赠送用户成功')
     visibleCrami.value = false
     queryAllUserList()
   })
@@ -172,9 +172,7 @@ onMounted(() => queryAllUserList())
       <el-table v-loading="loading" border :data="tableData" style="width: 100%;" size="large">
         <el-table-column prop="avatar" label="用户头像" fixed width="120">
           <template #default="scope">
-            <el-avatar
-              :src="scope.row.avatar"
-            />
+            <el-avatar :src="scope.row.avatar" />
           </template>
         </el-table-column>
         <el-table-column fixed prop="username" label="用户名称" width="150" />
@@ -197,7 +195,8 @@ onMounted(() => queryAllUserList())
         <el-table-column prop="balanceInfo.drawMjCount" label="会员到期时间" width="170" align="center">
           <template #default="scope">
             <el-tag type="success">
-              {{ scope.row?.balanceInfo?.expirationTime ? utcToShanghaiTime(new Date(scope.row?.balanceInfo?.expirationTime)) : '非会员' }}
+              {{ scope.row?.balanceInfo?.expirationTime ? utcToShanghaiTime(new
+                Date(scope.row?.balanceInfo?.expirationTime)) : '非会员' }}
             </el-tag>
           </template>
         </el-table-column>
@@ -230,7 +229,8 @@ onMounted(() => queryAllUserList())
             <el-button link type="primary" size="small" @click="handleUpdateStatus(scope.row)">
               修改状态
             </el-button>
-            <el-popconfirm title="确认重置此用户密码为【123456】?" confirm-button-text="确认重置" @confirm="handlerResetUserPass(scope.row)">
+            <el-popconfirm title="确认重置此用户密码为【123456】?" confirm-button-text="确认重置"
+              @confirm="handlerResetUserPass(scope.row)">
               <template #reference>
                 <el-button link type="danger">
                   重置密码
@@ -244,16 +244,9 @@ onMounted(() => queryAllUserList())
         </el-table-column>
       </el-table>
       <el-row class="flex justify-end mt-5">
-        <el-pagination
-          v-model:current-page="formInline.page"
-          v-model:page-size="formInline.size"
-          class="mr-5"
-          :page-sizes="[15, 30, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="queryAllUserList"
-          @current-change="queryAllUserList"
-        />
+        <el-pagination v-model:current-page="formInline.page" v-model:page-size="formInline.size" class="mr-5"
+          :page-sizes="[15, 30, 50, 100]" layout="total, sizes, prev, pager, next, jumper" :total="total"
+          @size-change="queryAllUserList" @current-change="queryAllUserList" />
       </el-row>
     </page-main>
 

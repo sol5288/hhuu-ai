@@ -31,7 +31,7 @@ function handlerUpdateConfig() {
         await apiConfig.setConfig({ settings: fotmatSetting(formInline) })
         ElMessage.success('变更配置信息成功')
       }
-      catch (error) {}
+      catch (error) { }
       queryAllconfig()
     }
     else {
@@ -67,7 +67,9 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="阿里云COS参数说明" description="阿里云的对象存储oss服务、前往阿里云申请oss服务 https://oss.console.aliyun.com/ 、如果同时开启多个存储服务、腾讯云高于阿里云优先级！" type="success" />
+      <el-alert :closable="false" show-icon title="阿里云COS参数说明"
+        description="阿里云的对象存储oss服务、前往阿里云申请oss服务 https://oss.console.aliyun.com/ 、如果同时开启多个存储服务、腾讯云高于阿里云优先级"
+        type="success" />
     </page-main>
     <el-card style="margin: 20px;">
       <template #header>
@@ -82,11 +84,7 @@ onMounted(() => {
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="服务启用状态" prop="aliOssStatus">
-              <el-switch
-                v-model="formInline.aliOssStatus"
-                active-value="1"
-                inactive-value="0"
-              />
+              <el-switch v-model="formInline.aliOssStatus" active-value="1" inactive-value="0" />
             </el-form-item>
           </el-col>
         </el-row>

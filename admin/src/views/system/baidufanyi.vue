@@ -33,7 +33,7 @@ function handlerUpdateConfig() {
         await apiConfig.setConfig({ settings: fotmatSetting(formInline) })
         ElMessage.success('变更配置信息成功')
       }
-      catch (error) {}
+      catch (error) { }
       queryAllconfig()
     }
     else {
@@ -59,7 +59,9 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="百度翻译参数说明" description="百度翻译为可选项、仅在mj描述词绘画中使用、当开启设置为百度翻译时会使用翻译、反之则使用AI翻译、如您需要、具体申请配置文档地址 https://api.fanyi.baidu.com/ 请开通通用文本翻译、别忘记填写你的服务器白名单才能使用！" type="success" />
+      <el-alert :closable="false" show-icon title="百度翻译参数说明"
+        description="百度翻译为可选项、仅在mj描述词绘画中使用、当开启设置为百度翻译时会使用翻译、反之则使用AI翻译、如您需要、具体申请配置文档地址 https://api.fanyi.baidu.com/ 请开通通用文本翻译、别忘记填写你的服务器白名单才能使用"
+        type="success" />
     </page-main>
     <el-card style="margin: 20px;">
       <template #header>

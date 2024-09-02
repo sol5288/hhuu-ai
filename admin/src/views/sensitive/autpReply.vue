@@ -83,7 +83,7 @@ function handleClose(formEl: FormInstance | undefined) {
 async function handlerSubmit(formEl: FormInstance | undefined) {
   formEl?.validate(async (valid) => {
     if (!valid) {
-      return ElMessage.warning('请按规则填写所有信息！')
+      return ElMessage.warning('请按规则填写所有信息')
     }
     if (activeId.value === 0) {
       await ApiAutoReply.addAutoReply(formAutoReply)
@@ -107,7 +107,8 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="自定义回复说明" description="当前可设置自定义回复、且可以多种关键词触发回复相同内容、可以开启精准匹配或模糊匹配用户设置自定义回复程度。" type="success" />
+      <el-alert :closable="false" show-icon title="自定义回复说明"
+        description="当前可设置自定义回复、且可以多种关键词触发回复相同内容、可以开启精准匹配或模糊匹配用户设置自定义回复程度。" type="success" />
     </page-main>
     <page-main>
       <el-form ref="formRef" :inline="true" :model="formInline">
@@ -116,7 +117,8 @@ onMounted(() => {
         </el-form-item>
         <el-form-item label="问题启用状态" prop="status">
           <el-select v-model="formInline.status" placeholder="请选择问题启用状态" clearable>
-            <el-option v-for="item in QUESTION_STATUS_OPTIONS" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in QUESTION_STATUS_OPTIONS" :key="item.value" :label="item.label"
+              :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -162,15 +164,8 @@ onMounted(() => {
             <el-button link type="primary" size="small" @click="handleEdit(scope.row)">
               编辑
             </el-button>
-            <el-popconfirm
-              confirm-button-text="确认删除"
-              cancel-button-text="放弃"
-              type="danger"
-              width="230px"
-              icon-color="red"
-              title="确定删除本条自动回复问题么？"
-              @confirm="handleDelete(scope.row.id)"
-            >
+            <el-popconfirm confirm-button-text="确认删除" cancel-button-text="放弃" type="danger" width="230px"
+              icon-color="red" title="确定删除本条自动回复问题么？" @confirm="handleDelete(scope.row.id)">
               <template #reference>
                 <el-button link type="danger" size="small">
                   删除
@@ -181,37 +176,16 @@ onMounted(() => {
         </el-table-column>
       </el-table>
       <el-row class="flex justify-end mt-5">
-        <el-pagination
-          v-model:current-page="formInline.page"
-          v-model:page-size="formInline.size"
-          class="mr-5"
-          :page-sizes="[10, 20, 30, 50]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="queryAutoReplyList"
-          @current-change="queryAutoReplyList"
-        />
+        <el-pagination v-model:current-page="formInline.page" v-model:page-size="formInline.size" class="mr-5"
+          :page-sizes="[10, 20, 30, 50]" layout="total, sizes, prev, pager, next, jumper" :total="total"
+          @size-change="queryAutoReplyList" @current-change="queryAutoReplyList" />
       </el-row>
     </page-main>
-    <el-dialog
-      v-model="visible"
-      :title="`${isUpdate ? '编辑' : '添加'}自动回复问题`"
-      width="480"
-      @close="handleClose(formAutoReplyRef)"
-    >
-      <el-form
-        ref="formAutoReplyRef"
-        label-position="right"
-        label-width="80px"
-        :model="formAutoReply"
-        :rules="rules"
-      >
+    <el-dialog v-model="visible" :title="`${isUpdate ? '编辑' : '添加'}自动回复问题`" width="480"
+      @close="handleClose(formAutoReplyRef)">
+      <el-form ref="formAutoReplyRef" label-position="right" label-width="80px" :model="formAutoReply" :rules="rules">
         <el-form-item label="开启状态" prop="status">
-          <el-switch
-            v-model="formAutoReply.status"
-            :active-value="1"
-            :inactive-value="0"
-          />
+          <el-switch v-model="formAutoReply.status" :active-value="1" :inactive-value="0" />
         </el-form-item>
         <el-form-item label="提问问题" prop="prompt">
           <el-input v-model="formAutoReply.prompt" type="textarea" :rows="5" placeholder="请填写预设提问问题" />

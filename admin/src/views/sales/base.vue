@@ -35,7 +35,7 @@ function handlerUpdateConfig() {
         await apiConfig.setConfig({ settings: fotmatSetting(formInline) })
         ElMessage.success('变更配置信息成功')
       }
-      catch (error) {}
+      catch (error) { }
       queryAllconfig()
     }
     else {
@@ -61,7 +61,9 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="分销系统基础配置" description="填写默认佣金比例和高级分销佣金比例会对应显示到客户端的分销页面、同时新用户将使用默认分销比例、允许提现额度限制用户最低提现金额、分销名称同样对应分销页面、高级代理可自定义名称！" type="success" />
+      <el-alert :closable="false" show-icon title="分销系统基础配置"
+        description="填写默认佣金比例和高级分销佣金比例会对应显示到客户端的分销页面、同时新用户将使用默认分销比例、允许提现额度限制用户最低提现金额、分销名称同样对应分销页面、高级代理可自定义名称"
+        type="success" />
     </page-main>
     <el-card style="margin: 20px;">
       <template #header>

@@ -120,11 +120,11 @@ function handlerSubmit(formEl: FormInstance | undefined) {
     if (valid) {
       if (activeAppCatId.value) {
         await ApiApp.updateCats({ id: activeAppCatId.value, ...formPackage })
-        ElMessage({ type: 'success', message: '更新套餐成功！' })
+        ElMessage({ type: 'success', message: '更新套餐成功' })
       }
       else {
         await ApiApp.createCats(formPackage)
-        ElMessage({ type: 'success', message: '创建新的套餐成功！' })
+        ElMessage({ type: 'success', message: '创建新的套餐成功' })
       }
       visible.value = false
       queryCatList()
@@ -139,7 +139,8 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="应用分类说明" description="你创建的为系统内置分类、可能会被多个用户收藏、一旦创建、不建议删除、系统或限制已经创建的应用、请合理规范应用以免造成不必要的迷惑。" type="success" />
+      <el-alert :closable="false" show-icon title="应用分类说明"
+        description="你创建的为系统内置分类、可能会被多个用户收藏、一旦创建、不建议删除、系统或限制已经创建的应用、请合理规范应用以免造成不必要的迷惑。" type="success" />
     </page-main>
     <page-main>
       <el-form ref="formRef" :inline="true" :model="formInline">
@@ -148,7 +149,8 @@ onMounted(() => {
         </el-form-item>
         <el-form-item label="分类状态" prop="status">
           <el-select v-model="formInline.status" placeholder="请选择分类状态" clearable>
-            <el-option v-for="item in ENABLE_STATUS_OPTIONS" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in ENABLE_STATUS_OPTIONS" :key="item.value" :label="item.label"
+              :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -207,48 +209,27 @@ onMounted(() => {
         </el-table-column>
       </el-table>
       <el-row class="flex justify-end mt-5">
-        <el-pagination
-          v-model:current-page="formInline.page"
-          v-model:page-size="formInline.size"
-          class="mr-5"
-          :page-sizes="[10, 20, 30, 50]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="queryCatList"
-          @current-change="queryCatList"
-        />
+        <el-pagination v-model:current-page="formInline.page" v-model:page-size="formInline.size" class="mr-5"
+          :page-sizes="[10, 20, 30, 50]" layout="total, sizes, prev, pager, next, jumper" :total="total"
+          @size-change="queryCatList" @current-change="queryCatList" />
       </el-row>
     </page-main>
-    <el-dialog v-model="visible" :close-on-click-modal="false" :title="dialogTitle" width="570" @close="handlerCloseDialog(formPackageRef)">
-      <el-form
-        ref="formPackageRef"
-        label-position="right"
-        label-width="100px"
-        :model="formPackage"
-        :rules="rules"
-      >
+    <el-dialog v-model="visible" :close-on-click-modal="false" :title="dialogTitle" width="570"
+      @close="handlerCloseDialog(formPackageRef)">
+      <el-form ref="formPackageRef" label-position="right" label-width="100px" :model="formPackage" :rules="rules">
         <el-form-item label="分类名称" prop="name">
           <el-input v-model="formPackage.name" placeholder="请填写分类名称" />
         </el-form-item>
         <el-form-item label="分类状态" prop="status">
-          <el-switch
-            v-model="formPackage.status"
-            :active-value="1"
-            :inactive-value="0"
-          />
+          <el-switch v-model="formPackage.status" :active-value="1" :inactive-value="0" />
         </el-form-item>
         <el-form-item label="背景地址" prop="coverImg">
           <el-input v-model="formPackage.coverImg" placeholder="请填写封面图地址" />
         </el-form-item>
 
         <el-form-item label="封面" prop="coverImg">
-          <el-upload
-            class="avatar-uploader"
-            :action="uploadUrl"
-            :show-file-list="false"
-            :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload"
-          >
+          <el-upload class="avatar-uploader" :action="uploadUrl" :show-file-list="false"
+            :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
             <img v-if="formPackage.coverImg" :src="formPackage.coverImg" style="width: 100px;" class="avatar">
             <el-icon v-else class="avatar-uploader-icon">
               <Plus />

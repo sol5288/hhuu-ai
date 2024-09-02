@@ -9,11 +9,11 @@ const props = defineProps({
   },
   headers: {
     type: Object,
-    default: () => {},
+    default: () => { },
   },
   data: {
     type: Object,
-    default: () => {},
+    default: () => { },
   },
   name: {
     type: String,
@@ -97,10 +97,10 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
   const isTypeOk = props.ext.includes(fileExt)
   const isSizeOk = file.size / 1024 / 1024 < props.size
   if (!isTypeOk) {
-    ElMessage.error(`上传图片只支持 ${props.ext.join(' / ')} 格式！`)
+    ElMessage.error(`上传图片只支持 ${props.ext.join(' / ')} 格式`)
   }
   if (!isSizeOk) {
-    ElMessage.error(`上传图片大小不能超过 ${props.size}MB！`)
+    ElMessage.error(`上传图片大小不能超过 ${props.size}MB`)
   }
   if (isTypeOk && isSizeOk) {
     uploadData.value.progress.preview = URL.createObjectURL(file)
@@ -138,7 +138,8 @@ const onSuccess: UploadProps['onSuccess'] = (res) => {
               <svg-icon name="ep:back" />
             </el-icon>
           </span>
-          <span v-show="url.length > 1" title="右移" :class="{ disabled: index === url.length - 1 }" @click="move(index, 'right')">
+          <span v-show="url.length > 1" title="右移" :class="{ disabled: index === url.length - 1 }"
+            @click="move(index, 'right')">
             <el-icon>
               <svg-icon name="ep:right" />
             </el-icon>
@@ -146,19 +147,9 @@ const onSuccess: UploadProps['onSuccess'] = (res) => {
         </div>
       </div>
     </div>
-    <el-upload
-      v-show="url.length < max"
-      :show-file-list="false"
-      :headers="headers"
-      :action="action"
-      :data="data"
-      :name="name"
-      :before-upload="beforeUpload"
-      :on-progress="onProgress"
-      :on-success="onSuccess"
-      drag
-      class="images-upload"
-    >
+    <el-upload v-show="url.length < max" :show-file-list="false" :headers="headers" :action="action" :data="data"
+      :name="name" :before-upload="beforeUpload" :on-progress="onProgress" :on-success="onSuccess" drag
+      class="images-upload">
       <div class="image-slot" :style="`width:${width}px;height:${height}px;`">
         <el-icon>
           <svg-icon name="ep:plus" />
@@ -171,10 +162,13 @@ const onSuccess: UploadProps['onSuccess'] = (res) => {
     </el-upload>
     <div v-if="!notip" class="el-upload__tip">
       <div style="display: inline-block;">
-        <el-alert :title="`上传图片支持 ${ext.join(' / ')} 格式，单张图片大小不超过 ${size}MB，建议图片尺寸为 ${width}*${height}，且图片数量不超过 ${max} 张`" type="success" show-icon :closable="false" />
+        <el-alert
+          :title="`上传图片支持 ${ext.join(' / ')} 格式，单张图片大小不超过 ${size}MB，建议图片尺寸为 ${width}*${height}，且图片数量不超过 ${max} 张`"
+          type="success" show-icon :closable="false" />
       </div>
     </div>
-    <el-image-viewer v-if="uploadData.imageViewerVisible" :url-list="url as string[]" :initial-index="uploadData.dialogImageIndex" teleported @close="previewClose" />
+    <el-image-viewer v-if="uploadData.imageViewerVisible" :url-list="url as string[]"
+      :initial-index="uploadData.dialogImageIndex" teleported @close="previewClose" />
   </div>
 </template>
 

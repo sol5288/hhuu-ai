@@ -119,7 +119,7 @@ const handleAvatarSuccess: UploadProps['onSuccess'] = (
 
 async function handleDeletePackage({ id }) {
   await ApiPackage.delPackage({ id })
-  ElMessage({ type: 'success', message: '删除套餐成功！' })
+  ElMessage({ type: 'success', message: '删除套餐成功' })
   queryAllUserList()
 }
 
@@ -159,11 +159,11 @@ async function handlerSubmit(formEl: FormInstance | undefined) {
     if (valid) {
       if (activePackageId.value) {
         await ApiPackage.updatePackage({ id: activePackageId.value, ...formPackage })
-        ElMessage({ type: 'success', message: '更新套餐成功！' })
+        ElMessage({ type: 'success', message: '更新套餐成功' })
       }
       else {
         await ApiPackage.createPackage(formPackage)
-        ElMessage({ type: 'success', message: '创建新的套餐成功！' })
+        ElMessage({ type: 'success', message: '创建新的套餐成功' })
       }
       visible.value = false
       queryAllUserList()
@@ -204,7 +204,9 @@ onMounted(() => {
     </page-main>
 
     <page-main>
-      <el-alert :closable="false" show-icon title="新版套餐说明" description="新版本套餐分为不限时套餐和限时套餐、不限时充值次数永不过期、限时套餐在规定时间未使用完毕将清空、套餐等级为套餐优先级、等级越高价值越高、充值非永久套餐的限时套餐将成为会员、当已经是会员资格的情况下、充值低于自身等级的套餐仅添加自身余额不更新日期、充值大于等于自生等级的套餐的时候、将叠加余额与时间（请仔细阅读）,套餐有效时间设为-1即为永久不过期！" type="success" />
+      <el-alert :closable="false" show-icon title="新版套餐说明"
+        description="新版本套餐分为不限时套餐和限时套餐、不限时充值次数永不过期、限时套餐在规定时间未使用完毕将清空、套餐等级为套餐优先级、等级越高价值越高、充值非永久套餐的限时套餐将成为会员、当已经是会员资格的情况下、充值低于自身等级的套餐仅添加自身余额不更新日期、充值大于等于自生等级的套餐的时候、将叠加余额与时间（请仔细阅读）,套餐有效时间设为-1即为永久不过期"
+        type="success" />
     </page-main>
 
     <page-main style="width: 100%;">
@@ -255,27 +257,15 @@ onMounted(() => {
         </el-table-column>
       </el-table>
       <el-row class="flex justify-end mt-5">
-        <el-pagination
-          v-model:current-page="formInline.page"
-          v-model:page-size="formInline.size"
-          class="mr-5"
-          :page-sizes="[10, 20, 30, 50]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="queryAllUserList"
-          @current-change="queryAllUserList"
-        />
+        <el-pagination v-model:current-page="formInline.page" v-model:page-size="formInline.size" class="mr-5"
+          :page-sizes="[10, 20, 30, 50]" layout="total, sizes, prev, pager, next, jumper" :total="total"
+          @size-change="queryAllUserList" @current-change="queryAllUserList" />
       </el-row>
     </page-main>
 
-    <el-dialog v-model="visible" :close-on-click-modal="false" :title="dialogTitle" width="970" @close="handlerCloseDialog(formPackageRef)">
-      <el-form
-        ref="formPackageRef"
-        label-position="right"
-        label-width="120px"
-        :model="formPackage"
-        :rules="rules"
-      >
+    <el-dialog v-model="visible" :close-on-click-modal="false" :title="dialogTitle" width="970"
+      @close="handlerCloseDialog(formPackageRef)">
+      <el-form ref="formPackageRef" label-position="right" label-width="120px" :model="formPackage" :rules="rules">
         <el-row>
           <el-col :span="11">
             <el-form-item label="套餐详细名称" prop="name">
@@ -284,11 +274,7 @@ onMounted(() => {
           </el-col>
           <el-col :span="3" :offset="2">
             <el-form-item label="套餐开启状态" prop="status">
-              <el-switch
-                v-model="formPackage.status"
-                :active-value="1"
-                :inactive-value="0"
-              />
+              <el-switch v-model="formPackage.status" :active-value="1" :inactive-value="0" />
             </el-form-item>
           </el-col>
           <el-col :span="7" :offset="1">
@@ -312,13 +298,8 @@ onMounted(() => {
             </el-form-item>
           </el-col>
           <el-col :span="2">
-            <el-upload
-              class="avatar-uploader"
-              :action="uploadUrl"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload"
-            >
+            <el-upload class="avatar-uploader" :action="uploadUrl" :show-file-list="false"
+              :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
               <el-button>
                 <el-icon>
                   <Plus />
@@ -334,7 +315,8 @@ onMounted(() => {
 
           <el-col :span="11">
             <el-form-item label="设置套餐描述" prop="des">
-              <el-input v-model="formPackage.des" type="textarea" placeholder="请填写套餐详细介绍信息、用于对外展示、建议控制套餐价格字数以便于用户端对齐格式..." :rows="6" />
+              <el-input v-model="formPackage.des" type="textarea"
+                placeholder="请填写套餐详细介绍信息、用于对外展示、建议控制套餐价格字数以便于用户端对齐格式..." :rows="6" />
             </el-form-item>
           </el-col>
 

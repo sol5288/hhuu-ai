@@ -50,7 +50,7 @@ function handlerUpdateConfig() {
         await apiConfig.setConfig({ settings: fotmatSetting(formInline) })
         ElMessage.success('变更配置信息成功')
       }
-      catch (error) {}
+      catch (error) { }
       queryAllconfig()
     }
     else {
@@ -90,7 +90,9 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="易支付参数说明" description="通用易支付渠道、请按文档配置即可、同时开启多种支付、我们会以菜单顺序为优先级使用、仅mpay支持非跳转支付、所有的支付通知地址统一为 https://域名/api/pay/notify 将域名修改为您的域名即可！" type="success" />
+      <el-alert :closable="false" show-icon title="易支付参数说明"
+        description="通用易支付渠道、请按文档配置即可、同时开启多种支付、我们会以菜单顺序为优先级使用、仅mpay支持非跳转支付、所有的支付通知地址统一为 https://域名/api/pay/notify 将域名修改为您的域名即可"
+        type="success" />
     </page-main>
     <el-card style="margin: 20px;">
       <template #header>
@@ -105,11 +107,7 @@ onMounted(() => {
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="启用当前支付" prop="payEpayPid">
-              <el-switch
-                v-model="formInline.payEpayStatus"
-                active-value="1"
-                inactive-value="0"
-              />
+              <el-switch v-model="formInline.payEpayStatus" active-value="1" inactive-value="0" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -160,17 +158,9 @@ onMounted(() => {
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="是否开启跳转支付" prop="payEpayRedirect" label-width="130px">
-              <el-tooltip
-                class="box-item"
-                effect="dark"
-                content="请注意、仅mapi支持不跳转支付、其他都需要为跳转支付、不开启跳转支付表示购买页面显示二维码直接扫码购买、跳转支付表示前往新页面！"
-                placement="right"
-              >
-                <el-switch
-                  v-model="formInline.payEpayRedirect"
-                  active-value="1"
-                  inactive-value="0"
-                />
+              <el-tooltip class="box-item" effect="dark"
+                content="请注意、仅mapi支持不跳转支付、其他都需要为跳转支付、不开启跳转支付表示购买页面显示二维码直接扫码购买、跳转支付表示前往新页面" placement="right">
+                <el-switch v-model="formInline.payEpayRedirect" active-value="1" inactive-value="0" />
               </el-tooltip>
             </el-form-item>
           </el-col>

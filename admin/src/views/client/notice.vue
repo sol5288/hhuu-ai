@@ -47,7 +47,7 @@ function handlerUpdateConfig() {
         await apiConfig.setConfig({ settings: fotmatSetting(formInline) })
         ElMessage.success('变更配置信息成功')
       }
-      catch (error) {}
+      catch (error) { }
       queryAllconfig()
     }
     else {
@@ -67,7 +67,7 @@ function fotmatSetting(settings: any) {
   })
 }
 
-function onChange(val) {}
+function onChange(val) { }
 async function onUploadImg(files, callback) {
   const res = await Promise.all(
     Array.from(files).map((file) => {
@@ -77,19 +77,19 @@ async function onUploadImg(files, callback) {
         try {
           const res = await axios.post(uploadUrl.value, form, { headers: { 'Content-Type': 'multipart/form-data' } })
           if (!res?.data?.data) {
-            ElMessage.error('图片上传失败、请检查您的配置信息！')
+            ElMessage.error('图片上传失败、请检查您的配置信息')
           }
           resovle(res.data.data)
         }
         catch (error) {
-          ElMessage.error(error?.response?.data?.message || '图片上传失败、请检查您的配置信息！')
+          ElMessage.error(error?.response?.data?.message || '图片上传失败、请检查您的配置信息')
           reject(error)
         }
       })
     }),
   )
   callback(res.map(item => item))
-  ElMessage({ message: '图片上传成功！', type: 'success' })
+  ElMessage({ message: '图片上传成功', type: 'success' })
 }
 
 onMounted(() => {
@@ -100,7 +100,9 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="公告设置说明" description="这里的公告设置是对应用户端的公告页面的、你可以使用MD语法或直接使用Html标签进行发布、您也可以直接粘贴上传图片、作为图床使用、其他地方比如上传商品等地方的图片也可以暂时在此作为临时方案。" type="success" />
+      <el-alert :closable="false" show-icon title="公告设置说明"
+        description="这里的公告设置是对应用户端的公告页面的、你可以使用MD语法或直接使用Html标签进行发布、您也可以直接粘贴上传图片、作为图床使用、其他地方比如上传商品等地方的图片也可以暂时在此作为临时方案。"
+        type="success" />
     </page-main>
     <el-card style="margin: 20px;">
       <template #header>
@@ -120,12 +122,8 @@ onMounted(() => {
           </el-col>
           <el-col :offset="2" :xs="24" :md="20" :lg="15" :xl="10">
             <el-form-item label="自动打开公告" prop="isAutoOpenNotice">
-              <el-tooltip content="设为自动打开则网站初始化会打开、用户仍可以选择24小时不再查看、选择关闭则不会主动打开！" placement="top" :show-after="500">
-                <el-switch
-                  v-model="formInline.isAutoOpenNotice"
-                  active-value="1"
-                  inactive-value="0"
-                />
+              <el-tooltip content="设为自动打开则网站初始化会打开、用户仍可以选择24小时不再查看、选择关闭则不会主动打开" placement="top" :show-after="500">
+                <el-switch v-model="formInline.isAutoOpenNotice" active-value="1" inactive-value="0" />
               </el-tooltip>
             </el-form-item>
             <el-col :xs="24" :md="20" :lg="15" :xl="12" />
@@ -134,7 +132,8 @@ onMounted(() => {
         <el-row>
           <el-col :span="24">
             <el-form-item label="公告信息" prop="noticeInfo">
-              <MdEditor v-model="formInline.noticeInfo" style="min-height: 80vh;" :theme="theme" @onChange="onChange" @onUploadImg="onUploadImg" />
+              <MdEditor v-model="formInline.noticeInfo" style="min-height: 80vh;" :theme="theme" @onChange="onChange"
+                @onUploadImg="onUploadImg" />
             </el-form-item>
           </el-col>
         </el-row>

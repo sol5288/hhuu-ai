@@ -72,7 +72,9 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="openai全局配置说明" description="系统默认的地址是 https://api.openai.com 、如果你是国内的服务器可能无法访问、您可以使用自己的代理地址、或者免费的 https://open2.aiproxy.xyz 、此处的配置为全局配置、我们可以对单张key进行单独设置、当我们对key不进行设置的时候将会走此处的设置、如果此处也没有设置、系统将会走系统内置默认配置！" type="success" />
+      <el-alert :closable="false" show-icon title="openai全局配置说明"
+        description="系统默认的地址是 https://api.openai.com 、如果你是国内的服务器可能无法访问、您可以使用自己的代理地址、或者免费的 https://open2.aiproxy.xyz 、此处的配置为全局配置、我们可以对单张key进行单独设置、当我们对key不进行设置的时候将会走此处的设置、如果此处也没有设置、系统将会走系统内置默认配置"
+        type="success" />
     </page-main>
     <el-card style="margin: 20px;">
       <template #header>
@@ -103,17 +105,9 @@ onMounted(() => {
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="是否自动降级" prop="openaiaAtoDowngrade" label-width="100">
-              <el-tooltip
-                class="box-item"
-                effect="dark"
-                content="开启自动降级后、如果用户没有4的权限、将会自动降级为基础模型、并扣除3的余额！"
-                placement="right"
-              >
-                <el-switch
-                  v-model="formInline.openaiaAtoDowngrade"
-                  :active-value="1"
-                  :inactive-value="0"
-                />
+              <el-tooltip class="box-item" effect="dark" content="开启自动降级后、如果用户没有4的权限、将会自动降级为基础模型、并扣除3的余额"
+                placement="right">
+                <el-switch v-model="formInline.openaiaAtoDowngrade" :active-value="1" :inactive-value="0" />
               </el-tooltip>
             </el-form-item>
           </el-col>
@@ -129,14 +123,15 @@ onMounted(() => {
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="普通基础模型允许最大回复上下文" prop="openaiModel3MaxTokensRes">
-              <el-input v-model="formInline.openaiModel3MaxTokensRes" placeholder="最大回复设置、默认1000、建议不能设置太高！" clearable />
+              <el-input v-model="formInline.openaiModel3MaxTokensRes" placeholder="最大回复设置、默认1000、建议不能设置太高" clearable />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="16k基础模型允许最大上下文" prop="openaiModel3MaxTokens16k">
-              <el-input v-model="formInline.openaiModel3MaxTokens16k" placeholder="16k基础模型最大支持16384、默认16384" clearable />
+              <el-input v-model="formInline.openaiModel3MaxTokens16k" placeholder="16k基础模型最大支持16384、默认16384"
+                clearable />
             </el-form-item>
           </el-col>
         </el-row>
@@ -165,14 +160,16 @@ onMounted(() => {
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="32k高级模型允许最大上下文" prop="openaiModel4MaxTokens32k">
-              <el-input v-model="formInline.openaiModel4MaxTokens32k" placeholder="32k高级模型上下文最大支持32768、默认16384" clearable />
+              <el-input v-model="formInline.openaiModel4MaxTokens32k" placeholder="32k高级模型上下文最大支持32768、默认16384"
+                clearable />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="32k高级模型允许最大回复上下文" prop="openaiModel4MaxTokens32kRes">
-              <el-input v-model="formInline.openaiModel4MaxTokens32kRes" placeholder="32k高级模型上下文最大回复设置、默认16384" clearable />
+              <el-input v-model="formInline.openaiModel4MaxTokens32kRes" placeholder="32k高级模型上下文最大回复设置、默认16384"
+                clearable />
             </el-form-item>
           </el-col>
         </el-row>

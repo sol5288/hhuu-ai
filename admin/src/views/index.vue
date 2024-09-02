@@ -18,10 +18,10 @@ const colorScheme = computed(() => {
 
 const baseInfo = ref({})
 let apiDashboard = {
-  getBaseInfo: () => {},
-  getBaiduVisit: () => {},
-  getChatStatistic: () => {},
-  getObserverCharts: () => {},
+  getBaseInfo: () => { },
+  getBaiduVisit: () => { },
+  getChatStatistic: () => { },
+  getObserverCharts: () => { },
 }
 let charCharts: echarts.ECharts
 let baiduCharts: echarts.ECharts
@@ -314,13 +314,15 @@ onBeforeMount(() => {
 
 <template>
   <div style="padding: 15px;">
-    <!-- <el-alert class="mb-3" :closable="false" title="当前是【演示账号】" description="演示账号无权操作编辑数据、无法查看邮箱、卡密、key等敏感信息、无法删除数据、仅可以查看有效的信息、如果您想体验超级管理员的权限、请联系作者、请合理使用演示账号、如果您有好的提议、欢迎联系作者反馈！" type="error" effect="dark" /> -->
+    <!-- <el-alert class="mb-3" :closable="false" title="当前是【演示账号】" description="演示账号无权操作编辑数据、无法查看邮箱、卡密、key等敏感信息、无法删除数据、仅可以查看有效的信息、如果您想体验超级管理员的权限、请联系作者、请合理使用演示账号、如果您有好的提议、欢迎联系作者反馈" type="error" effect="dark" /> -->
     <el-row :gutter="10">
       <el-col :lg="6" class="header-tongji mb-3">
         <el-card>
           <template #header>
             <div class="flex align-center">
-              <el-icon><UserFilled /></el-icon>
+              <el-icon>
+                <UserFilled />
+              </el-icon>
               <span class="ml-1 font-bold">今日新增用户数量</span>
             </div>
           </template>
@@ -335,7 +337,9 @@ onBeforeMount(() => {
         <el-card>
           <template #header>
             <div class="flex align-center">
-              <el-icon><ChatLineSquare /></el-icon>
+              <el-icon>
+                <ChatLineSquare />
+              </el-icon>
               <span class="ml-1 font-bold">今日对话数量</span>
             </div>
           </template>
@@ -350,7 +354,9 @@ onBeforeMount(() => {
         <el-card>
           <template #header>
             <div class="flex align-center">
-              <el-icon><MagicStick /></el-icon>
+              <el-icon>
+                <MagicStick />
+              </el-icon>
               <span class="ml-1 font-bold">今日新加绘画数量</span>
             </div>
           </template>
@@ -365,7 +371,9 @@ onBeforeMount(() => {
         <el-card>
           <template #header>
             <div class="flex align-center">
-              <el-icon><Compass /></el-icon>
+              <el-icon>
+                <Compass />
+              </el-icon>
               <span class="ml-1 font-bold">今日订单数量</span>
             </div>
           </template>
@@ -382,7 +390,9 @@ onBeforeMount(() => {
       <template #header>
         <div class="flex align-center justify-between">
           <div>
-            <el-icon><Histogram /></el-icon>
+            <el-icon>
+              <Histogram />
+            </el-icon>
             <span class="ml-1 font-bold">对话信息统计</span>
           </div>
           <div>
@@ -401,7 +411,9 @@ onBeforeMount(() => {
       <template #header>
         <div class="flex align-center justify-between">
           <div>
-            <el-icon><Histogram /></el-icon>
+            <el-icon>
+              <Histogram />
+            </el-icon>
             <span class="ml-1 font-bold">网站访客统计</span>
           </div>
           <div>

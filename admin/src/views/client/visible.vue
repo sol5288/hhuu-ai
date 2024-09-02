@@ -33,7 +33,7 @@ function handlerUpdateConfig() {
         await apiConfig.setConfig({ settings: fotmatSetting(formInline) })
         ElMessage.success('变更配置信息成功')
       }
-      catch (error) {}
+      catch (error) { }
       queryAllconfig()
     }
     else {
@@ -59,7 +59,7 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="客户端UI设置" description="对于用户端各个模块的显隐控制、具体显示部分参考提示！app" type="success" />
+      <el-alert :closable="false" show-icon title="客户端UI设置" description="对于用户端各个模块的显隐控制、具体显示部分参考提示app" type="success" />
     </page-main>
     <el-card style="margin: 20px;">
       <template #header>
@@ -74,39 +74,37 @@ onMounted(() => {
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="应用菜单顶部提示语" prop="maxRounds">
-              <el-input v-model="formInline.appMenuHeaderTips" placeholder="请填写应用菜单顶部提示语" clearable style="width: 80%;" />
-                <el-tooltip
-                  class="box-item"
-                  effect="dark"
-                  placement="right"
-                >
-                  <template #content>
-                    <div style="width: 250px;">
-                      用于应用菜单顶部的自定义语句、修改后将生效、不设置则使用默认的！
-                    </div>
-                  </template>
-                  <el-icon class="ml-3 cursor-pointer"><QuestionFilled /></el-icon>
-                </el-tooltip>
-              </el-form-item>
+              <el-input v-model="formInline.appMenuHeaderTips" placeholder="请填写应用菜单顶部提示语" clearable
+                style="width: 80%;" />
+              <el-tooltip class="box-item" effect="dark" placement="right">
+                <template #content>
+                  <div style="width: 250px;">
+                    用于应用菜单顶部的自定义语句、修改后将生效、不设置则使用默认的
+                  </div>
+                </template>
+                <el-icon class="ml-3 cursor-pointer">
+                  <QuestionFilled />
+                </el-icon>
+              </el-tooltip>
+            </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="应用菜单顶部背景图" prop="maxRounds">
-              <el-input v-model="formInline.appMenuHeaderBgUrl" placeholder="请填写应用菜单顶部背景图地址" clearable style="width: 80%;" />
-                <el-tooltip
-                  class="box-item"
-                  effect="dark"
-                  placement="right"
-                >
-                  <template #content>
-                    <div style="width: 250px;">
-                      用于应用菜单顶部的自定义背景图片地址、修改后将生效、不设置则使用默认的！
-                    </div>
-                  </template>
-                  <el-icon class="ml-3 cursor-pointer"><QuestionFilled /></el-icon>
-                </el-tooltip>
-              </el-form-item>
+              <el-input v-model="formInline.appMenuHeaderBgUrl" placeholder="请填写应用菜单顶部背景图地址" clearable
+                style="width: 80%;" />
+              <el-tooltip class="box-item" effect="dark" placement="right">
+                <template #content>
+                  <div style="width: 250px;">
+                    用于应用菜单顶部的自定义背景图片地址、修改后将生效、不设置则使用默认的
+                  </div>
+                </template>
+                <el-icon class="ml-3 cursor-pointer">
+                  <QuestionFilled />
+                </el-icon>
+              </el-tooltip>
+            </el-form-item>
           </el-col>
         </el-row>
       </el-form>

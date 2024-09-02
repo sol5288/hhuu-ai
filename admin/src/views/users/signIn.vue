@@ -70,7 +70,8 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="签到奖励说明" description="开启签到奖励则会在用户端展示签到入口、用户每日可签到一次、获得对应下方设置的奖励、注意不能为负数不赠送模块可以填为0！" type="warning" />
+      <el-alert :closable="false" show-icon title="签到奖励说明"
+        description="开启签到奖励则会在用户端展示签到入口、用户每日可签到一次、获得对应下方设置的奖励、注意不能为负数不赠送模块可以填为0" type="warning" />
     </page-main>
     <el-card style="margin: 20px;">
       <template #header>
@@ -85,17 +86,8 @@ onMounted(() => {
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="开启签到奖励" prop="signInStatus">
-              <el-tooltip
-                class="box-item"
-                effect="dark"
-                content="如您启用签到奖励、则用户端则可以通过每日签到获取额度！"
-                placement="right"
-              >
-                <el-switch
-                  v-model="formInline.signInStatus"
-                  active-value="1"
-                  inactive-value="0"
-                />
+              <el-tooltip class="box-item" effect="dark" content="如您启用签到奖励、则用户端则可以通过每日签到获取额度" placement="right">
+                <el-switch v-model="formInline.signInStatus" active-value="1" inactive-value="0" />
               </el-tooltip>
             </el-form-item>
           </el-col>

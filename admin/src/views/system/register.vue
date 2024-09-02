@@ -106,7 +106,8 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="注册设置说明" description="可以设置注册赠送的默认额度、包含对话次数、普通绘画额度、绘画额度、并且可以设置前x名用户获得更多额度、包含设置邀请和被邀请次数等！" type="success" />
+      <el-alert :closable="false" show-icon title="注册设置说明"
+        description="可以设置注册赠送的默认额度、包含对话次数、普通绘画额度、绘画额度、并且可以设置前x名用户获得更多额度、包含设置邀请和被邀请次数等" type="success" />
     </page-main>
     <el-card style="margin: 20px;">
       <template #header>
@@ -122,17 +123,8 @@ onMounted(() => {
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="是否关闭邮箱验证" prop="isVerifyEmail">
-              <el-tooltip
-                class="box-item"
-                effect="dark"
-                content="打开即为关闭邮箱校验、后续注册将直接成功、请谨慎打开此功能！"
-                placement="right"
-              >
-                <el-switch
-                  v-model="formInline.isVerifyEmail"
-                  :active-value="0"
-                  :inactive-value="1"
-                />
+              <el-tooltip class="box-item" effect="dark" content="打开即为关闭邮箱校验、后续注册将直接成功、请谨慎打开此功能" placement="right">
+                <el-switch v-model="formInline.isVerifyEmail" :active-value="0" :inactive-value="1" />
               </el-tooltip>
             </el-form-item>
           </el-col>
@@ -143,11 +135,7 @@ onMounted(() => {
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="是否开启注册赠送" prop="registerSendStatus">
-              <el-switch
-                v-model="formInline.registerSendStatus"
-                :active-value="1"
-                :inactive-value="0"
-              />
+              <el-switch v-model="formInline.registerSendStatus" :active-value="1" :inactive-value="0" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -177,11 +165,7 @@ onMounted(() => {
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="开启优先注册赠送" prop="firstRegisterSendStatus">
-              <el-switch
-                v-model="formInline.firstRegisterSendStatus"
-                :active-value="1"
-                :inactive-value="0"
-              />
+              <el-switch v-model="formInline.firstRegisterSendStatus" :active-value="1" :inactive-value="0" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -218,11 +202,7 @@ onMounted(() => {
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="开启邀请注册赠送" prop="inviteSendStatus">
-              <el-switch
-                v-model="formInline.inviteSendStatus"
-                active-value="1"
-                inactive-value="0"
-              />
+              <el-switch v-model="formInline.inviteSendStatus" active-value="1" inactive-value="0" />
             </el-form-item>
           </el-col>
         </el-row>

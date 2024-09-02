@@ -75,32 +75,21 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="DALL-E绘画说明" description="此处的midjourney模型选择是老版本的历史数据、新版迁移至新菜单分开！" type="success" />
+      <el-alert :closable="false" show-icon title="DALL-E绘画说明" description="此处的midjourney模型选择是老版本的历史数据、新版迁移至新菜单分开"
+        type="success" />
     </page-main>
     <page-main>
       <el-form ref="formRef" :inline="true" :model="formInline">
         <el-form-item label="用户名称" prop="userId">
-          <el-select
-            v-model="formInline.userId"
-            filterable
-            clearable
-            remote
-            reserve-keyword
-            placeholder="用户姓名[模糊搜索]"
-            remote-show-suffix
-            :remote-method="handlerSearchUser"
-          >
-            <el-option
-              v-for="item in userList"
-              :key="item.id"
-              :label="item.username"
-              :value="item.id"
-            />
+          <el-select v-model="formInline.userId" filterable clearable remote reserve-keyword placeholder="用户姓名[模糊搜索]"
+            remote-show-suffix :remote-method="handlerSearchUser">
+            <el-option v-for="item in userList" :key="item.id" :label="item.username" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="图片状态" prop="rec">
           <el-select v-model="formInline.rec" placeholder="请选择图片状态" clearable>
-            <el-option v-for="item in RECOMMEND_STATUS_OPTIONS" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in RECOMMEND_STATUS_OPTIONS" :key="item.value" :label="item.label"
+              :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="绘画模型" prop="model">
@@ -123,7 +112,8 @@ onMounted(() => {
       <div class="flex draw_container">
         <div v-for="item in tableData" :key="item.id" style="height: 280px;" class="draw_img_container flex border">
           <div class="draw_head">
-            <el-image fit="contain" :preview-src-list="[item.answer]" :src="item.thumbImg" lazy class="draw_img" hide-on-click-modal />
+            <el-image fit="contain" :preview-src-list="[item.answer]" :src="item.thumbImg" lazy class="draw_img"
+              hide-on-click-modal />
           </div>
           <div class="draw_footer flex mt-3 justify-between items-center">
             <el-tag class="ml-2" :type="item.rec ? 'success' : 'info'">
@@ -143,16 +133,9 @@ onMounted(() => {
       </div>
 
       <el-row class="flex justify-end mt-5">
-        <el-pagination
-          v-model:current-page="formInline.page"
-          v-model:page-size="formInline.size"
-          class="mr-5"
-          :page-sizes="[10, 20, 30, 50]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="queryAllDrawLog"
-          @current-change="queryAllDrawLog"
-        />
+        <el-pagination v-model:current-page="formInline.page" v-model:page-size="formInline.size" class="mr-5"
+          :page-sizes="[10, 20, 30, 50]" layout="total, sizes, prev, pager, next, jumper" :total="total"
+          @size-change="queryAllDrawLog" @current-change="queryAllDrawLog" />
       </el-row>
     </page-main>
   </div>
@@ -171,13 +154,15 @@ onMounted(() => {
   box-sizing: border-box;
   border: 1px solid #ccc;
   border-radius: 5px;
-  .draw_head{
+
+  .draw_head {
     flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
   }
+
   .draw_img {
     width: 100%;
   }

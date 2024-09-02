@@ -45,7 +45,7 @@ function handlerUpdateConfig() {
         await apiConfig.setConfig({ settings: fotmatSetting(formInline) })
         ElMessage.success('变更配置信息成功')
       }
-      catch (error) {}
+      catch (error) { }
       queryAllconfig()
     }
     else {
@@ -71,7 +71,9 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="官方微信支付参数说明" description="官方微信支付设置、同时开启多个支付、我们以微信支付优先级为最高、在pc端我们会调用native支付、在微信环境内、我们将调用Jsapi支付、请确认您的微信支付已经申请了支付权限、所有的支付通知地址统一为 https://域名/api/pay/notify 将域名修改为您的域名即可！" type="warning" />
+      <el-alert :closable="false" show-icon title="官方微信支付参数说明"
+        description="官方微信支付设置、同时开启多个支付、我们以微信支付优先级为最高、在pc端我们会调用native支付、在微信环境内、我们将调用Jsapi支付、请确认您的微信支付已经申请了支付权限、所有的支付通知地址统一为 https://域名/api/pay/notify 将域名修改为您的域名即可"
+        type="warning" />
     </page-main>
     <el-card style="margin: 20px;">
       <template #header>
@@ -86,11 +88,7 @@ onMounted(() => {
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="启用当前支付" prop="payWechatStatus">
-              <el-switch
-                v-model="formInline.payWechatStatus"
-                active-value="1"
-                inactive-value="0"
-              />
+              <el-switch v-model="formInline.payWechatStatus" active-value="1" inactive-value="0" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -132,14 +130,16 @@ onMounted(() => {
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="公钥地址" prop="payWeChatPublicKey">
-              <el-input v-model="formInline.payWeChatPublicKey" type="textarea" :rows="6" placeholder="请填写支付公钥信息（cert.pem文件）" clearable />
+              <el-input v-model="formInline.payWeChatPublicKey" type="textarea" :rows="6"
+                placeholder="请填写支付公钥信息（cert.pem文件）" clearable />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="私钥地址" prop="payWeChatPrivateKey">
-              <el-input v-model="formInline.payWeChatPrivateKey" type="textarea" :rows="6" placeholder="请填写支付私钥地址（key.pem文件）" clearable />
+              <el-input v-model="formInline.payWeChatPrivateKey" type="textarea" :rows="6"
+                placeholder="请填写支付私钥地址（key.pem文件）" clearable />
             </el-form-item>
           </el-col>
         </el-row>

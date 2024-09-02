@@ -104,7 +104,9 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="KEY池说明" description="所有key会按key绑定的模型自动划分为卡池3模型与卡池4模型、key余额耗尽将会自动锁定、每张key支持单独绑定模型与代理、已经上下文长度设置、如果不设置默认以全局配置为准！" type="success" />
+      <el-alert :closable="false" show-icon title="KEY池说明"
+        description="所有key会按key绑定的模型自动划分为卡池3模型与卡池4模型、key余额耗尽将会自动锁定、每张key支持单独绑定模型与代理、已经上下文长度设置、如果不设置默认以全局配置为准"
+        type="success" />
       <el-button class="mt-5" type="primary" @click="visible = true">
         添加白名单用户[添加用户可以使用GPT4模型]
       </el-button>
@@ -136,56 +138,27 @@ onMounted(() => {
         </el-table-column>
       </el-table>
       <el-row class="flex justify-end mt-5">
-        <el-pagination
-          v-model:current-page="formUser.page"
-          v-model:page-size="formUser.size"
-          class="mr-5"
-          :page-sizes="[10, 20, 30, 50]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="queryWhiteUserList"
-          @current-change="queryWhiteUserList"
-        />
+        <el-pagination v-model:current-page="formUser.page" v-model:page-size="formUser.size" class="mr-5"
+          :page-sizes="[10, 20, 30, 50]" layout="total, sizes, prev, pager, next, jumper" :total="total"
+          @size-change="queryWhiteUserList" @current-change="queryWhiteUserList" />
       </el-row>
     </page-main>
-    <el-dialog v-model="visible" :close-on-click-modal="false" :title="dialogTitle" width="400" @close="handlerCloseDialog(formPackageRef)">
-      <el-form
-        ref="formPackageRef"
-        label-position="right"
-        label-width="100px"
-        :model="formWhiteList"
-        :rules="rules"
-      >
+    <el-dialog v-model="visible" :close-on-click-modal="false" :title="dialogTitle" width="400"
+      @close="handlerCloseDialog(formPackageRef)">
+      <el-form ref="formPackageRef" label-position="right" label-width="100px" :model="formWhiteList" :rules="rules">
         <el-form-item v-if="!activeId" label="用户昵称" prop="userId">
-          <el-select
-            v-model="formWhiteList.userId"
-            filterable
-            clearable
-            style="width: 100%;"
-            remote
-            reserve-keyword
-            placeholder="用户姓名[模糊搜索]"
-            remote-show-suffix
-            :remote-method="handlerSearchUser"
-          >
-            <el-option
-              v-for="item in userList"
-              :key="item.id"
-              :label="item.username"
-              :value="item.id"
-            />
+          <el-select v-model="formWhiteList.userId" filterable clearable style="width: 100%;" remote reserve-keyword
+            placeholder="用户姓名[模糊搜索]" remote-show-suffix :remote-method="handlerSearchUser">
+            <el-option v-for="item in userList" :key="item.id" :label="item.username" :value="item.id" />
           </el-select>
         </el-form-item>
 
         <el-form-item label="限制次数" prop="count">
-          <el-input v-model.number="formWhiteList.count" placeholder="请填写限制用户的访问次数！" @keydown.enter.prevent="handlerSubmit(formPackageRef)" />
+          <el-input v-model.number="formWhiteList.count" placeholder="请填写限制用户的访问次数"
+            @keydown.enter.prevent="handlerSubmit(formPackageRef)" />
         </el-form-item>
         <el-form-item label="启用状态" prop="status">
-          <el-switch
-            v-model="formWhiteList.status"
-            :active-value="1"
-            :inactive-value="0"
-          />
+          <el-switch v-model="formWhiteList.status" :active-value="1" :inactive-value="0" />
         </el-form-item>
       </el-form>
       <template #footer>

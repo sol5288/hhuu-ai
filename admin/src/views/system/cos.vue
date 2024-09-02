@@ -37,7 +37,7 @@ function handlerUpdateConfig() {
         await apiConfig.setConfig({ settings: fotmatSetting(formInline) })
         ElMessage.success('变更配置信息成功')
       }
-      catch (error) {}
+      catch (error) { }
       queryAllconfig()
     }
     else {
@@ -63,7 +63,8 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="COS参数说明" description="当前默认使用腾讯云COS对象存储、如果您有特殊的对接通道、将为您开放API对接！！" type="success" />
+      <el-alert :closable="false" show-icon title="COS参数说明" description="当前默认使用腾讯云COS对象存储、如果您有特殊的对接通道、将为您开放API对接"
+        type="success" />
     </page-main>
     <el-card style="margin: 20px;">
       <template #header>

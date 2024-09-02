@@ -83,7 +83,8 @@ async function handleInputConfirm() {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="敏感词说明" description="当前为自定义敏感词、触发敏感词将自动拦截、如配置过三方平台、自定义检测将在三方平台通过后最后进行检测！" type="success" />
+      <el-alert :closable="false" show-icon title="敏感词说明"
+        description="当前为自定义敏感词、触发敏感词将自动拦截、如配置过三方平台、自定义检测将在三方平台通过后最后进行检测" type="success" />
     </page-main>
     <page-main>
       <el-form ref="formRef" :inline="true" :model="formInline">
@@ -93,7 +94,8 @@ async function handleInputConfirm() {
 
         <el-form-item label="敏感词状态" prop="status">
           <el-select v-model="formInline.status" placeholder="请选择敏感词状态" clearable>
-            <el-option v-for="item in ENABLE_STATUS_OPTIONS" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in ENABLE_STATUS_OPTIONS" :key="item.value" :label="item.label"
+              :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -108,29 +110,12 @@ async function handleInputConfirm() {
     </page-main>
 
     <page-main v-loading="loading" style="width: 100%;">
-      <el-tag
-        v-for="item in badWordList"
-        :key="item.id"
-        type="warning"
-        class="mr-3 mb-3"
-        closable
-        hit
-        :effect="theme"
-        :disable-transitions="true"
-        @close="handleDel(item.id)"
-      >
+      <el-tag v-for="item in badWordList" :key="item.id" type="warning" class="mr-3 mb-3" closable hit :effect="theme"
+        :disable-transitions="true" @close="handleDel(item.id)">
         {{ item.word }}
       </el-tag>
-      <ElInput
-        v-if="inputVisible"
-        ref="InputRef"
-        v-model="inputValue"
-        class="ml-1 "
-        style="width: 80px;"
-        size="small"
-        @keyup.enter="handleInputConfirm"
-        @blur="handleInputConfirm"
-      />
+      <ElInput v-if="inputVisible" ref="InputRef" v-model="inputValue" class="ml-1 " style="width: 80px;" size="small"
+        @keyup.enter="handleInputConfirm" @blur="handleInputConfirm" />
       <el-button v-else class="ml-1" size="small" @click="showInput">
         + New Word
       </el-button>

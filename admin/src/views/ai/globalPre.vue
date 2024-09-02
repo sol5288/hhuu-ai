@@ -31,7 +31,7 @@ function handlerUpdateConfig() {
         await apiConfig.setConfig({ settings: fotmatSetting(formInline) })
         ElMessage.success('变更配置信息成功')
       }
-      catch (error) {}
+      catch (error) { }
       queryAllconfig()
     }
     else {
@@ -57,7 +57,8 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="模型全局头部预设说明" description="当前消息将会被追加到对话模型的全局预设当中、对应用APP无效、对其他所有绘画生效！" type="success" />
+      <el-alert :closable="false" show-icon title="模型全局头部预设说明" description="当前消息将会被追加到对话模型的全局预设当中、对应用APP无效、对其他所有绘画生效"
+        type="success" />
     </page-main>
     <el-card style="margin: 20px;">
       <template #header>
@@ -72,7 +73,8 @@ onMounted(() => {
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="模型全局头部预设" prop="systemPreMessage">
-              <el-input v-model="formInline.systemPreMessage" type="textarea" :rows="5" placeholder="请填写模型全局头部预设信息！" clearable />
+              <el-input v-model="formInline.systemPreMessage" type="textarea" :rows="5" placeholder="请填写模型全局头部预设信息"
+                clearable />
             </el-form-item>
           </el-col>
         </el-row>

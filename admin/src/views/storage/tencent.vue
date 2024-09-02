@@ -32,7 +32,7 @@ function handlerUpdateConfig() {
         await apiConfig.setConfig({ settings: fotmatSetting(formInline) })
         ElMessage.success('变更配置信息成功')
       }
-      catch (error) {}
+      catch (error) { }
       queryAllconfig()
     }
     else {
@@ -68,7 +68,8 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="腾讯云COS参数设置" description="前往腾讯云申请对象存储服务、更多配置详见文档、申请服务前往 https://console.cloud.tencent.com/cos ！！" type="success" />
+      <el-alert :closable="false" show-icon title="腾讯云COS参数设置"
+        description="前往腾讯云申请对象存储服务、更多配置详见文档、申请服务前往 https://console.cloud.tencent.com/cos " type="success" />
     </page-main>
     <el-card style="margin: 20px;">
       <template #header>
@@ -83,11 +84,7 @@ onMounted(() => {
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="启用状态" prop="tencentCosStatus">
-              <el-switch
-                v-model="formInline.tencentCosStatus"
-                active-value="1"
-                inactive-value="0"
-              />
+              <el-switch v-model="formInline.tencentCosStatus" active-value="1" inactive-value="0" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -122,7 +119,8 @@ onMounted(() => {
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="全球加速域名" prop="tencentCosAcceleratedDomain">
-              <el-input v-model="formInline.tencentCosAcceleratedDomain" placeholder="如您是国外服务器可开启全球加速域名得到更快响应速度、同理也会更高计费！" clearable />
+              <el-input v-model="formInline.tencentCosAcceleratedDomain"
+                placeholder="如您是国外服务器可开启全球加速域名得到更快响应速度、同理也会更高计费" clearable />
             </el-form-item>
           </el-col>
         </el-row>

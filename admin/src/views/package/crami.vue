@@ -95,7 +95,7 @@ async function handlerCreateCrami(formEl: FormInstance | undefined) {
   formEl?.validate(async (valid) => {
     if (valid) {
       await ApiPackage.createCrami(form)
-      ElMessage({ type: 'success', message: '生成卡密成功！' })
+      ElMessage({ type: 'success', message: '生成卡密成功' })
       visible.value = false
       queryAllCramiList()
     }
@@ -113,7 +113,7 @@ function handlerReset(formEl: FormInstance | undefined) {
 
 async function handleDeleteCrami(row: any) {
   await ApiPackage.delCrami({ id: row.id })
-  ElMessage({ type: 'success', message: '删除卡密成功！' })
+  ElMessage({ type: 'success', message: '删除卡密成功' })
   queryAllCramiList()
 }
 
@@ -126,7 +126,7 @@ async function batchDelCrami() {
     loading.value = true
     await ApiPackage.batchDelCrami({ ids: selects.value.map((t: any) => t.id) })
     loading.value = false
-    ElMessage({ type: 'success', message: '删除卡密成功！' })
+    ElMessage({ type: 'success', message: '删除卡密成功' })
     queryAllCramiList()
   }
   catch (error) {
@@ -178,27 +178,14 @@ onMounted(() => {
 <template>
   <div>
     <!-- <page-main>
-      <el-alert :closable="false" show-icon title="卡密说明" description="可生成套餐类卡密与自定义卡密、套餐类卡密的设置项更多、当前过期时间表示卡密的过期时间、不是用户充值后、设置时间为0表示用不过期、后续将加入充值后有效期模式！" type="success" />
+      <el-alert :closable="false" show-icon title="卡密说明" description="可生成套餐类卡密与自定义卡密、套餐类卡密的设置项更多、当前过期时间表示卡密的过期时间、不是用户充值后、设置时间为0表示用不过期、后续将加入充值后有效期模式" type="success" />
     </page-main> -->
     <page-main>
       <el-form ref="formRef" :inline="true" :model="formInline">
         <el-form-item label="用户名称" prop="useId">
-          <el-select
-            v-model="formInline.useId"
-            filterable
-            clearable
-            remote
-            reserve-keyword
-            placeholder="用户姓名[模糊搜索]"
-            remote-show-suffix
-            :remote-method="handlerSearchUser"
-          >
-            <el-option
-              v-for="item in userList"
-              :key="item.id"
-              :label="item.username"
-              :value="item.id"
-            />
+          <el-select v-model="formInline.useId" filterable clearable remote reserve-keyword placeholder="用户姓名[模糊搜索]"
+            remote-show-suffix :remote-method="handlerSearchUser">
+            <el-option v-for="item in userList" :key="item.id" :label="item.username" :value="item.id" />
           </el-select>
         </el-form-item>
 
@@ -236,7 +223,8 @@ onMounted(() => {
     </page-main>
 
     <page-main style="width: 100%;">
-      <el-table v-loading="loading" border :data="tableData" style="width: 100%;" size="large" @selection-change="handleSelectionChange">
+      <el-table v-loading="loading" border :data="tableData" style="width: 100%;" size="large"
+        @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" />
         <el-table-column prop="code" label="卡密账号" width="180" />
         <el-table-column prop="packageName" label="套餐类型" width="180">
@@ -281,38 +269,16 @@ onMounted(() => {
         </el-table-column>
       </el-table>
       <el-row class="flex justify-end mt-5">
-        <el-pagination
-          v-model:current-page="formInline.page"
-          v-model:page-size="formInline.size"
-          class="mr-5"
-          :page-sizes="[15, 50, 100, 200]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="queryAllCramiList"
-          @current-change="queryAllCramiList"
-        />
+        <el-pagination v-model:current-page="formInline.page" v-model:page-size="formInline.size" class="mr-5"
+          :page-sizes="[15, 50, 100, 200]" layout="total, sizes, prev, pager, next, jumper" :total="total"
+          @size-change="queryAllCramiList" @current-change="queryAllCramiList" />
       </el-row>
     </page-main>
-    <el-dialog
-      v-model="visible"
-      title="生成卡密"
-      width="450"
-      @close="handleClose(formCramiRef)"
-    >
-      <el-form
-        ref="formCramiRef"
-        label-position="right"
-        label-width="100px"
-        :model="form"
-        :rules="rules"
-      >
+    <el-dialog v-model="visible" title="生成卡密" width="450" @close="handleClose(formCramiRef)">
+      <el-form ref="formCramiRef" label-position="right" label-width="100px" :model="form" :rules="rules">
         <el-row>
           <el-form-item label="是否生成自定义卡密" label-width="170px">
-            <el-switch
-              v-model="customCrami"
-              :active-value="1"
-              :inactive-value="0"
-            />
+            <el-switch v-model="customCrami" :active-value="1" :inactive-value="0" />
           </el-form-item>
         </el-row>
         <el-form-item v-if="!customCrami" label="套餐类型" prop="packageId">
@@ -345,10 +311,7 @@ onMounted(() => {
       </template>
     </el-dialog>
 
-    <el-dialog
-      v-model="cramiDialog"
-      title="卡密列表"
-    >
+    <el-dialog v-model="cramiDialog" title="卡密列表">
       <div style="max-height: 200px; overflow: scroll;">
         <div v-for="(item, index) in selectCramiList" :key="index">
           {{ item }}

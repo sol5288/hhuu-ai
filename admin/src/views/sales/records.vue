@@ -84,7 +84,7 @@ onMounted(() => {
       </el-form>
     </page-main>
     <page-main>
-      <el-alert show-icon title="分销佣金记录流水" description="每单的佣金会和此用户当前的返佣比例确定、用户返佣比例是可以手动变更的、所以佣金非固定！" type="success" />
+      <el-alert show-icon title="分销佣金记录流水" description="每单的佣金会和此用户当前的返佣比例确定、用户返佣比例是可以手动变更的、所以佣金非固定" type="success" />
     </page-main>
     <page-main style="width: 100%;">
       <el-table v-loading="loading" border :data="tableData" style="width: 100%;" size="large">
@@ -114,7 +114,7 @@ onMounted(() => {
 
         <!-- <el-table-column fixed="right" label="审核" width="200" align="center">
           <template #default="scope">
-            <el-popconfirm title="确认通过审核吗、请您先手动打款后通过！" width="260" icon-color="red" @confirm="handleAudit(scope.row, 1)">
+            <el-popconfirm title="确认通过审核吗、请您先手动打款后通过" width="260" icon-color="red" @confirm="handleAudit(scope.row, 1)">
               <template #reference>
                 <el-button link type="primary" size="small" :disabled="scope.row.orderPrice !== 0">
                   通过审核
@@ -122,7 +122,7 @@ onMounted(() => {
               </template>
             </el-popconfirm>
 
-            <el-popconfirm title="确认拒绝审核么、拒绝后此次提交将作废！" width="260" icon-color="red" @confirm="handleAudit(scope.row, -1)">
+            <el-popconfirm title="确认拒绝审核么、拒绝后此次提交将作废" width="260" icon-color="red" @confirm="handleAudit(scope.row, -1)">
               <template #reference>
                 <el-button link type="danger" size="small" :disabled="scope.row.orderPrice !== 0">
                   拒绝审核
@@ -133,16 +133,9 @@ onMounted(() => {
         </el-table-column> -->
       </el-table>
       <el-row class="flex justify-end mt-5">
-        <el-pagination
-          v-model:current-page="formInline.page"
-          v-model:page-size="formInline.size"
-          class="mr-5"
-          :page-sizes="[10, 20, 30, 50]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="querySalesRecords"
-          @current-change="querySalesRecords"
-        />
+        <el-pagination v-model:current-page="formInline.page" v-model:page-size="formInline.size" class="mr-5"
+          :page-sizes="[10, 20, 30, 50]" layout="total, sizes, prev, pager, next, jumper" :total="total"
+          @size-change="querySalesRecords" @current-change="querySalesRecords" />
       </el-row>
     </page-main>
   </div>

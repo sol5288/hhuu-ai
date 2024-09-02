@@ -48,7 +48,7 @@ function handlerUpdateConfig() {
         await apiConfig.setConfig({ settings: fotmatSetting(formInline) })
         ElMessage.success('变更配置信息成功')
       }
-      catch (error) {}
+      catch (error) { }
       queryAllconfig()
     }
     else {
@@ -88,7 +88,9 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="码支付参数说明" description="码支付只能支持跳转登录、可同时开通多渠道、同时开启多种支付方式的情况优先级参照支付菜单排序、同时只能使用一种平台、所有的支付通知地址统一为 https://域名/api/pay/notify 将域名修改为您的域名即可！" type="success" />
+      <el-alert :closable="false" show-icon title="码支付参数说明"
+        description="码支付只能支持跳转登录、可同时开通多渠道、同时开启多种支付方式的情况优先级参照支付菜单排序、同时只能使用一种平台、所有的支付通知地址统一为 https://域名/api/pay/notify 将域名修改为您的域名即可"
+        type="success" />
     </page-main>
     <el-card style="margin: 20px;">
       <template #header>
@@ -103,11 +105,7 @@ onMounted(() => {
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="启用当前支付" prop="payMpayPid">
-              <el-switch
-                v-model="formInline.payMpayStatus"
-                active-value="1"
-                inactive-value="0"
-              />
+              <el-switch v-model="formInline.payMpayStatus" active-value="1" inactive-value="0" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -155,7 +153,7 @@ onMounted(() => {
               <el-tooltip
                 class="box-item"
                 effect="dark"
-                content="请注意、仅mapi支持不跳转支付、其他都需要为跳转支付、不开启跳转支付表示购买页面显示二维码直接扫码购买、跳转支付表示前往新页面！"
+                content="请注意、仅mapi支持不跳转支付、其他都需要为跳转支付、不开启跳转支付表示购买页面显示二维码直接扫码购买、跳转支付表示前往新页面"
                 placement="right"
               >
               <el-switch

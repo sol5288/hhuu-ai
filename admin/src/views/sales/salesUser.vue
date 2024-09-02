@@ -72,7 +72,7 @@ async function handlerUpdate(formEl: FormInstance | undefined) {
       return
     }
     await ApiSales.updateSalesUser(formSalesUser)
-    ElMessage.success('修改信息成功！')
+    ElMessage.success('修改信息成功')
     visibleCrami.value = false
     querySalesUserList()
   })
@@ -113,7 +113,7 @@ onMounted(() => {
       </el-form>
     </page-main>
     <page-main>
-      <el-alert show-icon title="佣金账户设置说明" description="佣金设置实时生效、佣金比例用户用户邀请的成员下单后的结算比例、分销人代号会在分销页面展示！" type="success" />
+      <el-alert show-icon title="佣金账户设置说明" description="佣金设置实时生效、佣金比例用户用户邀请的成员下单后的结算比例、分销人代号会在分销页面展示" type="success" />
     </page-main>
     <page-main style="width: 100%;">
       <el-table v-loading="loading" border :data="tableData" style="width: 100%;" size="large">
@@ -140,28 +140,28 @@ onMounted(() => {
         </el-table-column>
         <el-table-column prop="totalAmount" label="分销人账户总金额" align="center" width="150">
           <template #default="scope">
-            <el-tag :type=" scope.row.totalAmount > 0 ? 'success' : 'danger'">
+            <el-tag :type="scope.row.totalAmount > 0 ? 'success' : 'danger'">
               ￥{{ scope.row.totalAmount }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="withdrawalAmount" label="分销人已提现金额" align="center" width="150">
           <template #default="scope">
-            <el-tag :type=" scope.row.withdrawalAmount > 0 ? 'success' : 'danger'">
+            <el-tag :type="scope.row.withdrawalAmount > 0 ? 'success' : 'danger'">
               ￥{{ scope.row.withdrawalAmount }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="distributionBalance" label="分销人可提现金额" align="center" width="150">
           <template #default="scope">
-            <el-tag :type=" scope.row.distributionBalance > 0 ? 'success' : 'danger'">
+            <el-tag :type="scope.row.distributionBalance > 0 ? 'success' : 'danger'">
               ￥{{ scope.row.distributionBalance }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="drawMoneyIn" label="分销人正在提现金额" align="center">
           <template #default="scope">
-            <el-tag :type=" scope.row.drawMoneyIn > 0 ? 'success' : 'danger'">
+            <el-tag :type="scope.row.drawMoneyIn > 0 ? 'success' : 'danger'">
               ￥{{ scope.row.drawMoneyIn }}
             </el-tag>
           </template>
@@ -184,16 +184,9 @@ onMounted(() => {
         </el-table-column>
       </el-table>
       <el-row class="flex justify-end mt-5">
-        <el-pagination
-          v-model:current-page="formInline.page"
-          v-model:page-size="formInline.size"
-          class="mr-5"
-          :page-sizes="[10, 20, 30, 50]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="querySalesUserList"
-          @current-change="querySalesUserList"
-        />
+        <el-pagination v-model:current-page="formInline.page" v-model:page-size="formInline.size" class="mr-5"
+          :page-sizes="[10, 20, 30, 50]" layout="total, sizes, prev, pager, next, jumper" :total="total"
+          @size-change="querySalesUserList" @current-change="querySalesUserList" />
       </el-row>
     </page-main>
 

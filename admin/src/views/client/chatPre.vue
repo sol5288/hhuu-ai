@@ -97,14 +97,14 @@ async function queryAllChatBox() {
 async function handleDeleteChatBoxType(row: any) {
   const { id } = row
   await ApiChatgpt.delChatPreType({ id })
-  ElMessage({ type: 'success', message: '操作完成！' })
+  ElMessage({ type: 'success', message: '操作完成' })
   queryAllChatBoxType()
 }
 
 async function handleDeleteChatBox(row: any) {
   const { id } = row
   await ApiChatgpt.delChatPre({ id })
-  ElMessage({ type: 'success', message: '操作完成！' })
+  ElMessage({ type: 'success', message: '操作完成' })
   queryAllChatBox()
 }
 
@@ -142,7 +142,7 @@ async function handlerSubmitChatBoxType(formEl: FormInstance | undefined) {
       delete params.id
       activeChatBoxTypeId.value && (params.id = activeChatBoxTypeId.value)
       await ApiChatgpt.setChatPreType(params)
-      ElMessage({ type: 'success', message: '操作成功！' })
+      ElMessage({ type: 'success', message: '操作成功' })
       activeChatBoxTypeId.value = 0
       visibleChatBoxType.value = false
       queryAllChatBoxType()
@@ -158,7 +158,7 @@ async function handlerSubmitChatBox(formEl: FormInstance | undefined) {
       delete params.id
       activeChatBoxId.value && (params.id = activeChatBoxId.value)
       await ApiChatgpt.setChatPre(params)
-      ElMessage({ type: 'success', message: '操作成功！' })
+      ElMessage({ type: 'success', message: '操作成功' })
       activeChatBoxId.value = 0
       visibleChatBox.value = false
       queryAllChatBox()
@@ -185,7 +185,8 @@ onMounted(() => {
 <template>
   <div>
     <page-main class="header">
-      <el-alert show-icon title="快问说明" description="此处设置用于对话窗口的左下角、点击可以快速打开我们创建的分类、每个分类下我们可以预设一些提问、只需要在提问的地方 补充其他内容即可完成快速提问！" type="success" />
+      <el-alert show-icon title="快问说明"
+        description="此处设置用于对话窗口的左下角、点击可以快速打开我们创建的分类、每个分类下我们可以预设一些提问、只需要在提问的地方 补充其他内容即可完成快速提问" type="success" />
       <el-button type="success" class="ml-3" size="large" @click="handleAdd">
         {{ addBtnText }}
         <el-icon class="ml-3">
@@ -216,7 +217,8 @@ onMounted(() => {
                 <el-button link type="primary" size="small" @click="handleEditChatboxType(scope.row)">
                   变更
                 </el-button>
-                <el-popconfirm title="确认删除此提示词么?" width="180" icon-color="red" @confirm="handleDeleteChatBoxType(scope.row)">
+                <el-popconfirm title="确认删除此提示词么?" width="180" icon-color="red"
+                  @confirm="handleDeleteChatBoxType(scope.row)">
                   <template #reference>
                     <el-button link type="danger" size="small">
                       删除分类
@@ -245,7 +247,8 @@ onMounted(() => {
                 <el-button link type="primary" size="small" @click="handleEditChatbox(scope.row)">
                   变更
                 </el-button>
-                <el-popconfirm title="确认删除此提示词么?" width="180" icon-color="red" @confirm="handleDeleteChatBox(scope.row)">
+                <el-popconfirm title="确认删除此提示词么?" width="180" icon-color="red"
+                  @confirm="handleDeleteChatBox(scope.row)">
                   <template #reference>
                     <el-button link type="danger" size="small">
                       删除分类
@@ -260,24 +263,16 @@ onMounted(() => {
     </page-main>
 
     <!-- type -->
-    <el-dialog v-model="visibleChatBoxType" :close-on-click-modal="false" :title="dialogTitleChatBoxType" width="770" @close="handlerCloseDialogChatBoxType(formPackageChatBoxTypeRef)">
-      <el-form
-        ref="formPackageChatBoxTypeRef"
-        label-position="right"
-        label-width="120px"
-        :model="formPackageChatBoxType"
-        :rules="rulesChatBoxType"
-      >
+    <el-dialog v-model="visibleChatBoxType" :close-on-click-modal="false" :title="dialogTitleChatBoxType" width="770"
+      @close="handlerCloseDialogChatBoxType(formPackageChatBoxTypeRef)">
+      <el-form ref="formPackageChatBoxTypeRef" label-position="right" label-width="120px"
+        :model="formPackageChatBoxType" :rules="rulesChatBoxType">
         <el-form-item label="分类启用状态" prop="status">
           <el-switch v-model="formPackageChatBoxType.status" />
-          <el-tooltip
-            class="box-item"
-            effect="dark"
-            placement="right"
-          >
+          <el-tooltip class="box-item" effect="dark" placement="right">
             <template #content>
               <div style="width: 250px;">
-                关闭当前分类、用户端将不再展示！
+                关闭当前分类、用户端将不再展示
               </div>
             </template>
             <el-icon class="ml-3 cursor-pointer">
@@ -292,7 +287,7 @@ onMounted(() => {
           <el-input v-model="formPackageChatBoxType.name" placeholder="请填写提示词名称（用户看到的名称）" />
         </el-form-item>
         <!-- <el-form-item label="分类图标" prop="proxyUrl">
-          <el-input  v-model="formPackageChatBoxType.icon" placeholder="请填写分类图标！" />
+          <el-input  v-model="formPackageChatBoxType.icon" placeholder="请填写分类图标" />
         </el-form-item> -->
       </el-form>
       <template #footer>
@@ -306,24 +301,16 @@ onMounted(() => {
     </el-dialog>
 
     <!-- box -->
-    <el-dialog v-model="visibleChatBox" :close-on-click-modal="false" :title="dialogTitleChatBox" width="770" @close="handlerCloseDialogChatBox(formPackageChatBoxRef)">
-      <el-form
-        ref="formPackageChatBoxTypeRef"
-        label-position="right"
-        label-width="120px"
-        :model="formPackageChatBox"
-        :rules="rulesChatBox"
-      >
+    <el-dialog v-model="visibleChatBox" :close-on-click-modal="false" :title="dialogTitleChatBox" width="770"
+      @close="handlerCloseDialogChatBox(formPackageChatBoxRef)">
+      <el-form ref="formPackageChatBoxTypeRef" label-position="right" label-width="120px" :model="formPackageChatBox"
+        :rules="rulesChatBox">
         <el-form-item label="启用状态" prop="status">
           <el-switch v-model="formPackageChatBoxType.status" />
-          <el-tooltip
-            class="box-item"
-            effect="dark"
-            placement="right"
-          >
+          <el-tooltip class="box-item" effect="dark" placement="right">
             <template #content>
               <div style="width: 250px;">
-                关闭当前子项、用户端将不再展示！
+                关闭当前子项、用户端将不再展示
               </div>
             </template>
             <el-icon class="ml-3 cursor-pointer">
@@ -343,7 +330,8 @@ onMounted(() => {
           <el-input v-model="formPackageChatBox.order" placeholder="排序id越大越靠前" />
         </el-form-item>
         <el-form-item label="预设问题" prop="prompt">
-          <el-input v-model="formPackageChatBox.prompt" type="textarea" :rows="5" placeholder="请填写预设问题、如果设置了应用、那么点击优先跳转应用、如果未设置、点击则会直接在对话中发当前填写预设内容" />
+          <el-input v-model="formPackageChatBox.prompt" type="textarea" :rows="5"
+            placeholder="请填写预设问题、如果设置了应用、那么点击优先跳转应用、如果未设置、点击则会直接在对话中发当前填写预设内容" />
         </el-form-item>
       </el-form>
       <template #footer>

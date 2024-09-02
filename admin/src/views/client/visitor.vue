@@ -35,7 +35,7 @@ function handlerUpdateConfig() {
         await apiConfig.setConfig({ settings: fotmatSetting(formInline) })
         ElMessage.success('变更配置信息成功')
       }
-      catch (error) {}
+      catch (error) { }
       queryAllconfig()
     }
     else {
@@ -61,7 +61,7 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="访客模式设置" description="设置为每日访客限制的访问积分额度、每日凌晨0点刷新新的额度！" type="success" />
+      <el-alert :closable="false" show-icon title="访客模式设置" description="设置为每日访客限制的访问积分额度、每日凌晨0点刷新新的额度" type="success" />
     </page-main>
     <el-card style="margin: 20px;">
       <template #header>

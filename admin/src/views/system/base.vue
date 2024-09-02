@@ -29,7 +29,7 @@ function handlerUpdateConfig() {
         await apiConfig.setConfig({ settings: fotmatSetting(formInline) })
         ElMessage.success('变更配置信息成功')
       }
-      catch (error) {}
+      catch (error) { }
       queryAllconfig()
     }
     else {
@@ -55,7 +55,9 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="基础设置说明" description="百度统计默认使用的是demo数据、用于demo展示、最终数据在首页程呈现、请查看部署文档或前往百度统计申请自己的专属key与token、这是免费的服务、如果您不想使用将下面设置留空就行。" type="success" />
+      <el-alert :closable="false" show-icon title="基础设置说明"
+        description="百度统计默认使用的是demo数据、用于demo展示、最终数据在首页程呈现、请查看部署文档或前往百度统计申请自己的专属key与token、这是免费的服务、如果您不想使用将下面设置留空就行。"
+        type="success" />
     </page-main>
     <el-card style="margin: 20px;">
       <template #header>
@@ -70,21 +72,22 @@ onMounted(() => {
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="百度统计siteId" prop="baiduSiteId">
-              <el-input v-model="formInline.baiduSiteId" placeholder="请填写百度site_id、不会请查看部署文档！" clearable />
+              <el-input v-model="formInline.baiduSiteId" placeholder="请填写百度site_id、不会请查看部署文档" clearable />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="百度统计token" prop="baiduToken">
-              <el-input v-model="formInline.baiduToken" placeholder="请填写百度access_token、不会请查看部署文档！" clearable />
+              <el-input v-model="formInline.baiduToken" placeholder="请填写百度access_token、不会请查看部署文档" clearable />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="百度统计代码" prop="baiduCode">
-              <el-input v-model="formInline.baiduCode" placeholder="填写百度统计代码可统计每日访问量详情，如果没有使用用请查看详细文档！" type="textarea" :rows="12" clearable />
+              <el-input v-model="formInline.baiduCode" placeholder="填写百度统计代码可统计每日访问量详情，如果没有使用用请查看详细文档" type="textarea"
+                :rows="12" clearable />
             </el-form-item>
           </el-col>
         </el-row>

@@ -1,4 +1,4 @@
-// 该文件为系统默认配置，请勿修改！！！
+// 该文件为系统默认配置，请勿修改
 
 import type { RecursiveRequired, Settings } from '#/global'
 

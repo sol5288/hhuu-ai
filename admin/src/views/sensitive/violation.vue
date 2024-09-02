@@ -50,7 +50,7 @@ function handleUpdateStatus(row: any) {
 
 async function handlerUpateUserStatus() {
   const res: any = await ApiUsre.updateUserStatus(form)
-  res.success && ElMessage({ type: 'success', message: '变更用户状态成功！' })
+  res.success && ElMessage({ type: 'success', message: '变更用户状态成功' })
   visible.value = false
 }
 
@@ -87,22 +87,9 @@ onMounted(() => {
     <page-main>
       <el-form ref="formRef" :inline="true" :model="formInline">
         <el-form-item label="用户名称" prop="userId">
-          <el-select
-            v-model="formInline.userId"
-            filterable
-            clearable
-            remote
-            reserve-keyword
-            placeholder="用户姓名[模糊搜索]"
-            remote-show-suffix
-            :remote-method="handlerSearchUser"
-          >
-            <el-option
-              v-for="item in userList"
-              :key="item.id"
-              :label="item.username"
-              :value="item.id"
-            />
+          <el-select v-model="formInline.userId" filterable clearable remote reserve-keyword placeholder="用户姓名[模糊搜索]"
+            remote-show-suffix :remote-method="handlerSearchUser">
+            <el-option v-for="item in userList" :key="item.id" :label="item.username" :value="item.id" />
           </el-select>
         </el-form-item>
 
@@ -142,14 +129,14 @@ onMounted(() => {
         <el-table-column label="违规类型">
           <template #default="scope">
             <el-tag type="danger">
-              {{ scope.row?.typeCn ? JSON.parse(scope.row?.typeCn).join('  |  ') : '' }}
+              {{ scope.row?.typeCn ? JSON.parse(scope.row?.typeCn).join(' | ') : '' }}
             </el-tag>
           </template>
         </el-table-column>
 
         <el-table-column label="违规关键词">
           <template #default="scope">
-            {{ scope.row?.words ? JSON.parse(scope.row?.words).join('  |  ') : '' }}
+            {{ scope.row?.words ? JSON.parse(scope.row?.words).join(' | ') : '' }}
           </template>
         </el-table-column>
         <el-table-column prop="typeOriginCn" label="违规检测来源" width="120">
@@ -185,16 +172,9 @@ onMounted(() => {
         </el-table-column>
       </el-table>
       <el-row class="flex justify-end mt-5">
-        <el-pagination
-          v-model:current-page="formInline.page"
-          v-model:page-size="formInline.size"
-          class="mr-5"
-          :page-sizes="[10, 20, 30, 50]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="queryAllLog"
-          @current-change="queryAllLog"
-        />
+        <el-pagination v-model:current-page="formInline.page" v-model:page-size="formInline.size" class="mr-5"
+          :page-sizes="[10, 20, 30, 50]" layout="total, sizes, prev, pager, next, jumper" :total="total"
+          @size-change="queryAllLog" @current-change="queryAllLog" />
       </el-row>
     </page-main>
 

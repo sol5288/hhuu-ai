@@ -60,7 +60,7 @@ function handlerUpdateConfig() {
         await apiConfig.setConfig({ settings: fotmatSetting(formInline) })
         ElMessage.success('变更配置信息成功')
       }
-      catch (error) {}
+      catch (error) { }
       queryAllconfig()
     }
     else {
@@ -100,7 +100,8 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="动态菜单配置说明" description="动态菜单继承到下方、用户端logo配置在客户端左上角、ico为网站图标请使用svg格式、可以在线转格式！" type="success" />
+      <el-alert :closable="false" show-icon title="动态菜单配置说明"
+        description="动态菜单继承到下方、用户端logo配置在客户端左上角、ico为网站图标请使用svg格式、可以在线转格式" type="success" />
     </page-main>
     <el-card style="margin: 20px;">
       <template #header>

@@ -118,7 +118,7 @@ async function queryAllUserList() {
 async function handleDeleteKey(row: any) {
   const { id } = row
   await ApiChatgpt.deleteGptKey({ id })
-  ElMessage({ type: 'success', message: '删除秘钥成功！' })
+  ElMessage({ type: 'success', message: '删除秘钥成功' })
   queryAllUserList()
 }
 
@@ -141,11 +141,11 @@ async function handlerSubmit(formEl: FormInstance | undefined) {
     if (valid) {
       if (activeAppCatId.value) {
         await ApiChatgpt.updateGptKey({ id: activeAppCatId.value, ...formPackage })
-        ElMessage({ type: 'success', message: '更新秘钥成功！' })
+        ElMessage({ type: 'success', message: '更新秘钥成功' })
       }
       else {
         await ApiChatgpt.addGptKey(formPackage)
-        ElMessage({ type: 'success', message: '添加秘钥成功！' })
+        ElMessage({ type: 'success', message: '添加秘钥成功' })
       }
       visible.value = false
       queryAllUserList()
@@ -193,7 +193,8 @@ onMounted(() => {
         </el-form-item>
         <el-form-item label="启用状态" prop="status">
           <el-select v-model="formInline.status" placeholder="请选择key启用状态" clearable>
-            <el-option v-for="item in QUESTION_STATUS_OPTIONS" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in QUESTION_STATUS_OPTIONS" :key="item.value" :label="item.label"
+              :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -221,7 +222,8 @@ onMounted(() => {
       </el-form>
     </page-main>
     <page-main>
-      <el-alert show-icon title="模块已废弃" description="当前版本会在2.0之后废弃、本次保留是为了让你查询历史key、后续此模块会直接移除、新的key池在下方『模型池设置』中、详细配置可以查看提示或参考官方文档！" type="error" />
+      <el-alert show-icon title="模块已废弃"
+        description="当前版本会在2.0之后废弃、本次保留是为了让你查询历史key、后续此模块会直接移除、新的key池在下方『模型池设置』中、详细配置可以查看提示或参考官方文档" type="error" />
     </page-main>
     <page-main style="width: 100%;">
       <el-table v-loading="loading" border :data="tableData" style="width: 100%;" size="large">
@@ -321,46 +323,25 @@ onMounted(() => {
         </el-table-column>
       </el-table>
       <el-row class="flex justify-end mt-5">
-        <el-pagination
-          v-model:current-page="formInline.page"
-          v-model:page-size="formInline.size"
-          class="mr-5"
-          :page-sizes="[10, 20, 30, 50]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="queryAllUserList"
-          @current-change="queryAllUserList"
-        />
+        <el-pagination v-model:current-page="formInline.page" v-model:page-size="formInline.size" class="mr-5"
+          :page-sizes="[10, 20, 30, 50]" layout="total, sizes, prev, pager, next, jumper" :total="total"
+          @size-change="queryAllUserList" @current-change="queryAllUserList" />
       </el-row>
     </page-main>
 
-    <el-dialog v-model="visible" :close-on-click-modal="false" title="批量添加秘钥" width="670" @close="handlerCloseDialog(formPackageRef)">
-      <el-form
-        ref="formPackageRef"
-        v-loading="modelLoading"
-        label-position="right"
-        label-width="120px"
-        :model="formPackage"
-        :rules="rules"
-      >
+    <el-dialog v-model="visible" :close-on-click-modal="false" title="批量添加秘钥" width="670"
+      @close="handlerCloseDialog(formPackageRef)">
+      <el-form ref="formPackageRef" v-loading="modelLoading" label-position="right" label-width="120px"
+        :model="formPackage" :rules="rules">
         <el-form-item label="key卡账号" prop="key">
           <el-input v-model="formPackage.key" placeholder="请填写chatgpt key" @blur="queryKeyModelList" />
         </el-form-item>
         <el-form-item label="启用状态" prop="status">
-          <el-switch
-            v-model="formPackage.status"
-            :active-value="1"
-            :inactive-value="0"
-          />
+          <el-switch v-model="formPackage.status" :active-value="1" :inactive-value="0" />
         </el-form-item>
         <el-form-item label="绑定模型" prop="model">
           <el-select v-model="formPackage.model" filterable clearable placeholder="请选用当前key绑定的模型">
-            <el-option
-              v-for="item in dynamicModelList"
-              :key="item"
-              :label="item"
-              :value="item"
-            />
+            <el-option v-for="item in dynamicModelList" :key="item" :label="item" :value="item" />
           </el-select>
           <el-button type="primary" class="ml-5" @click="queryKeyModelList">
             <!-- 查询当前key支持的模型 -->
@@ -368,19 +349,19 @@ onMounted(() => {
           </el-button>
         </el-form-item>
         <el-form-item label="轮询权重" prop="weight">
-          <el-input v-model.number="formPackage.weight" placeholder="请填写key的权重、数字越大使用评率越高！" />
+          <el-input v-model.number="formPackage.weight" placeholder="请填写key的权重、数字越大使用评率越高" />
         </el-form-item>
         <el-form-item label="模型最大Token" prop="maxModelTokens">
-          <el-input v-model.number="formPackage.maxModelTokens" placeholder="请填写模型最大Token、不填写默认使用默认！" />
+          <el-input v-model.number="formPackage.maxModelTokens" placeholder="请填写模型最大Token、不填写默认使用默认" />
         </el-form-item>
         <el-form-item label="最大回复Token" prop="maxResponseTokens">
-          <el-input v-model.number="formPackage.maxResponseTokens" placeholder="请填写最大回复Token、不填写使用默认！" />
+          <el-input v-model.number="formPackage.maxResponseTokens" placeholder="请填写最大回复Token、不填写使用默认" />
         </el-form-item>
         <el-form-item label="指定代理" prop="openaiProxyUrl">
-          <el-input v-model.number="formPackage.openaiProxyUrl" placeholder="请填写key的指定代理、不填写默认使用全局配置！" />
+          <el-input v-model.number="formPackage.openaiProxyUrl" placeholder="请填写key的指定代理、不填写默认使用全局配置" />
         </el-form-item>
         <el-form-item label="超时时间" prop="openaiTimeoutMs">
-          <el-input v-model.number="formPackage.openaiTimeoutMs" placeholder="请填写key的超时时间单位（ms）、不填写默认使用全局配置！" />
+          <el-input v-model.number="formPackage.openaiTimeoutMs" placeholder="请填写key的超时时间单位（ms）、不填写默认使用全局配置" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -393,16 +374,13 @@ onMounted(() => {
       </template>
     </el-dialog>
 
-    <el-dialog v-model="bulkVisible" :close-on-click-modal="false" :title="dialogTitle" width="670" @close="handlerCloseDialog(formPackageRef)">
-      <el-form
-        ref="formBlukRef"
-        v-loading="modelLoading"
-        label-position="right"
-        label-width="120px"
-        :model="formPackage"
-      >
+    <el-dialog v-model="bulkVisible" :close-on-click-modal="false" :title="dialogTitle" width="670"
+      @close="handlerCloseDialog(formPackageRef)">
+      <el-form ref="formBlukRef" v-loading="modelLoading" label-position="right" label-width="120px"
+        :model="formPackage">
         <el-form-item label="key卡账号列表" prop="keyList">
-          <el-input v-model="formBlukCreate.keyList" type="textarea" :rows="8" placeholder="请粘贴您的key秘钥列表、一行一个、批量添加的情况下我们将默认为您使用gpt-3.5-turbo模型、并且不会检测秘钥的有效期、请您自行校验！" />
+          <el-input v-model="formBlukCreate.keyList" type="textarea" :rows="8"
+            placeholder="请粘贴您的key秘钥列表、一行一个、批量添加的情况下我们将默认为您使用gpt-3.5-turbo模型、并且不会检测秘钥的有效期、请您自行校验" />
         </el-form-item>
       </el-form>
       <template #footer>

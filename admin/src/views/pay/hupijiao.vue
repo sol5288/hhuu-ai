@@ -30,7 +30,7 @@ const rules = ref<FormRules>({
 const formRef = ref<FormInstance>()
 
 async function queryAllconfig() {
-  const res = await apiConfig.queryConfig({ keys: ['payHupiSecret', 'payHupiNotifyUrl','payHupiGatewayUrl', 'payHupiReturnUrl', 'payHupiAppId', 'payHupiStatus'] })
+  const res = await apiConfig.queryConfig({ keys: ['payHupiSecret', 'payHupiNotifyUrl', 'payHupiGatewayUrl', 'payHupiReturnUrl', 'payHupiAppId', 'payHupiStatus'] })
   Object.assign(formInline, res.data)
 }
 
@@ -41,7 +41,7 @@ function handlerUpdateConfig() {
         await apiConfig.setConfig({ settings: fotmatSetting(formInline) })
         ElMessage.success('变更配置信息成功')
       }
-      catch (error) {}
+      catch (error) { }
       queryAllconfig()
     }
     else {
@@ -67,7 +67,9 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="虎皮椒支付参数说明" description="虎皮椒支付为三方支付、接入请购买微信渠道、详细参数参照 https://www.xunhupay.com/ 目前优先开通微信支付渠道、同时开启开启多种支付、我们将优先按照菜单顺序调用、所有的支付通知地址统一为 https://域名/api/pay/notify 将域名修改为您的域名即可！" type="success" />
+      <el-alert :closable="false" show-icon title="虎皮椒支付参数说明"
+        description="虎皮椒支付为三方支付、接入请购买微信渠道、详细参数参照 https://www.xunhupay.com/ 目前优先开通微信支付渠道、同时开启开启多种支付、我们将优先按照菜单顺序调用、所有的支付通知地址统一为 https://域名/api/pay/notify 将域名修改为您的域名即可"
+        type="success" />
     </page-main>
     <el-card style="margin: 20px;">
       <template #header>
@@ -82,11 +84,7 @@ onMounted(() => {
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="启用当前支付" prop="payHupiAppId">
-              <el-switch
-                v-model="formInline.payHupiStatus"
-                active-value="1"
-                inactive-value="0"
-              />
+              <el-switch v-model="formInline.payHupiStatus" active-value="1" inactive-value="0" />
             </el-form-item>
           </el-col>
         </el-row>

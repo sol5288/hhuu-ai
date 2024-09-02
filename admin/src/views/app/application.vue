@@ -146,11 +146,11 @@ function handlerSubmit(formEl: FormInstance | undefined) {
         /* 如果是用户的app 不能修改状态 保持原样返回 */
         isUserApp.value && Object.assign(params, { status: userAppStatus.value })
         await ApiApp.updateApp(params)
-        ElMessage({ type: 'success', message: '更新套餐成功！' })
+        ElMessage({ type: 'success', message: '更新套餐成功' })
       }
       else {
         await ApiApp.createApp(formPackage)
-        ElMessage({ type: 'success', message: '创建新的套餐成功！' })
+        ElMessage({ type: 'success', message: '创建新的套餐成功' })
       }
       visible.value = false
       queryAppList()
@@ -179,7 +179,9 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="应用说明" description="[由于各模型的使用不同、暂时关闭其他模型的应用使用、仅仅支持使用OpenAi的key使用、请配置了openAi的key之后再进行使用、如果没有配置将不能使用此功能、但用户可以自定义选择模型]  ====     应用一旦创建、可能会被多处使用后续将限制删除、请保持良好习惯、规范命名分类、后续尽量变更而不是删除。用户创建的应用我们不允许删除、但是可以做一定的变更和修改、审核通过的应用也将限制用户更改、一旦通过或者拒绝、将不允许再次对其状态进行变更、请知悉！" type="success" />
+      <el-alert :closable="false" show-icon title="应用说明"
+        description="[由于各模型的使用不同、暂时关闭其他模型的应用使用、仅仅支持使用OpenAi的key使用、请配置了openAi的key之后再进行使用、如果没有配置将不能使用此功能、但用户可以自定义选择模型]  ====     应用一旦创建、可能会被多处使用后续将限制删除、请保持良好习惯、规范命名分类、后续尽量变更而不是删除。用户创建的应用我们不允许删除、但是可以做一定的变更和修改、审核通过的应用也将限制用户更改、一旦通过或者拒绝、将不允许再次对其状态进行变更、请知悉"
+        type="success" />
     </page-main>
     <page-main>
       <el-form ref="formRef" :inline="true" :model="formInline">
@@ -190,11 +192,13 @@ onMounted(() => {
         </el-form-item>
         <el-form-item label="App状态" prop="status">
           <el-select v-model="formInline.status" placeholder="请选择App状态" clearable>
-            <el-option v-for="item in ENABLE_STATUS_OPTIONS" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in ENABLE_STATUS_OPTIONS" :key="item.value" :label="item.label"
+              :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="App名称" prop="name">
-          <el-input v-model="formInline.name" placeholder="App名称[模糊搜索]" clearable @keydown.enter.prevent="queryAppList" />
+          <el-input v-model="formInline.name" placeholder="App名称[模糊搜索]" clearable
+            @keydown.enter.prevent="queryAppList" />
         </el-form-item>
         <el-form-item label="App角色" prop="status">
           <el-select v-model="formInline.role" placeholder="请选择App角色" clearable>
@@ -251,11 +255,7 @@ onMounted(() => {
         <el-table-column prop="order" label="排序ID" /> />
         <el-table-column prop="preset" label="预设信息" width="400">
           <template #default="scope">
-            <el-tooltip
-              class="box-item"
-              effect="dark"
-              placement="top-start"
-            >
+            <el-tooltip class="box-item" effect="dark" placement="top-start">
               <template #content>
                 <div :style="{ maxWidth: '350px' }">
                   {{ scope.row.preset }}
@@ -270,11 +270,7 @@ onMounted(() => {
 
         <el-table-column prop="des" label="描述信息" width="300">
           <template #default="scope">
-            <el-tooltip
-              class="box-item"
-              effect="dark"
-              placement="top-start"
-            >
+            <el-tooltip class="box-item" effect="dark" placement="top-start">
               <template #content>
                 <div :style="{ maxWidth: '350px' }">
                   {{ scope.row.des }}
@@ -293,10 +289,12 @@ onMounted(() => {
         </el-table-column>
         <el-table-column label="操作" width="200">
           <template #default="scope">
-            <el-button v-if="scope.row.role === 'system' || scope.row.public" link type="primary" size="small" @click="handleUpdatePackage(scope.row)">
+            <el-button v-if="scope.row.role === 'system' || scope.row.public" link type="primary" size="small"
+              @click="handleUpdatePackage(scope.row)">
               编辑
             </el-button>
-            <el-popconfirm v-if="scope.row.role === 'system'" title="确认删除此应用么?" width="200" icon-color="red" @confirm="handleDeletePackage(scope.row)">
+            <el-popconfirm v-if="scope.row.role === 'system'" title="确认删除此应用么?" width="200" icon-color="red"
+              @confirm="handleDeletePackage(scope.row)">
               <template #reference>
                 <el-button link type="danger" size="small">
                   删除应用
@@ -304,7 +302,8 @@ onMounted(() => {
               </template>
             </el-popconfirm>
 
-            <el-popconfirm v-if="scope.row.role === 'user' && scope.row.status === 3" title="确认通过审核此应用么?" width="200" icon-color="red" @confirm="handleAuditAppPass(scope.row)">
+            <el-popconfirm v-if="scope.row.role === 'user' && scope.row.status === 3" title="确认通过审核此应用么?" width="200"
+              icon-color="red" @confirm="handleAuditAppPass(scope.row)">
               <template #reference>
                 <el-button link type="success" size="small">
                   通过审核
@@ -312,7 +311,8 @@ onMounted(() => {
               </template>
             </el-popconfirm>
 
-            <el-popconfirm v-if="scope.row.role === 'user' && scope.row.status === 3" title="确认拒绝通过此应用共享请求么?" width="200" icon-color="red" @confirm="handleAuditAppFail(scope.row)">
+            <el-popconfirm v-if="scope.row.role === 'user' && scope.row.status === 3" title="确认拒绝通过此应用共享请求么?"
+              width="200" icon-color="red" @confirm="handleAuditAppFail(scope.row)">
               <template #reference>
                 <el-button link type="danger" size="small">
                   拒绝审核
@@ -323,26 +323,14 @@ onMounted(() => {
         </el-table-column>
       </el-table>
       <el-row class="flex justify-end mt-5">
-        <el-pagination
-          v-model:current-page="formInline.page"
-          v-model:page-size="formInline.size"
-          class="mr-5"
-          :page-sizes="[10, 20, 30, 50]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="queryAppList"
-          @current-change="queryAppList"
-        />
+        <el-pagination v-model:current-page="formInline.page" v-model:page-size="formInline.size" class="mr-5"
+          :page-sizes="[10, 20, 30, 50]" layout="total, sizes, prev, pager, next, jumper" :total="total"
+          @size-change="queryAppList" @current-change="queryAppList" />
       </el-row>
     </page-main>
-    <el-dialog v-model="visible" :close-on-click-modal="false" :title="dialogTitle" width="570" @close="handlerCloseDialog(formPackageRef)">
-      <el-form
-        ref="formPackageRef"
-        label-position="right"
-        label-width="100px"
-        :model="formPackage"
-        :rules="rules"
-      >
+    <el-dialog v-model="visible" :close-on-click-modal="false" :title="dialogTitle" width="570"
+      @close="handlerCloseDialog(formPackageRef)">
+      <el-form ref="formPackageRef" label-position="right" label-width="100px" :model="formPackage" :rules="rules">
         <el-form-item label="App分类" prop="catId">
           <el-select v-model="formPackage.catId" placeholder="请选择App分类" clearable style="width: 100%;">
             <el-option v-for="item in catList" :key="item.id" :label="item.name" :value="item.id" />
@@ -352,11 +340,7 @@ onMounted(() => {
           <el-input v-model="formPackage.name" placeholder="请填写App名称" />
         </el-form-item>
         <el-form-item v-if="!isUserApp" label="App状态" prop="status">
-          <el-switch
-            v-model="formPackage.status"
-            :active-value="1"
-            :inactive-value="0"
-          />
+          <el-switch v-model="formPackage.status" :active-value="1" :inactive-value="0" />
         </el-form-item>
 
         <el-form-item label="App预设" prop="preset">
@@ -366,16 +350,12 @@ onMounted(() => {
           <el-input v-model="formPackage.des" type="textarea" placeholder="请填写App介绍信息、用于对外展示..." :rows="4" />
         </el-form-item>
         <el-form-item label="示例内容" prop="demoData">
-          <el-input v-model="formPackage.demoData" type="textarea" placeholder="请填写App的demo示例数据、每换行一次表示一个新的示例..." :rows="4" />
+          <el-input v-model="formPackage.demoData" type="textarea" placeholder="请填写App的demo示例数据、每换行一次表示一个新的示例..."
+            :rows="4" />
         </el-form-item>
         <el-form-item label="应用Logo" prop="coverImg">
-          <el-upload
-            class="avatar-uploader"
-            :action="uploadUrl"
-            :show-file-list="false"
-            :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload"
-          >
+          <el-upload class="avatar-uploader" :action="uploadUrl" :show-file-list="false"
+            :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
             <img v-if="formPackage.coverImg" :src="formPackage.coverImg" style="width: 100px;" class="avatar">
             <el-icon v-else class="avatar-uploader-icon">
               <Plus />

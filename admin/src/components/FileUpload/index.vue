@@ -49,10 +49,10 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
   const isTypeOk = props.ext.includes(fileExt)
   const isSizeOk = file.size / 1024 / 1024 < props.size
   if (!isTypeOk) {
-    ElMessage.error(`上传文件只支持 ${props.ext.join(' / ')} 格式！`)
+    ElMessage.error(`上传文件只支持 ${props.ext.join(' / ')} 格式`)
   }
   if (!isSizeOk) {
-    ElMessage.error(`上传文件大小不能超过 ${props.size}MB！`)
+    ElMessage.error(`上传文件大小不能超过 ${props.size}MB`)
   }
   return isTypeOk && isSizeOk
 }

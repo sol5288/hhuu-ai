@@ -36,7 +36,7 @@ const rules = ref<FormRules>({
     {
       validator: (rule: any, value: any, callback: any) => {
         if (value !== form.value.newpassword) {
-          callback(new Error('两次密码不一致！'))
+          callback(new Error('两次密码不一致'))
         }
         else {
           callback()

@@ -35,7 +35,7 @@ function handlerUpdateConfig() {
         await apiConfig.setConfig({ settings: fotmatSetting(formInline) })
         ElMessage.success('变更配置信息成功')
       }
-      catch (error) {}
+      catch (error) { }
       queryAllconfig()
     }
     else {
@@ -61,7 +61,9 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="百度文本审核参数说明" description="接入原因、当前百度云免费5万条，申请文档地址：https://console.bce.baidu.com/ai/#/ai/antiporn/overview/index 、如果百度云敏感词与自定义敏感词都配置的情况、会先检测百度云后检测自定义的敏感词！" type="success" />
+      <el-alert :closable="false" show-icon title="百度文本审核参数说明"
+        description="接入原因、当前百度云免费5万条，申请文档地址：https://console.bce.baidu.com/ai/#/ai/antiporn/overview/index 、如果百度云敏感词与自定义敏感词都配置的情况、会先检测百度云后检测自定义的敏感词"
+        type="success" />
     </page-main>
     <el-card style="margin: 20px;">
       <template #header>
@@ -76,12 +78,8 @@ onMounted(() => {
         <el-row>
           <el-col :xs="24" :md="20" :lg="15" :xl="12">
             <el-form-item label="开启此敏感词设置" prop="baiduTextStatus">
-              <el-tooltip content="开启将打开敏感词检测、如果同时开启其他敏感词将会通过菜单顺序仅同时开启一个！" placement="top" :show-after="500">
-                <el-switch
-                  v-model="formInline.baiduTextStatus"
-                  active-value="1"
-                  inactive-value="0"
-                />
+              <el-tooltip content="开启将打开敏感词检测、如果同时开启其他敏感词将会通过菜单顺序仅同时开启一个" placement="top" :show-after="500">
+                <el-switch v-model="formInline.baiduTextStatus" active-value="1" inactive-value="0" />
               </el-tooltip>
             </el-form-item>
           </el-col>

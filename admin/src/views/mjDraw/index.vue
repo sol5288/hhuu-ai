@@ -44,7 +44,7 @@ function handlerUpdateConfig() {
         await apiConfig.setConfig({ settings: fotmatSetting(formInline) })
         ElMessage.success('变更配置信息成功')
       }
-      catch (error) {}
+      catch (error) { }
       queryAllconfig()
     }
     else {
@@ -70,7 +70,9 @@ onMounted(() => {
 <template>
   <div>
     <page-main>
-      <el-alert :closable="false" show-icon title="MJ参数说明" description="详细配置请参考说明文档、当前暂未开放卡池、单个账号并发默认为三、如果您是更高的等级账号请在.env文件下添加 CONCURRENCY=3 此环境变量修改并发数、我们会为您默认开启队列、人数超过限制将需要进行排队！" type="success" />
+      <el-alert :closable="false" show-icon title="MJ参数说明"
+        description="详细配置请参考说明文档、当前暂未开放卡池、单个账号并发默认为三、如果您是更高的等级账号请在.env文件下添加 CONCURRENCY=3 此环境变量修改并发数、我们会为您默认开启队列、人数超过限制将需要进行排队"
+        type="success" />
     </page-main>
     <el-card style="margin: 20px;">
       <template #header>
