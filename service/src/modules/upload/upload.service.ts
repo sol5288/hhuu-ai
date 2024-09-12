@@ -8,6 +8,8 @@ import { createRandomUid, removeSpecialCharacters } from '@/common/utils';
 import { GlobalConfigService } from '../globalConfig/globalConfig.service';
 import * as FormData from 'form-data';
 import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class UploadService implements OnModuleInit {
@@ -30,9 +32,10 @@ export class UploadService implements OnModuleInit {
 
     Logger.debug(`上传配置状态 - 腾讯云: ${tencentCosStatus}, 阿里云: ${aliOssStatus}, Chevereto: ${cheveretoStatus}`, 'UploadService');
 
-    if (!Number(tencentCosStatus) && !Number(aliOssStatus) && !Number(cheveretoStatus)) {
-      throw new HttpException(this.i18n.t('common.configureUploadMethod'), HttpStatus.BAD_REQUEST);
-    }
+    // 로컬서버 업로드 추가
+    // if (!Number(tencentCosStatus) && !Number(aliOssStatus) && !Number(cheveretoStatus)) {
+    //   throw new HttpException(this.i18n.t('common.configureUploadMethod'), HttpStatus.BAD_REQUEST);
+    // }
     //
     try {
       if (Number(tencentCosStatus)) {
@@ -47,6 +50,9 @@ export class UploadService implements OnModuleInit {
         Logger.debug(this.i18n.t('common.usingChevereto'), 'UploadService');
         const { filename, buffer: fromBuffer, dir } = file;
         return await this.uploadFileByChevereto({ filename, buffer: fromBuffer.toString('base64'), dir, fileType });
+      } else {
+        Logger.debug(this.i18n.t('common.usingLocalUpload'), 'UploadService');
+        return await this.uploadFileToLocalServer({ filename, buffer, dir, fileType });
       }
     } catch (error) {
       Logger.error(this.i18n.t('common.uploadFailed'), 'UploadService');
@@ -68,6 +74,8 @@ export class UploadService implements OnModuleInit {
     }
     if (Number(cheveretoStatus)) {
       return 'chevereto';
+    } else {
+      return 'local';
     }
   }
 
@@ -91,6 +99,45 @@ export class UploadService implements OnModuleInit {
     }
     if (Number(cheveretoStatus)) {
       return await this.uploadFileByCheveretoFromUrl({ filename, url, dir });
+    }
+  }
+
+  async uploadFileToLocalServer({ filename, buffer, dir, fileType }) {
+    try {
+      // Logger.debug(`uploadFileToLocalServer 시작 - 파일명: ${filename}, 디렉토리: ${dir}, 파일 타입: ${fileType}`, 'UploadService');
+
+      const { localUploadPath, baseUrl } = await this.getUploadConfig('local');
+      // Logger.debug(`설정 로드 완료 - 로컬 업로드 경로: ${localUploadPath}, 베이스 URL: ${baseUrl}`, 'UploadService');
+
+      const fullDir = path.join(localUploadPath, dir);
+      // Logger.debug(`전체 디렉토리 경로: ${fullDir}`, 'UploadService');
+
+      // 디렉토리가 없으면 생성
+      if (!fs.existsSync(fullDir)) {
+        // Logger.debug(`디렉토리가 존재하지 않음. 생성 시도: ${fullDir}`, 'UploadService');
+        fs.mkdirSync(fullDir, { recursive: true });
+        // Logger.debug(`디렉토리 생성 완료: ${fullDir}`, 'UploadService');
+      } else {
+        // Logger.debug(`디렉토리가 이미 존재함: ${fullDir}`, 'UploadService');
+      }
+
+      const savedFilename = filename || `${createRandomUid()}.${fileType}`;
+      const fullPath = path.join(fullDir, savedFilename);
+      // Logger.debug(`저장될 파일의 전체 경로: ${fullPath}`, 'UploadService');
+
+      await fs.promises.writeFile(fullPath, buffer);
+      // Logger.debug(`파일 쓰기 완료: ${fullPath}`, 'UploadService');
+
+      // URL 생성
+      const fileUrl = new URL(path.join('upload', dir, savedFilename), baseUrl).toString();
+      // Logger.debug(`생성된 파일 URL: ${fileUrl}`, 'UploadService');
+
+      // Logger.debug(`파일 업로드 성공: ${fileUrl}`, 'UploadService');
+      return fileUrl;
+    } catch (error) {
+      // Logger.error(`로컬 파일 업로드 실패: ${error.message}`, 'UploadService');
+      // Logger.error(`스택 트레이스: ${error.stack}`, 'UploadService');
+      throw new HttpException(this.i18n.t('common.uploadFailedLocal', { args: { error: error.message } }), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -261,6 +308,17 @@ export class UploadService implements OnModuleInit {
         'cheveretoUploadPath',
       ]);
       return { key, uploadPath };
+    }
+    if (type === 'local') {
+      // const { localUploadPath } = await this.globalConfigService.getConfigs(['localUploadPath']);
+      // 하드코딩된 로컬 업로드 경로
+      const appRootDir = process.cwd();
+      const localUploadPath = path.join(appRootDir, 'public', 'upload'); // 업로드 경로 생성
+
+      const host = process.env.NINE_AI_HOST || 'http://localhost:8080'; // 기본 호스트 설정
+      const baseUrl = new URL('/upload', host).toString(); // URL 생성
+
+      return { localUploadPath, baseUrl };
     }
   }
 
